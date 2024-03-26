@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Simulations</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+</body>
+    <h1>Graph Simulations</h1>
+    <div>
+        <!-- Grid containers for displaying graphs -->
+        <div class="grid-containers">
+            <div>
+                <p>BFS</p>
+                <div class="grid-container" id="bfs"></div>
+            </div>
+            <div>
+                <p>Djikstras</p>
+                <div class="grid-container" id="djikstra"></div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend-container">
+            <p style="text-decoration: underline;">Legend</p>
+            <div class="legend">
+                <div class="grid-cell visited"></div>
+                <p>Visited</p>
+            </div>
+            <div class="legend">
+                <div class="grid-cell visiting"></div>
+                <p>Visiting</p>
+            </div>
+            <div class="legend">
+                <div class="grid-cell shortest-path"></div>
+                <p>Shortest Path</p>
+            </div>
+        </div>
+    </div>
+    
+    <button id="runAlgorithms">Run Simulation</button>
+
+    <script src="../dist/bundle.js" defer></script>
+</body>
+</html>
