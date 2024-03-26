@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'development', // or 'production' for production builds
-  entry: './src/script.ts', // Entry point of your application
+  entry: './public/script.ts', // Entry point of your application
   devtool: 'inline-source-map', // Source maps support
   module: {
     rules: [
@@ -22,6 +22,6 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js', // Output bundle file
-    path: path.resolve(__dirname, 'dist'), // Output directory
+    path: path.resolve(__dirname, 'public'), // Output directory
   },
 };

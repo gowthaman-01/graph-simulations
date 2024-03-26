@@ -1,10 +1,10 @@
-import { createGridGraph } from './utils/graph';
-import { AlgorithmType } from './common/types';
-import { COLS, END_NODE, GRID_SIZE, ROWS, START_NODE } from './common/constants';
-import { getColorByDistance } from './utils/color';
-import { clearHighlight } from './utils/highlight';
-import { bfs } from './algorithms/bfs';
-import { dijkstra } from './algorithms/djikstra';
+import { createGridGraph } from '../src/utils/graph';
+import { AlgorithmType } from '../src/common/types';
+import { COLS, END_NODE, GRID_SIZE, ROWS, START_NODE } from '../src/common/constants';
+import { getColorByDistance } from '../src/utils/color';
+import { clearHighlight } from '../src/utils/highlight';
+import { bfs } from '../src/algorithms/bfs';
+import { dijkstra } from '../src/algorithms/djikstra';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
