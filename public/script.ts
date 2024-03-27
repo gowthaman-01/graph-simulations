@@ -1,5 +1,4 @@
 import { createGridGraph, createMazeGraph } from '../src/utils/graph';
-import { AlgorithmType } from '../src/common/types';
 import {
     COLS,
     END_NODE,
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let isMaze = false;
     let graph = generateGraph(gridContainers, isMaze);
-
+    let firstRender = true;
     let isRunning = false;
 
     maze_checkbox.addEventListener('change', () => {
@@ -48,7 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         maze_switch.style.cursor = 'not-allowed';
         isRunning = true;
 
-        graph = generateGraph(gridContainers, isMaze);
+        if (!firstRender) {
+            graph = generateGraph(gridContainers, isMaze);
+            firstRender = false;
+        }
 
         // Run both algorithms synchronously and display their paths
         await Promise.all([
