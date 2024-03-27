@@ -38,7 +38,7 @@ export const highlightCell = async (
 };
 
 /**
- * Clears highlighting of all grid cells associated with a particular algorithm.
+ * Clears highlighting of all grid cells associated with a particular algorithm. [NOT USED]
  *
  * @param {number} size - The size of the grid.
  * @param {AlgorithmType} algorithm - The algorithm for which the grid cells are associated.

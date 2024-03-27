@@ -10,7 +10,6 @@ import {
     START_NODE,
 } from '../src/common/constants';
 import { getColorByDistance, getRgbString } from '../src/utils/color';
-import { clearHighlight } from '../src/utils/highlight';
 import { bfs } from '../src/algorithms/bfs';
 import { dijkstra } from '../src/algorithms/djikstra';
 
@@ -49,9 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         maze_switch.style.cursor = 'not-allowed';
         isRunning = true;
 
-        for (const algorithm of Object.values(AlgorithmType)) {
-            await clearHighlight(GRID_SIZE, algorithm as AlgorithmType);
-        }
+        graph = generateGraph(gridContainers, isMaze);
+
         // Run both algorithms synchronously and display their paths
         await Promise.all([
             bfs(graph, START_NODE.toString(), END_NODE.toString()),
