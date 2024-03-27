@@ -1,5 +1,6 @@
 import { randomDistance } from './general';
 import { Distances, Graph } from '../common/types';
+import { GRID_SIZE } from '../common/constants';
 
 /**
  * Creates a grid graph with the specified number of rows and columns.
@@ -10,10 +11,9 @@ import { Distances, Graph } from '../common/types';
  */
 export const createGridGraph = (rows: number, cols: number): Graph => {
     const graph: Graph = {};
-    const size = rows * cols;
     const distances: Distances = {};
 
-    for (let i = 0; i < size; i++) {
+    for (let i = 0; i < GRID_SIZE; i++) {
         graph[i] = []; // Initialize each node with an empty array of neighbors
 
         // Direct neighbors
@@ -28,7 +28,7 @@ export const createGridGraph = (rows: number, cols: number): Graph => {
                 distance: getDistance(distances, up.toString(), i.toString()),
             });
 
-        if (down < size)
+        if (down < GRID_SIZE)
             graph[i].push({
                 node: down.toString(),
                 distance: getDistance(distances, down.toString(), i.toString()),
@@ -48,6 +48,68 @@ export const createGridGraph = (rows: number, cols: number): Graph => {
     }
 
     return graph;
+};
+
+export const createMazeGraph = (rows: number, cols: number): Graph => {
+    let maze: Graph = {};
+    let visited: Set<string> = new Set();
+
+    // Initialize all cells in the maze as isolated nodes
+    for (let i = 0; i < GRID_SIZE; i++) {
+        maze[i] = [];
+    }
+
+    // Converts row and column to node key
+    const toNodeKey = (row: number, col: number): string => {
+        return (row * cols + col).toString();
+    };
+
+    // Depth-first search to create paths
+    const dfs = (row: number, col: number) => {
+        visited.add(toNodeKey(row, col));
+        const directions = [
+            [0, 1], // Right
+            [1, 0], // Down
+            [0, -1], // Left
+            [-1, 0], // Up
+        ];
+
+        // Shuffle directions to ensure maze variability
+        for (let i = directions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [directions[i], directions[j]] = [directions[j], directions[i]];
+        }
+
+        directions.forEach(([dRow, dCol]) => {
+            const newRow = row + dRow;
+            const newCol = col + dCol;
+            const newNodeKey = toNodeKey(newRow, newCol);
+
+            // Check for valid, unvisited cell to become a path
+            if (
+                newRow >= 0 &&
+                newRow < rows &&
+                newCol >= 0 &&
+                newCol < cols &&
+                !visited.has(newNodeKey)
+            ) {
+                // For simplicity, assuming direct neighbors are at distance 1
+                // Mark the path by setting distance between nodes
+                maze[toNodeKey(row, col)].push({ node: newNodeKey, distance: 0 });
+                maze[newNodeKey].push({ node: toNodeKey(row, col), distance: 0 });
+
+                // Recursively visit the new cell
+                dfs(newRow, newCol);
+            }
+            // Else, you could explicitly set the distance to Infinity if you need to represent walls within the graph
+            // Though typically for a maze, you'd simply not have an edge/connection in the graph where a wall exists
+        });
+    };
+
+    // Start DFS from the top-left cell
+    dfs(0, 0);
+
+    return maze;
 };
 
 /**

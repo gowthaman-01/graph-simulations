@@ -36,6 +36,15 @@ export interface HeapNode {
 }
 
 /**
+ * Represents a RGB color.
+ */
+export interface Color {
+    r: number;
+    g: number;
+    b: number;
+}
+
+/**
  * Enumerates different types of cell highlights for visualization purposes.
  */
 export enum HighlightType {

@@ -16,21 +16,19 @@ p {
     text-align: center;
 }
 
-button {
+#runAlgorithms {
   padding: 10px 30px;
   font-size: 16px;
   border-radius: 5px;
   border: 0.5px solid #ccc;
   background-color: #f0f0f0;
   box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: rgba(230, 230, 230);
+#runAlgorithms:disabled {
+  cursor: not-allowed;
 }
-
 
 .grid-containers {
     display: flex;
@@ -46,7 +44,7 @@ button:hover {
 .grid-cell {
   width: 40px;
   height: 40px;
-  background-color: #E6E6FA; /* Default background color */
+  background-color: #f5f5f5; /* Default background color */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,19 +52,19 @@ button:hover {
 
 /* Highlight classes for different states */
 .unvisited {
-  background-color: #E6E6FA; /* Lavender */
+  background-color: #f5f5f5; 
 }
 
 .visiting {
-  background-color: #FFA500; /* Vivid Orange */
+  background-color: #ffa500; 
 }
 
 .visited {
-  background-color: #008080; /* Teal */
+  background-color: #dcbdfb; 
 }
 
 .shortest-path {
-  background-color: #7FFF00; /* Chartreuse */
+  background-color: #42a5f5;
 }
 
 .legend-container {
@@ -80,5 +78,64 @@ button:hover {
 
 .legend {
   display: flex;
-  gap: 10px
+  gap: 10px;
+}
+
+.legend-toggle {
+  display: flex;
+  justify-content: space-between;
+}
+
+.maze {
+  display: flex;
+  margin-top: 30px;
+  margin-right: 10px;
+  gap: 15px;
+}
+
+.maze p {
+  font-size: larger;
+  margin-top: 6px;
+}
+
+.toggle {
+  position: relative;
+  width: 60px;
+  height: 34px;
+}
+
+.checkbox {
+  display: none;
+}
+
+.switch {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: background-color 0.3s;
+}
+
+.switch:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.checkbox:checked + .switch {
+  background-color: #2196F3;
+}
+
+.checkbox:checked + .switch:before {
+ transform: translateX(26px);
 }

@@ -20,24 +20,34 @@
                 <div class="grid-container" id="djikstra"></div>
             </div>
         </div>
-
-        <!-- Legend -->
-        <div class="legend-container">
-            <p style="text-decoration: underline;">Legend</p>
-            <div class="legend">
-                <div class="grid-cell visited"></div>
-                <p>Visited</p>
+        <div class="legend-toggle">
+             <!-- Legend -->
+            <div class="legend-container">
+                <p style="text-decoration: underline;">Legend</p>
+                <div class="legend">
+                    <div class="grid-cell visited"></div>
+                    <p>Visited</p>
+                </div>
+                <div class="legend">
+                    <div class="grid-cell visiting"></div>
+                    <p>Visiting</p>
+                </div>
+                <div class="legend">
+                    <div class="grid-cell shortest-path"></div>
+                    <p>Shortest Path</p>
+                </div>
             </div>
-            <div class="legend">
-                <div class="grid-cell visiting"></div>
-                <p>Visiting</p>
-            </div>
-            <div class="legend">
-                <div class="grid-cell shortest-path"></div>
-                <p>Shortest Path</p>
+            <div class="maze"> 
+                <p>Maze</p>
+                <div class="toggle">
+                    <input type="checkbox" id="maze-checkbox" class="checkbox">
+                    <label for="maze-checkbox" id="maze-switch" class="switch"></label>
+                </div>
             </div>
         </div>
+       
     </div>
+    
     
     <button id="runAlgorithms">Run Simulation</button>
 

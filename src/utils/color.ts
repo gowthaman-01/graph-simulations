@@ -1,4 +1,5 @@
-import { MAGENTA_COLOR, MAX_DISTANCE, TURQUOISE_COLOR } from '../common/constants';
+import { MAX_COLOR, MAX_DISTANCE, MIN_COLOR, UNVISTED_COLOR } from '../common/constants';
+import { Color } from '../common/types';
 
 /**
  * Calculates and returns a color based on a given distance.
@@ -7,16 +8,22 @@ import { MAGENTA_COLOR, MAX_DISTANCE, TURQUOISE_COLOR } from '../common/constant
  * @param {number} distance - The distance value used to determine the color.
  * @returns {string} The interpolated color in RGB format (e.g., "rgb(255, 0, 0)").
  */
-export const getColorByDistance = (distance: number): string => {
+export const getColorByDistance = (isMaze: boolean, distance: number): string => {
     // Normalize distance to a scale of 0 to 1
     const normalizedDistance = distance / MAX_DISTANCE;
-    const startColor = TURQUOISE_COLOR;
-    const endColor = MAGENTA_COLOR;
+    const minColor = isMaze ? UNVISTED_COLOR : MIN_COLOR;
 
     // Calculate intermediate color based on distance
-    const r = Math.round(startColor.r + (endColor.r - startColor.r) * normalizedDistance);
-    const g = Math.round(startColor.g + (endColor.g - startColor.g) * normalizedDistance);
-    const b = Math.round(startColor.b + (endColor.b - startColor.b) * normalizedDistance);
+    const r = Math.round(minColor.r + (MAX_COLOR.r - minColor.r) * normalizedDistance);
+    const g = Math.round(minColor.g + (MAX_COLOR.g - minColor.g) * normalizedDistance);
+    const b = Math.round(minColor.b + (MAX_COLOR.b - minColor.b) * normalizedDistance);
 
     return `rgb(${r},${g},${b})`;
+};
+
+/**
+ * Converts a Color object to a string recognisable by CSS.
+ */
+export const getRgbString = (color: Color) => {
+    return `rgb(${color.r},${color.g},${color.b})`;
 };

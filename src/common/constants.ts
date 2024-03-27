@@ -1,4 +1,11 @@
-import { HighlightType } from './types';
+import { Color, HighlightType } from './types';
+
+// RGB Color values.
+export const TURQUOISE_COLOR: Color = { r: 64, g: 224, b: 208 };
+export const MAGENTA_COLOR: Color = { r: 139, g: 0, b: 139 };
+export const BLUE_COLOR: Color = { r: 0, g: 0, b: 255 };
+export const RED_COLOR: Color = { r: 255, g: 0, b: 0 };
+export const UNVISTED_COLOR: Color = { r: 245, g: 245, b: 245 };
 
 /**
  * Default delay in milliseconds for visualizations.
@@ -53,8 +60,14 @@ export const highlightClasses = {
     [HighlightType.ShortestPath]: 'shortest-path',
 };
 
-// RGB Color values.
-export const TURQUOISE_COLOR = { r: 64, g: 224, b: 208 };
-export const MAGENTA_COLOR = { r: 139, g: 0, b: 139 };
-export const BLUE_COLOR = { r: 0, g: 0, b: 255 };
-export const RED_COLOR = { r: 255, g: 0, b: 0 };
+/**
+ * Color to show minium distance between cells.
+ * @type {Color}
+ */
+export const MIN_COLOR = TURQUOISE_COLOR;
+
+/**
+ * Color to show maximum distance between cells.
+ * @type {Color}
+ */
+export const MAX_COLOR = MAGENTA_COLOR;
