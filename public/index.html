@@ -14,42 +14,97 @@
             <div>
                 <p>BFS</p>
                 <div class="grid-container" id="bfs"></div>
+                <p id="bfs-distance">&nbsp</p>
             </div>
             <div>
                 <p>Djikstras</p>
                 <div class="grid-container" id="djikstra"></div>
+                <p id="djikstra-distance">&nbsp</p>
             </div>
         </div>
-        <div class="legend-toggle">
+        
+        <div class="bottom-container">
              <!-- Legend -->
-            <div class="legend-container">
+            <div class="left-container">
                 <p style="text-decoration: underline;">Legend</p>
                 <div class="legend">
-                    <div class="grid-cell visited"></div>
+                    <div class="legend-image-container-large">
+                        <img src="./assets/start.png" alt="Start Node"/>
+                    </div>
+                    <p>Start node</p>
+                </div>
+                <div class="legend">
+                    <div class="legend-image-container-large">
+                        <img src="./assets/end.png" alt="End Node"/>
+                    </div>
+                    <p>End node</p>
+                </div>
+                <div class="legend">
+                    <div class="legend-image-container-small">
+                        <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
+                    </div>
                     <p>Visited</p>
                 </div>
                 <div class="legend">
-                    <div class="grid-cell visiting"></div>
+                    <div class="legend-image-container-small">
+                         <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter"/>
+                    </div>
                     <p>Visiting</p>
                 </div>
                 <div class="legend">
-                    <div class="grid-cell shortest-path"></div>
-                    <p>Shortest Path</p>
+                    <div class="legend-image-container-small">
+                        <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter"/>
+                    </div>
+                    <p>Shortest path</p>
                 </div>
             </div>
-            <div class="maze"> 
-                <p>Maze</p>
-                <div class="toggle">
-                    <input type="checkbox" id="maze-checkbox" class="checkbox">
-                    <label for="maze-checkbox" id="maze-switch" class="switch"></label>
+
+            <div class="right-container">
+                 <div class="weight-controls-container">
+                    <div class="weight-control-container"> 
+                        <p>Weights</p>
+                        <div class="weight-control">
+                            <input type="checkbox" id="weight-checkbox" class="checkbox">
+                            <label for="weight-checkbox" id="weight-switch" class="switch"></label>
+                        </div>
+                    </div>
+                    <div class="weight-slider-container">
+                        <p>Distance distribution</p>
+                        <input type="range" id="slider" min="1" max="100" step="1">
+                    </div>
                 </div>
+                <div class="graph-controls-container">
+                    <!-- <div class="maze-controls-container">
+                        <div class="maze-control-container"> 
+                            <p>Maze</p>
+                            <div class="maze-control">
+                                <input type="checkbox" id="maze-checkbox" class="checkbox">
+                                <label for="maze-checkbox" id="maze-switch" class="switch"></label>
+                            </div>
+                        </div>
+                        <div class="orientation-control-container"> 
+                            <p>H</p>
+                            <div class="orientation-control">
+                                <input type="checkbox" id="orientation-checkbox" class="checkbox">
+                                <label for="orientation-checkbox" id="orientation-switch" class="toggle"></label>
+                            </div>
+                            <p>W</p>
+                        </div>
+                    </div> -->
+                    <button id="newGraph">Generate new graph</button>
+                    <button id="changeStart">Change start node</button>
+                    <button id="changeEnd">Change end node</button>
+                </div>
+               
             </div>
         </div>
-       
+
+        <div class="middle-container">
+            <button id="runAlgorithms">Run simulations</button>
+        </div>
+
+        
     </div>
-    
-    
-    <button id="runAlgorithms">Run Simulation</button>
 
     <script src="./bundle.js" defer></script>
 </body>

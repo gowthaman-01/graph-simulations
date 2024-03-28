@@ -1,23 +1,31 @@
 /**
- * Represents a neighbor node in a graph.
+ * Represents a node in a graph.
  */
-export interface Neighbor {
-    node: string;
+export interface Node {
+    id: string;
     distance: number;
+}
+
+/**
+ * Represents a collection of nodes.
+ */
+export interface Nodes {
+    [id: string]: Node;
 }
 
 /**
  * Represents a graph where each node is associated with a list of neighboring nodes.
  */
 export interface Graph {
-    [key: string]: Neighbor[];
+    [id: string]: Node[];
 }
 
 /**
- * Represents a mapping of distances between nodes.
+ * Contains essential information regarding the graph.
  */
-export interface Distances {
-    [key: string]: number;
+export interface GraphStructure {
+    graph: Graph;
+    nodes: Nodes;
 }
 
 /**
@@ -31,7 +39,7 @@ export interface VisitedSet {
  * Represents a node in a heap data structure.
  */
 export interface HeapNode {
-    node: string;
+    id: string;
     priority: number;
 }
 
@@ -45,13 +53,13 @@ export interface Color {
 }
 
 /**
- * Enumerates different types of cell highlights for visualization purposes.
+ * Enumerates different types of ccell marking for visualization purposes.
  */
-export enum HighlightType {
-    Unvisited,
-    Visiting,
-    Visited,
-    ShortestPath,
+export enum MarkType {
+    Unvisited = 'unvisited',
+    Visiting = 'visiting',
+    Visited = 'visited',
+    ShortestPath = 'shortest-path',
 }
 
 /**

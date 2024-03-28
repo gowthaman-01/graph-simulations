@@ -1,20 +1,27 @@
 import { DEFAULT_DELAY } from '../common/constants';
-import { AlgorithmType, Graph, HeapNode, HighlightType } from '../common/types';
+import { AlgorithmType, Graph, HeapNode, MarkType, Node, Nodes } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
-import { highlightCell } from '../utils/highlight';
+import { markCell } from '../utils/mark';
 
 /**
  * Finds the shortest path using Dijkstra's algorithm from startNode to endNode in the given graph.
  *
  * @param {Graph} graph - The graph to search.
+ * @param {Nodes} nodes - The collection of nodes in the graph.
  * @param {string} startNode - The starting node for the search.
  * @param {string} endNode - The target node to find the shortest path to.
- * @returns {Promise<void>} A promise that resolves once the shortest path is found and highlighted.
+ * @returns {Promise<Node[]>} A promise that resolves once the shortest path is found and marked.
  */
-export const dijkstra = async (graph: Graph, startNode: string, endNode: string): Promise<void> => {
+export const dijkstra = async (
+    graph: Graph,
+    nodes: Nodes,
+    startNode: number,
+    endNode: number,
+): Promise<Node[]> => {
     const distances: { [key: string]: number } = {};
     const previous: { [key: string]: string | null } = {};
     const visited: { [key: string]: boolean } = {};
+    let shortestPath: Node[] = [];
 
     // Initialize distances and previous
     Object.keys(graph).forEach((node) => {
@@ -27,44 +34,44 @@ export const dijkstra = async (graph: Graph, startNode: string, endNode: string)
 
     // Initialize the min heap with the start node
     const heap = new MinHeap<HeapNode>(heapNodeComparator);
-    heap.add({ node: startNode, priority: 0 });
+    heap.push({ id: startNode.toString(), priority: 0 });
 
     while (!heap.isEmpty()) {
-        const { node: currentNode } = heap.pop()!;
+        const { id: currentNode } = heap.pop()!;
         visited[currentNode] = true;
 
-        await highlightCell(
-            currentNode,
-            HighlightType.Visiting,
-            AlgorithmType.Djikstra,
-            Math.log2(Object.keys(graph).length) * DEFAULT_DELAY,
-        );
-
-        if (currentNode === endNode) {
-            let current = endNode;
+        if (currentNode === endNode.toString()) {
+            let current = endNode.toString();
             while (current !== null) {
-                await highlightCell(current, HighlightType.ShortestPath, AlgorithmType.Djikstra);
+                shortestPath.push({ id: current, distance: nodes[current].distance });
                 current = previous[current];
             }
-            return;
+            return shortestPath.reverse();
         }
 
         for (const neighbor of graph[currentNode]) {
-            const { node, distance } = neighbor;
-            if (visited[node]) continue;
-            const newDistance = distances[currentNode] + distance;
+            const { id: neighborId, distance: neighborDistance } = neighbor;
+            if (visited[neighborId]) continue;
+            const newDistance = distances[currentNode] + neighborDistance;
 
             // If a shorter path is found.
-            if (newDistance < distances[node]) {
-                distances[node] = newDistance;
-                previous[node] = currentNode;
-                heap.add({ node, priority: newDistance });
+            if (newDistance < distances[neighborId]) {
+                distances[neighborId] = newDistance;
+                previous[neighborId] = currentNode;
+                heap.push({ id: neighborId, priority: newDistance });
+                if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
+                    await markCell(
+                        neighborId,
+                        MarkType.Visiting,
+                        AlgorithmType.Djikstra,
+                        Math.log2(Object.keys(graph).length) * DEFAULT_DELAY,
+                    );
+                }
             }
         }
 
-        await highlightCell(currentNode, HighlightType.Visited, AlgorithmType.Djikstra);
+        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+            await markCell(currentNode, MarkType.Visited, AlgorithmType.Djikstra);
+        }
     }
-
-    // If the endNode is not reachable, return an empty array
-    return;
 };

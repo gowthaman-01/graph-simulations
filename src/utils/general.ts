@@ -1,10 +1,9 @@
-import { MAX_DISTANCE } from '../common/constants';
-
 export const delay = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 /**
- * Generates a random distance between 0 and MAX_DISTANCE.
+ * Generates a random distance between 0 and maxDistance.
  */
-export const randomDistance = () => Math.floor(Math.random() * MAX_DISTANCE) + 1;
+export const randomDistance = (maxDistance: number) =>
+    Math.floor(Math.exp(Math.random() * Math.log(maxDistance)));

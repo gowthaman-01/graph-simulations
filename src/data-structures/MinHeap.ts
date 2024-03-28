@@ -80,16 +80,20 @@ export class MinHeap<T> {
         if (this.heap.length === 0) {
             return null;
         }
-        const item: T = this.heap[0];
+        const top: T = this.heap[0];
         this.heap[0] = this.heap[this.heap.length - 1];
         this.heap.pop();
         this.heapifyDown();
-        return item;
+        return top;
     }
 
-    add(item: T): void {
+    push(item: T): void {
         this.heap.push(item);
         this.heapifyUp();
+    }
+
+    list() {
+        return this.heap;
     }
 
     private heapifyUp(): void {
@@ -106,14 +110,14 @@ export class MinHeap<T> {
             let smallerChildIndex: number = this.getLeftChildIndex(index);
             if (
                 this.hasRightChild(index) &&
-                this.comparator(this.rightChild(index), this.leftChild(index))
+                this.comparator(this.leftChild(index), this.rightChild(index))
             ) {
                 smallerChildIndex = this.getRightChildIndex(index);
             }
-            if (!this.comparator(this.heap[index], this.heap[smallerChildIndex])) {
-                break;
-            } else {
+            if (this.comparator(this.heap[index], this.heap[smallerChildIndex])) {
                 this.swap(index, smallerChildIndex);
+            } else {
+                break;
             }
             index = smallerChildIndex;
         }
