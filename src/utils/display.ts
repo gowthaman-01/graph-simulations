@@ -1,4 +1,4 @@
-import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS, STEP_DIFFERENCE } from '../common/constants';
+import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
 import { AlgorithmType, Nodes, StepMetadata } from '../common/types';
 import { getColorByDistance } from './color';
 import { delay } from './general';
@@ -63,7 +63,8 @@ export const displayInitialNodeState = (
 export const displayAllRunResults = async (
     runResultList: RunResults[],
     stepsSlider: HTMLInputElement,
-    stepsCounter: HTMLParagraphElement,
+    stepsCount: HTMLParagraphElement,
+    stepDifference: number,
 ) => {
     const maxSteps = Math.max(...runResultList.map((result) => result.getTotalSteps()));
     let step = 0;
@@ -80,8 +81,11 @@ export const displayAllRunResults = async (
             displayStep(step, runResult);
         }
 
-        step += STEP_DIFFERENCE;
-        stepsCounter.innerHTML = `Steps: ${step}`;
+        step += stepDifference;
+        stepsCount.innerHTML = `Steps: ${Math.min(
+            parseInt(stepsSlider.value),
+            Math.max(...runResultList.map((result) => result.getAlgorithmSteps())),
+        ).toString()}`;
         stepsSlider.value = step.toString();
         await delay(DEFAULT_DELAY);
     }

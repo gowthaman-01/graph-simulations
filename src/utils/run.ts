@@ -8,9 +8,10 @@ export const runAlgorithm = (
     startNode: number,
     endNode: number,
     algorithmType: AlgorithmType,
+    stepDifference: number,
 ) => {
     const algorithm = getAlgorithmFromAlgorithmType(algorithmType);
-    const runResults = algorithm(graph, nodes, startNode, endNode);
+    const runResults = algorithm(graph, nodes, startNode, endNode, stepDifference);
     return runResults;
 };
 

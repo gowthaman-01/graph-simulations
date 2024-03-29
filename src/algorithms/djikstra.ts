@@ -18,6 +18,7 @@ import { RunResults } from '../results/RunResults';
  * @param {Nodes} nodes - The collection of nodes in the graph.
  * @param {string} startNode - The starting node for the search.
  * @param {string} endNode - The target node to find the shortest path to.
+ * @param {number} stepDifference - The stepDifference of execution.
  * @returns {RunResults} A promise that resolves once the shortest path is found and marked.
  */
 export const dijkstra = (
@@ -25,8 +26,15 @@ export const dijkstra = (
     nodes: Nodes,
     startNode: number,
     endNode: number,
+    stepDifference: number,
 ): RunResults => {
-    const runResults = new RunResults(nodes, startNode, endNode, AlgorithmType.Djikstra);
+    const runResults = new RunResults(
+        nodes,
+        startNode,
+        endNode,
+        AlgorithmType.Djikstra,
+        stepDifference,
+    );
     let steps = 0;
 
     const distances: { [key: string]: number } = {};

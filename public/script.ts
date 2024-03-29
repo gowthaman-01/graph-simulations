@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const weightSlider = document.getElementById('weight-slider') as HTMLInputElement;
     const stepsSlider = document.getElementById('steps-slider') as HTMLInputElement;
     const stepsCount = document.getElementById('steps-count') as HTMLParagraphElement;
+    const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
 
     // Return early if an element is undefined.
     if (
@@ -46,7 +47,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         !legendCells ||
         !weightSlider ||
         !stepsSlider ||
-        !stepsCount
+        !stepsCount ||
+        !speedSlider
     )
         return;
 
@@ -55,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let orientation: 'H' | 'V' = 'H';
 
     let maxDistance = 1;
+    let stepDifference = 10;
 
     let startNode = START_NODE();
     let endNode = END_NODE();
@@ -136,11 +139,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.documentElement.style.setProperty('--steps-slider-cursor', 'pointer');
     };
 
+    const disableSpeedSlider = () => {
+        speedSlider.style.cursor = 'not-allowed';
+        speedSlider.disabled = true;
+        document.documentElement.style.setProperty('--speed-slider-cursor', 'not-allowed');
+    };
+
+    const enableSpeedSlider = () => {
+        speedSlider.style.cursor = 'pointer';
+        speedSlider.disabled = false;
+        document.documentElement.style.setProperty('--speed-slider-cursor', 'pointer');
+    };
+
     const getRunResults = () => {
         const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
-            runAlgorithm(graph, nodes, startNode, endNode, algorithmType),
+            runAlgorithm(graph, nodes, startNode, endNode, algorithmType, stepDifference),
         );
-
+        console.log(stepDifference);
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getTotalSteps()),
         ).toString();
@@ -152,6 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setWeightColor();
     disableWeightSlider();
     resetStepsSlider();
+    enableSpeedSlider();
 
     let { graph, nodes } = createGraph(ROWS, COLS, maxDistance, isMaze, orientation);
     let runResults = getRunResults();
@@ -170,6 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         disableGraphControls();
         disableWeightControls();
         disableStepsSlider();
+        disableSpeedSlider();
 
         if (!firstRender) {
             runResults = getRunResults();
@@ -186,11 +203,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         firstRender = false;
 
-        await displayAllRunResults(runResults, stepsSlider, stepsCount);
+        await displayAllRunResults(runResults, stepsSlider, stepsCount, stepDifference);
 
         enableGraphControls();
         enableWeightControls();
         enableStepsSlider();
+        enableSpeedSlider();
     });
 
     newGraphButton.addEventListener('click', async () => {
@@ -327,7 +345,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             endNode,
             Object.values(AlgorithmType),
         );
-        stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
+
+        stepsCount.innerHTML = `Steps: ${Math.min(
+            parseInt(stepsSlider.value),
+            Math.max(...runResults.map((result) => result.getAlgorithmSteps())),
+        ).toString()}`;
         runResults.forEach((runResult) => {
             displayStep(parseInt(stepsSlider.value), runResult);
         });
@@ -337,5 +359,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 displayTotalWeight(runResult.getTotalWeights(), runResult.getAlgorithmType()),
             );
         }
+    });
+
+    speedSlider.addEventListener('input', async () => {
+        stepDifference = parseInt(speedSlider.value);
+        runResults = getRunResults();
     });
 });

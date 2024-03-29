@@ -1,4 +1,4 @@
-import { GRID_SIZE, SHORTEST_PATH_STEP_DIFFERENCE } from '../common/constants';
+import { GRID_SIZE } from '../common/constants';
 import {
     AlgorithmType,
     NewNodeState,
@@ -18,12 +18,15 @@ export class RunResults {
     private shortestPath: Node[] = [];
     private algorithmType: AlgorithmType;
     private displayComplete: boolean = false;
+    private stepDifference: number;
+    private algorithmSteps: number = 0;
 
     public constructor(
         nodes: Nodes,
         startNode: number,
         endNode: number,
         algorithmType: AlgorithmType,
+        stepDifference: number,
     ) {
         this.nodes = nodes;
         this.startnode = startNode;
@@ -33,6 +36,7 @@ export class RunResults {
             nodeMetaDataMap: this.createNodeMetadataMap(nodes, startNode, endNode),
         });
         this.algorithmType = algorithmType;
+        this.stepDifference = stepDifference;
     }
 
     private createNodeMetadataMap = (
@@ -75,6 +79,7 @@ export class RunResults {
     };
 
     public setShortestPath = (shortestPath: Node[]): void => {
+        this.algorithmSteps = this.getTotalSteps();
         this.shortestPath = shortestPath;
         const blankNodeMetadataMap = this.createNodeMetadataMap(
             this.nodes,
@@ -98,7 +103,7 @@ export class RunResults {
                 newNodeMetadataMap[node.id].state = NodeState.ShortestPath;
             }
             this.stepMetadataList.push({
-                steps: this.getTotalSteps() + SHORTEST_PATH_STEP_DIFFERENCE,
+                steps: this.getTotalSteps() + this.stepDifference * 3,
                 nodeMetaDataMap: newNodeMetadataMap,
             });
         });
@@ -144,5 +149,9 @@ export class RunResults {
 
     public getNodes = () => {
         return this.nodes;
+    };
+
+    public getAlgorithmSteps = () => {
+        return this.algorithmSteps;
     };
 }

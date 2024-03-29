@@ -60,7 +60,3 @@ export const END_NODE = () => Math.floor(Math.random() * GRID_SIZE);
  * @type {number}
  */
 export const MAX_DISTANCE = 100;
-
-export const STEP_DIFFERENCE = 10;
-
-export const SHORTEST_PATH_STEP_DIFFERENCE = STEP_DIFFERENCE * 3;

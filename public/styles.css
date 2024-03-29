@@ -166,15 +166,39 @@ img {
 }
 
 .weight-slider-container input[type="range"]::-webkit-slider-thumb:disabled {
-cursor: not-allowed;
+ cursor: not-allowed;
+}
+
+.speed-slider-container input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+}
+
+.speed-slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--slider-thumb-bg);
+  cursor: var(--speed-slider-cursor);
+}
+
+.speed-slider-container input[type="range"]::-webkit-slider-thumb:disabled {
+ cursor: not-allowed;
 }
 
 
 .graph-controls-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 5px;
+  gap: 29px;
+  margin-top: 7px;
 }
 
 .maze-controls-container {
