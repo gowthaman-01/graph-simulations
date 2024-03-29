@@ -1,4 +1,4 @@
-import { Color, MarkType } from './types';
+import { Color, NodeState } from './types';
 
 // RGB Color values.
 export const BLUE: Color = { r: 0, g: 0, b: 200 };
@@ -9,13 +9,13 @@ export const WHITE: Color = { r: 240, g: 240, b: 240 };
 export const GREEN: Color = { r: 28, g: 172, b: 120 };
 export const GRAY: Color = { r: 44, g: 44, b: 44 };
 
-export const getMarkFilters = (markType: MarkType) => {
+export const getMarkFilters = (markType: NodeState) => {
     switch (markType) {
-        case MarkType.ShortestPath:
+        case NodeState.ShortestPath:
             return 'invert(67%) sepia(59%) saturate(6047%) hue-rotate(126deg) brightness(96%) contrast(78%)';
-        case MarkType.Visited:
+        case NodeState.Visited:
             return 'invert(99%) sepia(63%) saturate(2988%) hue-rotate(349deg) brightness(94%) contrast(113%)';
-        case MarkType.Visiting:
+        case NodeState.Visiting:
             return 'invert(72%) sepia(63%) saturate(3558%) hue-rotate(360deg) brightness(104%) contrast(106%)';
     }
 };
@@ -23,7 +23,7 @@ export const getMarkFilters = (markType: MarkType) => {
  * Default delay in milliseconds for visualizations.
  * @type {number}
  */
-export const DEFAULT_DELAY = 10;
+export const DEFAULT_DELAY = 1;
 
 /**
  * Number of rows in the grid.
@@ -60,3 +60,7 @@ export const END_NODE = () => Math.floor(Math.random() * GRID_SIZE);
  * @type {number}
  */
 export const MAX_DISTANCE = 100;
+
+export const STEP_DIFFERENCE = 10;
+
+export const SHORTEST_PATH_STEP_DIFFERENCE = STEP_DIFFERENCE * 3;

@@ -1,10 +1,14 @@
-import { COLS, END_NODE, GRID_SIZE, MAX_DISTANCE, ROWS, START_NODE } from '../src/common/constants';
+import { COLS, END_NODE, MAX_DISTANCE, ROWS, START_NODE } from '../src/common/constants';
 import { getColorByDistance } from '../src/utils/color';
-import { bfs } from '../src/algorithms/bfs';
-import { dijkstra } from '../src/algorithms/djikstra';
-import { AlgorithmType, Graph, GraphStructure, MarkType, Node, Nodes } from '../src/common/types';
-import { markCell } from '../src/utils/mark';
+import { AlgorithmType } from '../src/common/types';
 import { createGraph } from '../src/utils/graph';
+import {
+    displayInitialNodeState,
+    displayAllRunResults,
+    displayStep,
+    displayTotalWeight,
+} from '../src/utils/display';
+import { runAlgorithm } from '../src/utils/run';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,8 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const legendCells = document.getElementsByClassName(
         'legend-cell',
     ) as HTMLCollectionOf<HTMLDivElement>;
-    const slider = document.getElementById('slider') as HTMLInputElement;
-    const rangeInput = document.querySelector('input[type="range"]') as HTMLInputElement;
+    const weightSlider = document.getElementById('weight-slider') as HTMLInputElement;
+    const stepsSlider = document.getElementById('steps-slider') as HTMLInputElement;
+    const stepsCount = document.getElementById('steps-count') as HTMLParagraphElement;
 
     // Return early if an element is undefined.
     if (
@@ -39,33 +44,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         // !maze_checkbox ||
         // !maze_switch ||
         !legendCells ||
-        !slider ||
-        !rangeInput
+        !weightSlider ||
+        !stepsSlider ||
+        !stepsCount
     )
         return;
 
     // Initialise variables.
     let isMaze = false;
-    let maxDistance = 1;
     let orientation: 'H' | 'V' = 'H';
-    let { graph, nodes } = createGraph(ROWS, COLS, maxDistance, isMaze, orientation);
+
+    let maxDistance = 1;
+
     let startNode = START_NODE();
     let endNode = END_NODE();
+
     let firstRender = true;
-    let isRunning = false;
-    let weightControlsColor = getColorByDistance(isMaze, maxDistance);
 
     // Helper functions
+    const disableWeightSlider = () => {
+        weightSlider.style.cursor = 'not-allowed';
+        weightSlider.disabled = true;
+        document.documentElement.style.setProperty('--weight-slider-cursor', 'not-allowed');
+    };
+
+    const enableWeightSlider = () => {
+        weightSlider.style.cursor = 'pointer';
+        weightSlider.disabled = false;
+        document.documentElement.style.setProperty('--weight-slider-cursor', 'pointer');
+    };
+
     const disableWeightControls = () => {
-        slider.style.cursor = 'not-allowed';
-        rangeInput.disabled = true;
-        document.documentElement.style.setProperty('--slider-cursor', 'not-allowed');
+        disableWeightSlider();
+        weight_switch.style.cursor = 'not-allowed';
+        weight_checkbox.disabled = true;
     };
 
     const enableWeightControls = () => {
-        slider.style.cursor = 'pointer';
-        rangeInput.disabled = false;
-        document.documentElement.style.setProperty('--slider-cursor', 'pointer');
+        enableWeightSlider();
+        weight_switch.style.cursor = 'pointer';
+        weight_checkbox.disabled = false;
     };
 
     const disableGraphControls = () => {
@@ -77,8 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeStartButton.style.cursor = 'not-allowed';
         changeEndButton.disabled = true;
         changeEndButton.style.cursor = 'not-allowed';
-        weight_switch.style.cursor = 'not-allowed';
-        weight_checkbox.disabled = true;
         // maze_switch.style.cursor = 'not-allowed';
         // maze_checkbox.disabled = true;
     };
@@ -92,120 +108,89 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeStartButton.style.cursor = 'pointer';
         changeEndButton.disabled = false;
         changeEndButton.style.cursor = 'pointer';
-        weight_switch.style.cursor = 'pointer';
-        weight_checkbox.disabled = false;
         // maze_switch.style.cursor = 'pointer';
         // maze_checkbox.disabled = false;
     };
 
-    const setWeightControlsColor = () => {
-        weightControlsColor = getColorByDistance(isMaze, maxDistance);
-        document.documentElement.style.setProperty('--slider-thumb-bg', weightControlsColor);
-        document.documentElement.style.setProperty('--switch-bg', weightControlsColor);
+    const setWeightColor = () => {
+        const weightColor = getColorByDistance(maxDistance);
+        document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
+        document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
+    };
+
+    const resetStepsSlider = () => {
+        stepsSlider.value = '0';
+        stepsCount.innerHTML = `Steps: 0`;
+        document.documentElement.style.setProperty('--steps-slider-cursor', 'pointer');
+    };
+
+    const disableStepsSlider = () => {
+        stepsSlider.style.cursor = 'not-allowed';
+        stepsSlider.disabled = true;
+        document.documentElement.style.setProperty('--steps-slider-cursor', 'not-allowed');
+    };
+
+    const enableStepsSlider = () => {
+        stepsSlider.style.cursor = 'pointer';
+        stepsSlider.disabled = false;
+        document.documentElement.style.setProperty('--steps-slider-cursor', 'pointer');
+    };
+
+    const getRunResults = () => {
+        const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
+            runAlgorithm(graph, nodes, startNode, endNode, algorithmType),
+        );
+
+        stepsSlider.max = Math.max(
+            ...newRunResults.map((result) => result.getTotalSteps()),
+        ).toString();
+
+        return newRunResults;
     };
 
     // Set slider thumb color.
-    setWeightControlsColor();
+    setWeightColor();
+    disableWeightSlider();
+    resetStepsSlider();
+
+    let { graph, nodes } = createGraph(ROWS, COLS, maxDistance, isMaze, orientation);
+    let runResults = getRunResults();
 
     // Display graph.
-    displayNodes(gridContainers, nodes, startNode, endNode, isMaze, Object.values(AlgorithmType));
+    displayInitialNodeState(
+        gridContainers,
+        nodes,
+        startNode,
+        endNode,
+        Object.values(AlgorithmType),
+    );
 
     // Event listeners
-    weight_checkbox.addEventListener('change', async () => {
-        if (isRunning) return;
-
-        if (weight_checkbox.checked) {
-            maxDistance = MAX_DISTANCE * 0.5;
-
-            setWeightControlsColor();
-
-            const { graph: newGraph, nodes: newNodes } = createGraph(
-                ROWS,
-                COLS,
-                maxDistance,
-                isMaze,
-                orientation,
-            );
-            graph = newGraph;
-            nodes = newNodes;
-            displayNodes(
-                gridContainers,
-                nodes,
-                startNode,
-                endNode,
-                isMaze,
-                Object.values(AlgorithmType),
-            );
-
-            enableWeightControls();
-        } else {
-            maxDistance = 1;
-
-            setWeightControlsColor();
-
-            const { graph: newGraph, nodes: newNodes } = createGraph(
-                ROWS,
-                COLS,
-                maxDistance,
-                isMaze,
-                orientation,
-            );
-            graph = newGraph;
-            nodes = newNodes;
-            displayNodes(
-                gridContainers,
-                nodes,
-                startNode,
-                endNode,
-                isMaze,
-                Object.values(AlgorithmType),
-            );
-
-            disableWeightControls();
-        }
-    });
-
-    // maze_checkbox.addEventListener('change', () => {
-    //     if (isRunning) return;
-    //     isMaze = maze_checkbox.checked;
-    // });
-
     runButton.addEventListener('click', async () => {
-        if (isRunning) return;
-        isRunning = true;
         disableGraphControls();
         disableWeightControls();
+        disableStepsSlider();
 
         if (!firstRender) {
-            displayNodes(
+            runResults = getRunResults();
+
+            displayInitialNodeState(
                 gridContainers,
                 nodes,
                 startNode,
                 endNode,
-                isMaze,
                 Object.values(AlgorithmType),
             );
+            resetStepsSlider();
         }
 
         firstRender = false;
 
-        await Promise.all(
-            Object.values(AlgorithmType).map((algorithmType) =>
-                runAlgorithmAndDisplayResults(
-                    graph,
-                    nodes,
-                    startNode,
-                    endNode,
-                    algorithmType,
-                    gridContainers,
-                    isMaze,
-                ),
-            ),
-        );
+        await displayAllRunResults(runResults, stepsSlider, stepsCount);
 
-        isRunning = false;
         enableGraphControls();
         enableWeightControls();
+        enableStepsSlider();
     });
 
     newGraphButton.addEventListener('click', async () => {
@@ -218,43 +203,101 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
         graph = newGraph;
         nodes = newNodes;
-        displayNodes(
+        runResults = getRunResults();
+
+        displayInitialNodeState(
             gridContainers,
             nodes,
             startNode,
             endNode,
-            isMaze,
             Object.values(AlgorithmType),
         );
+        resetStepsSlider();
     });
 
     changeStartButton.addEventListener('click', () => {
         startNode = START_NODE();
-        displayNodes(
+        runResults = getRunResults();
+
+        displayInitialNodeState(
             gridContainers,
             nodes,
             startNode,
             endNode,
-            isMaze,
             Object.values(AlgorithmType),
         );
+        resetStepsSlider();
     });
 
     changeEndButton.addEventListener('click', async () => {
         endNode = END_NODE();
-        displayNodes(
+        runResults = getRunResults();
+
+        displayInitialNodeState(
             gridContainers,
             nodes,
             startNode,
             endNode,
-            isMaze,
             Object.values(AlgorithmType),
         );
+        resetStepsSlider();
     });
 
-    slider.addEventListener('input', async () => {
-        maxDistance = (Math.floor(parseInt(slider.value)) / 100) * MAX_DISTANCE;
-        setWeightControlsColor();
+    weight_checkbox.addEventListener('change', async () => {
+        if (weight_checkbox.checked) {
+            maxDistance = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_DISTANCE;
+            setWeightColor();
+            enableWeightSlider();
+
+            const { graph: newGraph, nodes: newNodes } = createGraph(
+                ROWS,
+                COLS,
+                maxDistance,
+                isMaze,
+                orientation,
+            );
+            graph = newGraph;
+            nodes = newNodes;
+            runResults = getRunResults();
+
+            displayInitialNodeState(
+                gridContainers,
+                nodes,
+                startNode,
+                endNode,
+                Object.values(AlgorithmType),
+            );
+            resetStepsSlider();
+        } else {
+            maxDistance = 1;
+            setWeightColor();
+            disableWeightSlider();
+
+            const { graph: newGraph, nodes: newNodes } = createGraph(
+                ROWS,
+                COLS,
+                maxDistance,
+                isMaze,
+                orientation,
+            );
+            graph = newGraph;
+            nodes = newNodes;
+            runResults = getRunResults();
+
+            displayInitialNodeState(
+                gridContainers,
+                nodes,
+                startNode,
+                endNode,
+                Object.values(AlgorithmType),
+            );
+            resetStepsSlider();
+        }
+    });
+
+    weightSlider.addEventListener('input', async () => {
+        maxDistance = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_DISTANCE;
+        setWeightColor();
         const { graph: newGraph, nodes: newNodes } = createGraph(
             ROWS,
             COLS,
@@ -264,141 +307,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
         graph = newGraph;
         nodes = newNodes;
-        displayNodes(
+        runResults = getRunResults();
+
+        displayInitialNodeState(
             gridContainers,
             nodes,
             startNode,
             endNode,
-            isMaze,
             Object.values(AlgorithmType),
         );
+        resetStepsSlider();
+    });
+
+    stepsSlider.addEventListener('input', async () => {
+        displayInitialNodeState(
+            gridContainers,
+            nodes,
+            startNode,
+            endNode,
+            Object.values(AlgorithmType),
+        );
+        stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
+        runResults.forEach((runResult) => {
+            displayStep(parseInt(stepsSlider.value), runResult);
+        });
+
+        if (stepsSlider.value === stepsSlider.max) {
+            runResults.forEach((runResult) =>
+                displayTotalWeight(runResult.getTotalWeights(), runResult.getAlgorithmType()),
+            );
+        }
     });
 });
-
-// Algorithm related functions
-const runAlgorithmAndDisplayResults = async (
-    graph: Graph,
-    nodes: Nodes,
-    startNode: number,
-    endNode: number,
-    algorithmType: AlgorithmType,
-    gridContainers: HTMLCollectionOf<HTMLDivElement>,
-    isMaze: boolean,
-) => {
-    const algorithm = getAlgorithmFromAlgorithmType(algorithmType);
-    if (!algorithm) return;
-    const shortestPath = await algorithm(graph, nodes, startNode, endNode);
-    await displayShortestPath(
-        gridContainers,
-        nodes,
-        startNode,
-        endNode,
-        isMaze,
-        shortestPath,
-        algorithmType,
-    );
-    const totalDistance = getTotalDistance(shortestPath);
-    displayTotalDistance(totalDistance, algorithmType);
-};
-
-const getAlgorithmFromAlgorithmType = (algorithmType: AlgorithmType) => {
-    switch (algorithmType) {
-        case AlgorithmType.Bfs:
-            return bfs;
-
-        case AlgorithmType.Djikstra:
-            return dijkstra;
-
-        default:
-            return;
-    }
-};
-
-const displayShortestPath = async (
-    gridContainers: HTMLCollectionOf<HTMLDivElement>,
-    nodes: Nodes,
-    startNode: number,
-    endNode: number,
-    isMaze: boolean,
-    shortestPath: Node[],
-    algorithmType: AlgorithmType,
-) => {
-    let totalDistance = 0;
-    displayNodes(gridContainers, nodes, startNode, endNode, isMaze, [algorithmType]);
-    for (let i = 0; i < shortestPath.length; i++) {
-        const node = shortestPath[i];
-        totalDistance += node.distance;
-        if (i !== 0 && i !== shortestPath.length - 1) {
-            await markCell(node.id, MarkType.ShortestPath, algorithmType, 30);
-        }
-    }
-};
-
-const getTotalDistance = (nodes: Node[]) => {
-    let totalDistance = 0;
-    nodes.forEach((node) => (totalDistance += node.distance));
-    return totalDistance;
-};
-
-const displayTotalDistance = (totalDistance: number, algorithmType: AlgorithmType) => {
-    const distanceParagraphElement = document.getElementById(
-        `${algorithmType}-distance`,
-    ) as HTMLParagraphElement;
-    distanceParagraphElement.innerHTML = `<b>Total Distance: ${totalDistance}</b>`;
-};
-
-const displayNodes = (
-    gridContainers: HTMLCollectionOf<HTMLDivElement>,
-    nodes: Nodes,
-    startNode: number,
-    endNode: number,
-    isMaze: boolean,
-    algorithms: AlgorithmType[],
-) => {
-    for (const gridContainer of Array.from(gridContainers)) {
-        const algorithmType: AlgorithmType = gridContainer.id as AlgorithmType;
-        if (!algorithms.includes(algorithmType)) {
-            continue;
-        }
-
-        const distanceParagraphElement = document.getElementById(
-            `${algorithmType}-distance`,
-        ) as HTMLParagraphElement;
-        distanceParagraphElement.innerHTML = '&nbsp';
-
-        gridContainer.innerHTML = '';
-        gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
-        gridContainer.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
-
-        // Create grid cells .
-        for (let i = 0; i < GRID_SIZE; i++) {
-            const cell = document.createElement('div');
-            const distance = nodes[i.toString()].distance;
-            const color = getColorByDistance(isMaze, distance);
-            cell.id = `${gridContainer.id}-cell-${i}`;
-            cell.className = 'grid-cell';
-            cell.style.border = `solid 1px #59595d`;
-            cell.style.backgroundColor = color;
-
-            const mark = document.createElement('img');
-            mark.style.width = '90%';
-            mark.classList.add('mark');
-            // mark.style.filter = getMarkFilters(markType);
-
-            if (i == startNode) {
-                mark.id = 'start-node';
-                mark.src = `./assets/start.png`;
-            } else if (i == endNode) {
-                mark.id = 'end-node';
-                mark.src = `./assets/end.png`;
-            }
-
-            if (i == startNode || i == endNode) {
-                cell.appendChild(mark);
-            }
-
-            gridContainer.appendChild(cell);
-        }
-    }
-};

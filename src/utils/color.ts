@@ -8,8 +8,8 @@ import { Color } from '../common/types';
  * @param {number} distance - The distance value used to determine the color.
  * @returns {string} The interpolated color in RGB format (e.g., "rgb(255, 0, 0)").
  */
-export const getColorByDistance = (isMaze: boolean, distance: number): string => {
-    // Normalize distance to a scale of 0.5 to 1
+export const getColorByDistance = (distance: number): string => {
+    // Normalize distance to a scale of 0.1 to 1
     const normalizedDistance = (distance / MAX_DISTANCE) * (1 - 0.1) + 0.1;
     const start = WHITE;
     const end = BLUE;

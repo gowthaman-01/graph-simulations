@@ -1,9 +1,3 @@
-:root {
-    --slider-thumb-bg: #0000CC; 
-    --slider-cursor: 'pointer'; 
-    --switch-bg: #0000CC;
-}
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -78,18 +72,25 @@ img {
 }
 
 .middle-container {
+  margin-top: 7px;
   display: flex;
-  justify-content: center;
-  align-items: end;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
 }
 
+.steps-slider-container {
+  margin-top: 5px;
+  width: 450px;
+}
+
+
 .right-container {
-  margin-top: 1px;
+  margin-top: 3px;
   margin-left: 4px;
   display: flex;
   justify-content: right;
   gap: 100px;
-  width: 100%;
 }
 
 .right-container button {
@@ -123,31 +124,48 @@ img {
   height: 34px;
 }
 
-.weight-slider-container {
-  margin-top: 0px;
+.steps-slider-container input[type="range"] {
+  margin-top: 10px;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
 }
 
-input[type="range"] {
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 10px;
-    border-radius: 5px;
-    background: #d3d3d3;
-    outline: none;
+.steps-slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--slider-thumb-bg);
+  cursor: var(--steps-slider-cursor);
 }
 
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--slider-thumb-bg);
-    cursor: var(--slider-cursor);
+.weight-slider-container input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
 }
 
-input[type="range"]::-webkit-slider-thumb:disabled {
+.weight-slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--slider-thumb-bg);
+  cursor: var(--weight-slider-cursor);
+}
+
+.weight-slider-container input[type="range"]::-webkit-slider-thumb:disabled {
 cursor: not-allowed;
 }
 
@@ -224,7 +242,7 @@ cursor: not-allowed;
 }
 
 .checkbox:checked + .switch {
-  background-color: var(--switch-bg);
+  background-color: var(--weight-switch-bg);
 }
 
 .checkbox:checked + .switch:before, .checkbox:checked + .toggle:before {

@@ -1,6 +1,14 @@
-import { AlgorithmType, Graph, MarkType, Node, Nodes, VisitedSet } from '../common/types';
+import {
+    AlgorithmType,
+    Graph,
+    NewNodeState,
+    Node,
+    NodeState,
+    Nodes,
+    VisitedSet,
+} from '../common/types';
 import { Queue } from '../data-structures/Queue';
-import { markCell, unmarkCell } from '../utils/mark';
+import { RunResults } from '../results/RunResults';
 
 /**
  * Finds the shortest path using Breadth-First Search (BFS) algorithm from startNode to endNode in the given graph.
@@ -9,14 +17,12 @@ import { markCell, unmarkCell } from '../utils/mark';
  * @param {Nodes} nodes - The collection of nodes in the graph.
  * @param {string} startNode - The starting node for the search.
  * @param {string} endNode - The target node to find the shortest path to.
- * @returns {Promise<Node[]>} A promise that resolves once the shortest path is found and marked.
+ * @returns {RunResults} A promise that resolves once the shortest path is found and marked.
  */
-export const bfs = async (
-    graph: Graph,
-    nodes: Nodes,
-    startNode: number,
-    endNode: number,
-): Promise<Node[]> => {
+export const bfs = (graph: Graph, nodes: Nodes, startNode: number, endNode: number): RunResults => {
+    const runResults = new RunResults(nodes, startNode, endNode, AlgorithmType.Bfs);
+    let steps = 0;
+
     // Initialize visited set, queue and parent map.
     const visited: VisitedSet = {};
     const queue = new Queue<string>();
@@ -27,12 +33,12 @@ export const bfs = async (
     queue.enqueue(startNode.toString());
     visited[startNode] = true;
 
+    steps += 6;
+
     while (queue.getSize() > 0) {
         // Dequeue node.
         const currentNode = queue.dequeue();
-        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
-            await markCell(currentNode, MarkType.Visited, AlgorithmType.Bfs);
-        }
+        steps += 3;
 
         // Mark shortest path if endNode is reached.
         if (currentNode === endNode.toString()) {
@@ -41,7 +47,9 @@ export const bfs = async (
                 shortestPath.push({ id: current, distance: nodes[current].distance });
                 current = parentMap[current];
             }
-            return shortestPath.reverse();
+            shortestPath.reverse();
+            runResults.setShortestPath(shortestPath);
+            return runResults;
         }
 
         // Explore neighbors of the current node
@@ -50,12 +58,26 @@ export const bfs = async (
             queue.enqueue(neighbor.id);
             visited[neighbor.id] = true;
             parentMap[neighbor.id] = currentNode;
+            steps += 5;
+
             if (neighbor.id !== startNode.toString() && neighbor.id !== endNode.toString()) {
-                await markCell(neighbor.id, MarkType.Visiting, AlgorithmType.Bfs);
+                const newNodeState: NewNodeState = {
+                    id: neighbor.id,
+                    newState: NodeState.Visiting,
+                };
+                runResults.addStep(steps, [newNodeState]);
             }
+        }
+
+        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+            const newNodeState: NewNodeState = {
+                id: currentNode,
+                newState: NodeState.Visited,
+            };
+            runResults.addStep(steps, [newNodeState]);
         }
     }
 
     // If endNode is not reachable from startNode
-    return shortestPath;
+    return runResults;
 };

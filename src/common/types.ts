@@ -53,19 +53,41 @@ export interface Color {
 }
 
 /**
- * Enumerates different types of ccell marking for visualization purposes.
- */
-export enum MarkType {
-    Unvisited = 'unvisited',
-    Visiting = 'visiting',
-    Visited = 'visited',
-    ShortestPath = 'shortest-path',
-}
-
-/**
  * Enumerates different types of graph traversal algorithms.
  */
 export enum AlgorithmType {
     Bfs = 'bfs',
     Djikstra = 'djikstra',
+}
+
+/**
+ * Enumerates different types of node state for visualization purposes. For v3.
+ */
+export enum NodeState {
+    Unvisited = 'unvisited',
+    Visiting = 'visiting',
+    Visited = 'visited',
+    ShortestPath = 'shortest-path',
+    StartNode = 'start',
+    EndNode = 'end',
+}
+
+export interface NodeMetadata {
+    id: string;
+    state: NodeState;
+    weight: number;
+}
+
+export interface NodeMetadataMap {
+    [id: string]: NodeMetadata;
+}
+
+export interface StepMetadata {
+    steps: number;
+    nodeMetaDataMap: NodeMetadataMap;
+}
+
+export interface NewNodeState {
+    id: string;
+    newState: NodeState;
 }

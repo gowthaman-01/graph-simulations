@@ -58,6 +58,15 @@
                     <p>Shortest path</p>
                 </div>
             </div>
+            
+            <div class="middle-container">
+                <div class="steps-slider-container">
+                    <input type="range" id="steps-slider" min="0" max="1000" step="1">
+                </div>
+                <p id="steps-count">Steps: 0</p>
+                <button id="runAlgorithms">Run</button>
+  
+            </div>
 
             <div class="right-container">
                  <div class="weight-controls-container">
@@ -70,7 +79,7 @@
                     </div>
                     <div class="weight-slider-container">
                         <p>Distance distribution</p>
-                        <input type="range" id="slider" min="1" max="100" step="1">
+                        <input type="range" id="weight-slider" min="1" max="100" step="1">
                     </div>
                 </div>
                 <div class="graph-controls-container">
@@ -97,13 +106,7 @@
                 </div>
                
             </div>
-        </div>
-
-        <div class="middle-container">
-            <button id="runAlgorithms">Run simulations</button>
-        </div>
-
-        
+        </div>        
     </div>
 
     <script src="./bundle.js" defer></script>
