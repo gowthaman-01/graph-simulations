@@ -51,7 +51,7 @@ export const bfs = (
         if (currentNode === endNode.toString()) {
             let current = currentNode;
             while (current !== null) {
-                shortestPath.push({ id: current, distance: nodes[current].distance });
+                shortestPath.push({ id: current, weight: nodes[current].weight });
                 current = parentMap[current];
             }
             shortestPath.reverse();

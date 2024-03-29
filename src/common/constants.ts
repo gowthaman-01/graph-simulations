@@ -56,7 +56,7 @@ export const START_NODE = () => Math.floor(Math.random() * GRID_SIZE);
 export const END_NODE = () => Math.floor(Math.random() * GRID_SIZE);
 
 /**
- * Maximum distance used in calculations.
+ * Maximum weight used in calculations.
  * @type {number}
  */
-export const MAX_DISTANCE = 100;
+export const MAX_WEIGHT = 100;

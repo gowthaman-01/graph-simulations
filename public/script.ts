@@ -1,5 +1,5 @@
-import { COLS, END_NODE, MAX_DISTANCE, ROWS, START_NODE } from '../src/common/constants';
-import { getColorByDistance } from '../src/utils/color';
+import { COLS, END_NODE, MAX_WEIGHT, ROWS, START_NODE } from '../src/common/constants';
+import { getColorByWeight } from '../src/utils/color';
 import { AlgorithmType } from '../src/common/types';
 import { createGraph } from '../src/utils/graph';
 import {
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isMaze = false;
     let orientation: 'H' | 'V' = 'H';
 
-    let maxDistance = 1;
+    let maxWeight = 1;
     let stepDifference = 10;
 
     let startNode = START_NODE();
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setWeightColor = () => {
-        const weightColor = getColorByDistance(maxDistance);
+        const weightColor = getColorByWeight(maxWeight);
         document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
         document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     resetStepsSlider();
     enableSpeedSlider();
 
-    let { graph, nodes } = createGraph(ROWS, COLS, maxDistance, isMaze, orientation);
+    let { graph, nodes } = createGraph(ROWS, COLS, maxWeight, isMaze, orientation);
     let runResults = getRunResults();
 
     // Display graph.
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { graph: newGraph, nodes: newNodes } = createGraph(
             ROWS,
             COLS,
-            maxDistance,
+            maxWeight,
             isMaze,
             orientation,
         );
@@ -263,14 +263,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     weight_checkbox.addEventListener('change', async () => {
         if (weight_checkbox.checked) {
-            maxDistance = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_DISTANCE;
+            maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
             setWeightColor();
             enableWeightSlider();
 
             const { graph: newGraph, nodes: newNodes } = createGraph(
                 ROWS,
                 COLS,
-                maxDistance,
+                maxWeight,
                 isMaze,
                 orientation,
             );
@@ -287,14 +287,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             );
             resetStepsSlider();
         } else {
-            maxDistance = 1;
+            maxWeight = 1;
             setWeightColor();
             disableWeightSlider();
 
             const { graph: newGraph, nodes: newNodes } = createGraph(
                 ROWS,
                 COLS,
-                maxDistance,
+                maxWeight,
                 isMaze,
                 orientation,
             );
@@ -314,12 +314,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     weightSlider.addEventListener('input', async () => {
-        maxDistance = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_DISTANCE;
+        maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
         setWeightColor();
         const { graph: newGraph, nodes: newNodes } = createGraph(
             ROWS,
             COLS,
-            maxDistance,
+            maxWeight,
             isMaze,
             orientation,
         );

@@ -1,31 +1,31 @@
-import { randomDistance } from './general';
+import { randomWeight } from './general';
 import { Graph, GraphStructure, Nodes } from '../common/types';
-import { GRID_SIZE, MAX_DISTANCE } from '../common/constants';
+import { GRID_SIZE, MAX_WEIGHT } from '../common/constants';
 
 export const createGraph = (
     rows: number,
     cols: number,
-    maxDistance: number,
+    maxWeight: number,
     isMaze: boolean,
     orientation: 'H' | 'V',
 ) => {
-    return isMaze ? createMazeGraph(rows, cols, orientation) : createGridGraph(cols, maxDistance);
+    return isMaze ? createMazeGraph(rows, cols, orientation) : createGridGraph(cols, maxWeight);
 };
 
 /**
  * Creates a grid graph with the specified number of rows and columns.
  *
  * @param {number} cols - The number of columns in the grid.
- * @param {number} maxDistance - The maximum distance of each cell.
+ * @param {number} maxWeight - The maximum weight of each cell.
  * @returns {GraphStructure} The created grid graph as well as the collection of nodes.
  */
-const createGridGraph = (cols: number, maxDistance: number): GraphStructure => {
+const createGridGraph = (cols: number, maxWeight: number): GraphStructure => {
     const graph: Graph = {};
     const nodes: Nodes = {};
 
     // Create nodes.
     for (let i = 0; i < GRID_SIZE; i++) {
-        nodes[i] = { id: i.toString(), distance: randomDistance(maxDistance) };
+        nodes[i] = { id: i.toString(), weight: randomWeight(maxWeight) };
     }
 
     // Create graph.
@@ -41,25 +41,25 @@ const createGridGraph = (cols: number, maxDistance: number): GraphStructure => {
         if (up >= 0)
             graph[i].push({
                 id: up.toString(),
-                distance: nodes[up.toString()].distance,
+                weight: nodes[up.toString()].weight,
             });
 
         if (down < GRID_SIZE)
             graph[i].push({
                 id: down.toString(),
-                distance: nodes[down.toString()].distance,
+                weight: nodes[down.toString()].weight,
             });
 
         if (left !== -1)
             graph[i].push({
                 id: left.toString(),
-                distance: nodes[left.toString()].distance,
+                weight: nodes[left.toString()].weight,
             });
 
         if (right !== -1)
             graph[i].push({
                 id: right.toString(),
-                distance: nodes[right.toString()].distance,
+                weight: nodes[right.toString()].weight,
             });
     }
 
@@ -116,7 +116,7 @@ const createMazerecursiveDivision = (
                 // If the current col isn't the col for the passage.
                 let nodeIndex = wallY * cols + x;
                 if (nodeIndex >= GRID_SIZE) break;
-                nodes[nodeIndex.toString()].distance = MAX_DISTANCE;
+                nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
             }
         }
 
@@ -134,7 +134,7 @@ const createMazerecursiveDivision = (
                 // If the current row isn't the row for the passage.
                 let nodeIndex = y * cols + wallX;
                 if (nodeIndex >= GRID_SIZE) break;
-                nodes[nodeIndex.toString()].distance = MAX_DISTANCE;
+                nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
             }
         }
 

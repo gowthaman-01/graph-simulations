@@ -37,19 +37,19 @@ export const dijkstra = (
     );
     let steps = 0;
 
-    const distances: { [key: string]: number } = {};
+    const weights: { [key: string]: number } = {};
     const previous: { [key: string]: string | null } = {};
     const visited: { [key: string]: boolean } = {};
     let shortestPath: Node[] = [];
 
-    // Initialize distances and previous
+    // Initialize weights and previous
     Object.keys(graph).forEach((node) => {
-        distances[node] = Infinity;
+        weights[node] = Infinity;
         previous[node] = null;
     });
 
-    // Set distance to the startNode as 0
-    distances[startNode] = 0;
+    // Set weight to the startNode as 0
+    weights[startNode] = 0;
 
     // Initialize the min heap with the start node
     const heap = new MinHeap<HeapNode>(heapNodeComparator);
@@ -66,7 +66,7 @@ export const dijkstra = (
         if (currentNode === endNode.toString()) {
             let current = endNode.toString();
             while (current !== null) {
-                shortestPath.push({ id: current, distance: nodes[current].distance });
+                shortestPath.push({ id: current, weight: nodes[current].weight });
                 current = previous[current];
             }
             shortestPath.reverse();
@@ -75,17 +75,17 @@ export const dijkstra = (
         }
 
         for (const neighbor of graph[currentNode]) {
-            const { id: neighborId, distance: neighborDistance } = neighbor;
+            const { id: neighborId, weight: neighborWeight } = neighbor;
             if (visited[neighborId]) continue;
-            const newDistance = distances[currentNode] + neighborDistance;
+            const newWeight = weights[currentNode] + neighborWeight;
 
             steps += 4;
 
             // If a shorter path is found.
-            if (newDistance < distances[neighborId]) {
-                distances[neighborId] = newDistance;
+            if (newWeight < weights[neighborId]) {
+                weights[neighborId] = newWeight;
                 previous[neighborId] = currentNode;
-                heapPushSteps = heap.push({ id: neighborId, priority: newDistance });
+                heapPushSteps = heap.push({ id: neighborId, priority: newWeight });
                 steps += heapPushSteps + 3;
                 if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
                     const newNodeState: NewNodeState = {

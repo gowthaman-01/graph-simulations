@@ -63,7 +63,7 @@ export class RunResults {
             const nodeMetaData: NodeMetadata = {
                 id: i.toString(),
                 state: nodeState,
-                weight: nodes[i].distance,
+                weight: nodes[i].weight,
             };
 
             nodeMetadataMap[i] = nodeMetaData;
@@ -126,9 +126,9 @@ export class RunResults {
     };
 
     public getTotalWeights = (): number => {
-        let totalDistance = 0;
-        this.shortestPath.forEach((node) => (totalDistance += node.distance));
-        return totalDistance;
+        let totalWeight = 0;
+        this.shortestPath.forEach((node) => (totalWeight += node.weight));
+        return totalWeight;
     };
 
     public setDisplayComplete = () => {

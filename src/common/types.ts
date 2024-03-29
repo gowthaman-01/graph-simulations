@@ -3,7 +3,7 @@
  */
 export interface Node {
     id: string;
-    distance: number;
+    weight: number;
 }
 
 /**

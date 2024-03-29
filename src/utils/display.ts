@@ -1,6 +1,6 @@
 import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
 import { AlgorithmType, Nodes, StepMetadata } from '../common/types';
-import { getColorByDistance } from './color';
+import { getColorByWeight } from './color';
 import { delay } from './general';
 import { markCell } from './mark';
 import { RunResults } from '../results/RunResults';
@@ -18,10 +18,10 @@ export const displayInitialNodeState = (
             continue;
         }
 
-        const distanceParagraphElement = document.getElementById(
-            `${algorithmType}-distance`,
+        const weightParagraphElement = document.getElementById(
+            `${algorithmType}-weight`,
         ) as HTMLParagraphElement;
-        distanceParagraphElement.innerHTML = '&nbsp';
+        weightParagraphElement.innerHTML = '&nbsp';
 
         gridContainer.innerHTML = '';
         gridContainer.style.display = 'grid';
@@ -31,8 +31,8 @@ export const displayInitialNodeState = (
         // Create grid cells .
         for (let i = 0; i < GRID_SIZE; i++) {
             const cell = document.createElement('div');
-            const distance = nodes[i.toString()].distance;
-            const color = getColorByDistance(distance);
+            const weight = nodes[i.toString()].weight;
+            const color = getColorByWeight(weight);
             cell.id = `${gridContainer.id}-cell-${i}`;
             cell.className = 'grid-cell';
             cell.style.border = `solid 1px #59595d`;
@@ -104,11 +104,11 @@ export const displayStep = (step: number, runResult: RunResults) => {
     });
 };
 
-export const displayTotalWeight = (totalDistance: number, algorithmType: AlgorithmType) => {
-    const distanceParagraphElement = document.getElementById(
-        `${algorithmType}-distance`,
+export const displayTotalWeight = (totalWeight: number, algorithmType: AlgorithmType) => {
+    const weightParagraphElement = document.getElementById(
+        `${algorithmType}-weight`,
     ) as HTMLParagraphElement;
-    distanceParagraphElement.innerHTML = `<b>Total Distance: ${totalDistance}</b>`;
+    weightParagraphElement.innerHTML = `<b>Total Weight: ${totalWeight}</b>`;
 };
 
 const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number) => {
