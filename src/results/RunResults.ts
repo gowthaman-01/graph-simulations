@@ -109,6 +109,10 @@ export class RunResults {
         });
     };
 
+    public getShortestPath = () => {
+        return this.shortestPath;
+    };
+
     private getLatestNodeMetaMap = (): NodeMetadataMap => {
         return this.stepMetadataList[this.stepMetadataList.length - 1].nodeMetaDataMap;
     };

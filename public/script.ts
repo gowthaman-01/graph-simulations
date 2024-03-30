@@ -1,4 +1,11 @@
-import { COLS, END_NODE, MAX_WEIGHT, ROWS, START_NODE } from '../src/common/constants';
+import {
+    COLS,
+    DEFAULT_STEP_DIFFERENCE,
+    END_NODE,
+    MAX_WEIGHT,
+    ROWS,
+    START_NODE,
+} from '../src/common/constants';
 import { getColorByWeight } from '../src/utils/color';
 import { AlgorithmType } from '../src/common/types';
 import { createGraph } from '../src/utils/graph';
@@ -7,6 +14,7 @@ import {
     displayAllRunResults,
     displayStep,
     displayTotalWeight,
+    displayShortestPath,
 } from '../src/utils/display';
 import { runAlgorithm } from '../src/utils/run';
 
@@ -57,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let orientation: 'H' | 'V' = 'H';
 
     let maxWeight = 1;
-    let stepDifference = 10;
+    let stepDifference = DEFAULT_STEP_DIFFERENCE;
 
     let startNode = START_NODE();
     let endNode = END_NODE();
@@ -155,9 +163,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
             runAlgorithm(graph, nodes, startNode, endNode, algorithmType, stepDifference),
         );
-        console.log(stepDifference);
         stepsSlider.max = Math.max(
-            ...newRunResults.map((result) => result.getTotalSteps()),
+            ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
 
         return newRunResults;
@@ -355,9 +362,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (stepsSlider.value === stepsSlider.max) {
-            runResults.forEach((runResult) =>
-                displayTotalWeight(runResult.getTotalWeights(), runResult.getAlgorithmType()),
-            );
+            const maxSteps = Math.max(...runResults.map((result) => result.getTotalSteps()));
+            runResults.forEach((runResult) => {
+                if (runResult.getTotalSteps() === maxSteps) {
+                    displayShortestPath(
+                        gridContainers,
+                        nodes,
+                        startNode,
+                        endNode,
+                        runResult.getShortestPath(),
+                        runResult.getAlgorithmType(),
+                        stepDifference,
+                    );
+                }
+
+                displayTotalWeight(runResult.getTotalWeights(), runResult.getAlgorithmType());
+            });
         }
     });
 

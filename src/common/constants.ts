@@ -25,6 +25,8 @@ export const getMarkFilters = (markType: NodeState) => {
  */
 export const DEFAULT_DELAY = 1;
 
+export const DEFAULT_STEP_DIFFERENCE = 20;
+
 /**
  * Number of rows in the grid.
  * @type {number}

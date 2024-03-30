@@ -1,5 +1,5 @@
 import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
-import { AlgorithmType, Nodes, StepMetadata } from '../common/types';
+import { AlgorithmType, Nodes, Node, StepMetadata, NodeState } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay } from './general';
 import { markCell } from './mark';
@@ -67,8 +67,11 @@ export const displayAllRunResults = async (
     stepDifference: number,
 ) => {
     const maxSteps = Math.max(...runResultList.map((result) => result.getTotalSteps()));
-    let step = 0;
-    stepsSlider.max = maxSteps.toString();
+    const maxAlgorithmSteps = Math.max(
+        ...runResultList.map((result) => result.getAlgorithmSteps()),
+    );
+    let step = parseInt(stepsSlider.value);
+    stepsSlider.max = maxAlgorithmSteps.toString();
 
     while (step <= maxSteps) {
         for (const runResult of runResultList) {
@@ -102,6 +105,25 @@ export const displayStep = (step: number, runResult: RunResults) => {
     Object.values(currentStep.nodeMetaDataMap).forEach((nodeMetaData) => {
         markCell(nodeMetaData.id, nodeMetaData.state, runResult.getAlgorithmType());
     });
+};
+
+export const displayShortestPath = async (
+    gridContainers: HTMLCollectionOf<HTMLDivElement>,
+    nodes: Nodes,
+    startNode: number,
+    endNode: number,
+    shortestPath: Node[],
+    algorithmType: AlgorithmType,
+    stepDifference: number,
+) => {
+    displayInitialNodeState(gridContainers, nodes, startNode, endNode, [algorithmType]);
+    for (let i = 0; i < shortestPath.length; i++) {
+        const node = shortestPath[i];
+        if (i !== 0 && i !== shortestPath.length - 1) {
+            markCell(node.id, NodeState.ShortestPath, algorithmType);
+            await delay(stepDifference);
+        }
+    }
 };
 
 export const displayTotalWeight = (totalWeight: number, algorithmType: AlgorithmType) => {
