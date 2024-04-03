@@ -1,4 +1,4 @@
-import { BLUE, MAX_WEIGHT, WHITE } from '../common/constants';
+import { BLUE, MAX_WEIGHT, RED, WHITE } from '../common/constants';
 import { Color } from '../common/types';
 
 /**
@@ -10,9 +10,11 @@ import { Color } from '../common/types';
  */
 export const getColorByWeight = (weight: number): string => {
     // Normalize weight to a scale of 0.1 to 1
-    const normalizedWeight = (weight / MAX_WEIGHT) * (1 - 0.1) + 0.1;
+    const normalizedWeight = (Math.abs(weight) / MAX_WEIGHT) * (1 - 0.1) + 0.1;
+
+    const end = weight < 0 ? RED : BLUE;
     const start = WHITE;
-    const end = BLUE;
+
     // Calculate intermediate color based on weight
     const r = Math.round(start.r + (end.r - start.r) * normalizedWeight);
     const g = Math.round(start.g + (end.g - start.g) * normalizedWeight);
