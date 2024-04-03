@@ -1,23 +1,31 @@
 /**
- * Represents a neighbor node in a graph.
+ * Represents a node in a graph.
  */
-export interface Neighbor {
-    node: string;
-    distance: number;
+export interface Node {
+    id: string;
+    weight: number;
+}
+
+/**
+ * Represents a collection of nodes.
+ */
+export interface Nodes {
+    [id: string]: Node;
 }
 
 /**
  * Represents a graph where each node is associated with a list of neighboring nodes.
  */
 export interface Graph {
-    [key: string]: Neighbor[];
+    [id: string]: Node[];
 }
 
 /**
- * Represents a mapping of distances between nodes.
+ * Contains essential information regarding the graph.
  */
-export interface Distances {
-    [key: string]: number;
+export interface GraphStructure {
+    graph: Graph;
+    nodes: Nodes;
 }
 
 /**
@@ -31,7 +39,7 @@ export interface VisitedSet {
  * Represents a node in a heap data structure.
  */
 export interface HeapNode {
-    node: string;
+    id: string;
     priority: number;
 }
 
@@ -45,19 +53,41 @@ export interface Color {
 }
 
 /**
- * Enumerates different types of cell highlights for visualization purposes.
- */
-export enum HighlightType {
-    Unvisited,
-    Visiting,
-    Visited,
-    ShortestPath,
-}
-
-/**
  * Enumerates different types of graph traversal algorithms.
  */
 export enum AlgorithmType {
     Bfs = 'bfs',
     Djikstra = 'djikstra',
+}
+
+/**
+ * Enumerates different types of node state for visualization purposes. For v3.
+ */
+export enum NodeState {
+    Unvisited = 'unvisited',
+    Visiting = 'visiting',
+    Visited = 'visited',
+    ShortestPath = 'shortest-path',
+    StartNode = 'start',
+    EndNode = 'end',
+}
+
+export interface NodeMetadata {
+    id: string;
+    state: NodeState;
+    weight: number;
+}
+
+export interface NodeMetadataMap {
+    [id: string]: NodeMetadata;
+}
+
+export interface StepMetadata {
+    steps: number;
+    nodeMetaDataMap: NodeMetadataMap;
+}
+
+export interface NewNodeState {
+    id: string;
+    newState: NodeState;
 }

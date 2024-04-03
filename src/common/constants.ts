@@ -1,17 +1,31 @@
-import { Color, HighlightType } from './types';
+import { Color, NodeState } from './types';
 
 // RGB Color values.
-export const TURQUOISE_COLOR: Color = { r: 64, g: 224, b: 208 };
-export const MAGENTA_COLOR: Color = { r: 139, g: 0, b: 139 };
-export const BLUE_COLOR: Color = { r: 0, g: 0, b: 255 };
-export const RED_COLOR: Color = { r: 255, g: 0, b: 0 };
-export const UNVISTED_COLOR: Color = { r: 245, g: 245, b: 245 };
+export const BLUE: Color = { r: 0, g: 0, b: 200 };
+export const YELLOW: Color = { r: 253, g: 238, b: 0 };
+export const ORANGE: Color = { r: 255, g: 165, b: 0 };
+export const RED: Color = { r: 224, g: 71, b: 76 };
+export const WHITE: Color = { r: 240, g: 240, b: 240 };
+export const GREEN: Color = { r: 28, g: 172, b: 120 };
+export const GRAY: Color = { r: 44, g: 44, b: 44 };
 
+export const getMarkFilters = (markType: NodeState) => {
+    switch (markType) {
+        case NodeState.ShortestPath:
+            return 'invert(67%) sepia(59%) saturate(6047%) hue-rotate(126deg) brightness(96%) contrast(78%)';
+        case NodeState.Visited:
+            return 'invert(99%) sepia(63%) saturate(2988%) hue-rotate(349deg) brightness(94%) contrast(113%)';
+        case NodeState.Visiting:
+            return 'invert(72%) sepia(63%) saturate(3558%) hue-rotate(360deg) brightness(104%) contrast(106%)';
+    }
+};
 /**
  * Default delay in milliseconds for visualizations.
  * @type {number}
  */
-export const DEFAULT_DELAY = 10;
+export const DEFAULT_DELAY = 1;
+
+export const DEFAULT_STEP_DIFFERENCE = 20;
 
 /**
  * Number of rows in the grid.
@@ -35,39 +49,16 @@ export const GRID_SIZE = ROWS * COLS;
  * Index of the start node in the grid.
  * @type {number}
  */
-export const START_NODE = 0;
+export const START_NODE = () => Math.floor(Math.random() * GRID_SIZE);
 
 /**
  * Index of the end node in the grid.
  * @type {number}
  */
-export const END_NODE = 224;
+export const END_NODE = () => Math.floor(Math.random() * GRID_SIZE);
 
 /**
- * Maximum distance used in calculations.
+ * Maximum weight used in calculations.
  * @type {number}
  */
-export const MAX_DISTANCE = 10;
-
-/**
- * CSS classes used for different highlight types.
- * @type {Record<HighlightType, string>}
- */
-export const highlightClasses = {
-    [HighlightType.Unvisited]: 'unvisited',
-    [HighlightType.Visiting]: 'visiting',
-    [HighlightType.Visited]: 'visited',
-    [HighlightType.ShortestPath]: 'shortest-path',
-};
-
-/**
- * Color to show minium distance between cells.
- * @type {Color}
- */
-export const MIN_COLOR = TURQUOISE_COLOR;
-
-/**
- * Color to show maximum distance between cells.
- * @type {Color}
- */
-export const MAX_COLOR = MAGENTA_COLOR;
+export const MAX_WEIGHT = 100;

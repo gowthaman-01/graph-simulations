@@ -1,10 +1,11 @@
-import { MAX_DISTANCE } from '../common/constants';
-
-export const delay = (ms: number) => {
+export const delay = (ms?: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 /**
- * Generates a random distance between 0 and MAX_DISTANCE.
+ * Generates a random weight between 0 and maxWeight.
  */
-export const randomDistance = () => Math.floor(Math.random() * MAX_DISTANCE) + 1;
+export const randomWeight = (maxWeight: number) => {
+    const absoluteWeight = Math.floor(Math.exp(Math.random() * Math.log(Math.abs(maxWeight))));
+    return maxWeight < 0 ? -absoluteWeight : absoluteWeight;
+};

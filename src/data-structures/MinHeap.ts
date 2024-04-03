@@ -76,46 +76,64 @@ export class MinHeap<T> {
         return this.heap[0];
     }
 
-    pop(): T | null {
+    pop(): [T, number] | null {
         if (this.heap.length === 0) {
             return null;
         }
-        const item: T = this.heap[0];
+        const top: T = this.heap[0];
         this.heap[0] = this.heap[this.heap.length - 1];
         this.heap.pop();
-        this.heapifyDown();
-        return item;
+        let steps = 4;
+
+        steps += this.heapifyDown();
+
+        return [top, steps];
     }
 
-    add(item: T): void {
+    push(item: T): number {
         this.heap.push(item);
-        this.heapifyUp();
+        let steps = 1;
+        steps += this.heapifyUp();
+        return steps;
     }
 
-    private heapifyUp(): void {
+    list() {
+        return this.heap;
+    }
+
+    private heapifyUp(): number {
         let index: number = this.heap.length - 1;
+        let steps = 1;
         while (this.hasParent(index) && this.comparator(this.parent(index), this.heap[index])) {
             this.swap(this.getParentIndex(index), index);
             index = this.getParentIndex(index);
+            steps += 4;
         }
+        return steps;
     }
 
-    private heapifyDown(): void {
+    private heapifyDown(): number {
         let index: number = 0;
+        let steps = 1;
         while (this.hasLeftChild(index)) {
             let smallerChildIndex: number = this.getLeftChildIndex(index);
+            steps += 2;
             if (
                 this.hasRightChild(index) &&
-                this.comparator(this.rightChild(index), this.leftChild(index))
+                this.comparator(this.leftChild(index), this.rightChild(index))
             ) {
                 smallerChildIndex = this.getRightChildIndex(index);
+                steps += 5;
             }
-            if (!this.comparator(this.heap[index], this.heap[smallerChildIndex])) {
-                break;
-            } else {
+            if (this.comparator(this.heap[index], this.heap[smallerChildIndex])) {
                 this.swap(index, smallerChildIndex);
+                steps += 6;
+            } else {
+                break;
             }
             index = smallerChildIndex;
+            steps += 1;
         }
+        return steps;
     }
 }

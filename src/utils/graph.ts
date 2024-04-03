@@ -1,20 +1,36 @@
-import { randomDistance } from './general';
-import { Distances, Graph } from '../common/types';
-import { GRID_SIZE } from '../common/constants';
+import { randomWeight } from './general';
+import { Graph, GraphStructure, Nodes } from '../common/types';
+import { GRID_SIZE, MAX_WEIGHT } from '../common/constants';
+
+export const createGraph = (
+    rows: number,
+    cols: number,
+    maxWeight: number,
+    isMaze: boolean,
+    orientation: 'H' | 'V',
+) => {
+    return isMaze ? createMazeGraph(rows, cols, orientation) : createGridGraph(cols, maxWeight);
+};
 
 /**
  * Creates a grid graph with the specified number of rows and columns.
  *
- * @param {number} rows - The number of rows in the grid.
  * @param {number} cols - The number of columns in the grid.
- * @returns {Graph} The created grid graph represented as an adjacency list.
+ * @param {number} maxWeight - The maximum weight of each cell.
+ * @returns {GraphStructure} The created grid graph as well as the collection of nodes.
  */
-export const createGridGraph = (rows: number, cols: number): Graph => {
+const createGridGraph = (cols: number, maxWeight: number): GraphStructure => {
     const graph: Graph = {};
-    const distances: Distances = {};
+    const nodes: Nodes = {};
 
+    // Create nodes.
     for (let i = 0; i < GRID_SIZE; i++) {
-        graph[i] = []; // Initialize each node with an empty array of neighbors
+        nodes[i] = { id: i.toString(), weight: randomWeight(maxWeight) };
+    }
+
+    // Create graph.
+    for (let i = 0; i < GRID_SIZE; i++) {
+        graph[i.toString()] = []; // Initialize each node with an empty array of neighbors
 
         // Direct neighbors
         const up = i - cols;
@@ -24,114 +40,118 @@ export const createGridGraph = (rows: number, cols: number): Graph => {
 
         if (up >= 0)
             graph[i].push({
-                node: up.toString(),
-                distance: getDistance(distances, up.toString(), i.toString()),
+                id: up.toString(),
+                weight: nodes[up.toString()].weight,
             });
 
         if (down < GRID_SIZE)
             graph[i].push({
-                node: down.toString(),
-                distance: getDistance(distances, down.toString(), i.toString()),
+                id: down.toString(),
+                weight: nodes[down.toString()].weight,
             });
 
         if (left !== -1)
             graph[i].push({
-                node: left.toString(),
-                distance: getDistance(distances, left.toString(), i.toString()),
+                id: left.toString(),
+                weight: nodes[left.toString()].weight,
             });
 
         if (right !== -1)
             graph[i].push({
-                node: right.toString(),
-                distance: getDistance(distances, right.toString(), i.toString()),
+                id: right.toString(),
+                weight: nodes[right.toString()].weight,
             });
     }
 
-    return graph;
+    return { graph, nodes };
 };
 
-export const createMazeGraph = (rows: number, cols: number): Graph => {
-    let maze: Graph = {};
-    let visited: Set<string> = new Set();
+const createMazeGraph = (rows: number, cols: number, orientation: 'H' | 'V'): GraphStructure => {
+    const { graph, nodes } = createGridGraph(cols, 0);
+    return createMazerecursiveDivision(
+        graph,
+        nodes,
+        rows,
+        cols,
+        0,
+        0,
+        cols - 1,
+        rows - 1,
+        orientation,
+    );
+};
 
-    // Initialize all cells in the maze as isolated nodes
-    for (let i = 0; i < GRID_SIZE; i++) {
-        maze[i] = [];
+const createMazerecursiveDivision = (
+    graph: Graph,
+    nodes: Nodes,
+    cols: number,
+    rows: number,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    orientation: 'H' | 'V',
+) => {
+    if (
+        startX < 0 ||
+        endX >= cols ||
+        startY < 0 ||
+        endY >= rows ||
+        endX - startX < 2 ||
+        endY - startY < 2
+    ) {
+        // The section is too small to divide further.
+        return { graph, nodes };
     }
 
-    // Converts row and column to node key
-    const toNodeKey = (row: number, col: number): string => {
-        return (row * cols + col).toString();
-    };
+    let wallX: number, wallY: number, passageX: number, passageY: number;
 
-    // Depth-first search to create paths
-    const dfs = (row: number, col: number) => {
-        visited.add(toNodeKey(row, col));
-        const directions = [
-            [0, 1], // Right
-            [1, 0], // Down
-            [0, -1], // Left
-            [-1, 0], // Up
-        ];
-
-        // Shuffle directions to ensure maze variability
-        for (let i = directions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [directions[i], directions[j]] = [directions[j], directions[i]];
+    if (orientation === 'H') {
+        // Choose a horizontal wall line and a vertical passage
+        wallY = randomEven(startY + 1, endY - 1);
+        passageX = randomOdd(startX, endX);
+        // Iterate over the cols in the current section to place the wall.
+        for (let x = startX; x <= endX; x++) {
+            if (x !== passageX) {
+                // If the current col isn't the col for the passage.
+                let nodeIndex = wallY * cols + x;
+                if (nodeIndex >= GRID_SIZE) break;
+                nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
+            }
         }
 
-        directions.forEach(([dRow, dCol]) => {
-            const newRow = row + dRow;
-            const newCol = col + dCol;
-            const newNodeKey = toNodeKey(newRow, newCol);
+        // Recursively divide.
+        createMazerecursiveDivision(graph, nodes, rows, cols, startX, startY, endX, wallY - 1, 'V');
+        createMazerecursiveDivision(graph, nodes, rows, cols, startX, wallY + 1, endX, endY, 'V');
+    } else {
+        // Choose a vertical wall line and a horizontal passage
+        wallX = randomEven(startX + 1, endX - 1);
+        passageY = randomOdd(startY, endY);
 
-            // Check for valid, unvisited cell to become a path
-            if (
-                newRow >= 0 &&
-                newRow < rows &&
-                newCol >= 0 &&
-                newCol < cols &&
-                !visited.has(newNodeKey)
-            ) {
-                // For simplicity, assuming direct neighbors are at distance 1
-                // Mark the path by setting distance between nodes
-                maze[toNodeKey(row, col)].push({ node: newNodeKey, distance: 0 });
-                maze[newNodeKey].push({ node: toNodeKey(row, col), distance: 0 });
-
-                // Recursively visit the new cell
-                dfs(newRow, newCol);
+        // Iterate over the rows in the current section to place the wall.
+        for (let y = startY; y <= endY; y++) {
+            if (y !== passageY) {
+                // If the current row isn't the row for the passage.
+                let nodeIndex = y * cols + wallX;
+                if (nodeIndex >= GRID_SIZE) break;
+                nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
             }
-            // Else, you could explicitly set the distance to Infinity if you need to represent walls within the graph
-            // Though typically for a maze, you'd simply not have an edge/connection in the graph where a wall exists
-        });
-    };
+        }
 
-    // Start DFS from the top-left cell
-    dfs(0, 0);
-
-    return maze;
-};
-
-/**
- * Gets the distance between two nodes in a graph.
- * If the distance between the nodes is not already calculated, it generates a random distance and stores it in the distances object.
- * This prevents adjacent nodes to have different distances.
- *
- * @param {Distances} distances - The distances object storing precalculated distances between nodes.
- * @param {string} node - The index of the first node.
- * @param {string} neighbor - The index of the second node.
- * @returns {number} The distance between the two nodes.
- */
-const getDistance = (distances: Distances, node: string, neighbor: string): number => {
-    // Generate key -> eg: node = '5', neighbor = '1', key = '1,5'.
-    const key = parseInt(node) < parseInt(neighbor) ? node + ',' + neighbor : neighbor + ',' + node;
-
-    // Check if the distance between the nodes is already calculated.
-    if (!(key in distances)) {
-        // If not, generate a random distance and store it in the distances object.
-        distances[key] = randomDistance();
+        // Recursively divide.
+        createMazerecursiveDivision(graph, nodes, rows, cols, startX, startY, wallX - 1, endY, 'H');
+        createMazerecursiveDivision(graph, nodes, rows, cols, wallX + 1, startY, endX, endY, 'H');
     }
 
-    // Return the distance between the nodes
-    return distances[key];
+    return { graph, nodes };
+};
+
+const randomEven = (start: number, end: number) => {
+    let range = start + Math.floor(Math.random() * ((end - start) / 2));
+    return 2 * range;
+};
+
+const randomOdd = (start: number, end: number) => {
+    let range = start + Math.floor(Math.random() * ((end - start) / 2));
+    return 2 * range + 1;
 };
