@@ -6,6 +6,5 @@ export const delay = (ms?: number) => {
  * Generates a random weight between 0 and maxWeight.
  */
 export const randomWeight = (maxWeight: number) => {
-    const absoluteWeight = Math.floor(Math.exp(Math.random() * Math.log(Math.abs(maxWeight))));
-    return maxWeight < 0 ? -absoluteWeight : absoluteWeight;
+    return Math.floor(Math.exp(Math.random() * Math.log(maxWeight)));
 };

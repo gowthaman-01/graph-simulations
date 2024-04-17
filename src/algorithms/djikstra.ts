@@ -2,6 +2,7 @@ import { GRID_SIZE } from '../common/constants';
 import {
     AlgorithmType,
     Graph,
+    GraphType,
     HeapNode,
     NewNodeState,
     Node,
@@ -15,6 +16,7 @@ import { RunResults } from '../results/RunResults';
  * Finds the shortest path using Dijkstra's algorithm from startNode to endNode in the given graph.
  *
  * @param {Graph} graph - The graph to search.
+ * @param {GraphType} graphType - The type of graph.
  * @param {Nodes} nodes - The collection of nodes in the graph.
  * @param {string} startNode - The starting node for the search.
  * @param {string} endNode - The target node to find the shortest path to.
@@ -23,6 +25,7 @@ import { RunResults } from '../results/RunResults';
  */
 export const dijkstra = (
     graph: Graph,
+    graphType: GraphType,
     nodes: Nodes,
     startNode: number,
     endNode: number,
@@ -33,6 +36,7 @@ export const dijkstra = (
         startNode,
         endNode,
         AlgorithmType.Djikstra,
+        graphType,
         stepDifference,
     );
     let steps = 0;

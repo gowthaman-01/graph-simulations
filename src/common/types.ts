@@ -72,6 +72,13 @@ export enum NodeState {
     EndNode = 'end',
 }
 
+export enum GraphType {
+    Unweighted = 'unweighted',
+    Weighted = 'weighted',
+    NegativeWeight = 'negative-weighted',
+    Directed = 'directed',
+}
+
 export interface NodeMetadata {
     id: string;
     state: NodeState;

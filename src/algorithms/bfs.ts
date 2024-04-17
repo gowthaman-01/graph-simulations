@@ -1,6 +1,7 @@
 import {
     AlgorithmType,
     Graph,
+    GraphType,
     NewNodeState,
     Node,
     NodeState,
@@ -14,6 +15,7 @@ import { RunResults } from '../results/RunResults';
  * Finds the shortest path using Breadth-First Search (BFS) algorithm from startNode to endNode in the given graph.
  *
  * @param {Graph} graph - The graph to search.
+ * @param {GraphType} graphType - The type of graph.
  * @param {Nodes} nodes - The collection of nodes in the graph.
  * @param {string} startNode - The starting node for the search.
  * @param {string} endNode - The target node to find the shortest path to.
@@ -22,12 +24,20 @@ import { RunResults } from '../results/RunResults';
  */
 export const bfs = (
     graph: Graph,
+    graphType: GraphType,
     nodes: Nodes,
     startNode: number,
     endNode: number,
     stepDifference: number,
 ): RunResults => {
-    const runResults = new RunResults(nodes, startNode, endNode, AlgorithmType.Bfs, stepDifference);
+    const runResults = new RunResults(
+        nodes,
+        startNode,
+        endNode,
+        AlgorithmType.Bfs,
+        graphType,
+        stepDifference,
+    );
     let steps = 0;
 
     // Initialize visited set, queue and parent map.

@@ -69,41 +69,26 @@
             </div>
 
             <div class="right-container">
-                 <div class="weight-controls-container">
-                    <div class="weight-control-container"> 
-                        <p>Weights</p>
-                        <div class="weight-control">
-                            <input type="checkbox" id="weight-checkbox" class="checkbox">
-                            <label for="weight-checkbox" id="weight-switch" class="switch"></label>
-                        </div>
+                 <div class="graph-controls-container">
+                    <div class="graph-control-container"> 
+                        <p id="graph-type-text">Graph type</p>
+                        <select id="graph-dropdown" class="dropdown">
+                            <option value="unweighted">Unweighted</option>
+                            <option value="weighted">Weighted</option>
+                            <option value="negative-weighted">Negative weights</option>
+                            <option value="directed">Directed</option>
+                        </select>
                     </div>
                     <div class="weight-slider-container">
                         <p style="text-align: start;">Weight distribution</p>
-                        <input type="range" id="weight-slider" min="-200" max="200" step="1">
+                        <input type="range" id="weight-slider" min="1" max="200" step="1">
                     </div>
                     <div class="speed-slider-container">
                         <p style="text-align: start;"">Speed</p>
                         <input type="range" id="speed-slider" min="1" max="50" step="1">
                     </div>
                 </div>
-                <div class="graph-controls-container">
-                    <!-- <div class="maze-controls-container">
-                        <div class="maze-control-container"> 
-                            <p>Maze</p>
-                            <div class="maze-control">
-                                <input type="checkbox" id="maze-checkbox" class="checkbox">
-                                <label for="maze-checkbox" id="maze-switch" class="switch"></label>
-                            </div>
-                        </div>
-                        <div class="orientation-control-container"> 
-                            <p>H</p>
-                            <div class="orientation-control">
-                                <input type="checkbox" id="orientation-checkbox" class="checkbox">
-                                <label for="orientation-checkbox" id="orientation-switch" class="toggle"></label>
-                            </div>
-                            <p>W</p>
-                        </div>
-                    </div> -->
+                <div class="graph-buttons-container">
                     <button id="newGraph">Generate new graph</button>
                     <button id="changeStart">Change start node</button>
                     <button id="changeEnd">Change end node</button>

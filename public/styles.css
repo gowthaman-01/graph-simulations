@@ -102,26 +102,49 @@ img {
   background-color: #f0f0f0;
   box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  min-width: 210px ;
+  min-width: 210px;
 }
 
-.weight-controls-container {
+.right-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.graph-controls-container {
   display: flex;
   flex-direction: column;
+  margin-top: 7px;
+  gap: 20px
 }
 
-.weight-control-container {
+.graph-buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 7px;
+  gap: 30px
+}
+
+.graph-control-container {
   display: flex;
   justify-content: center;
   margin-right: 10px;
   gap: 15px;
 }
 
-.weight-control {
-  margin-top: 7px;
-  position: relative;
-  width: 60px;
-  height: 34px;
+#graph-type-text {
+  margin-top: 10px;
+}
+
+#graph-dropdown {
+  color: #666;
+  padding: 0px 10px 0px 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 0.5px solid #ccc;
+  background-color: #f0f0f0;
+  box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  max-height: 40px;
 }
 
 .steps-slider-container input[type="range"] {
@@ -191,14 +214,6 @@ img {
 
 .speed-slider-container input[type="range"]::-webkit-slider-thumb:disabled {
  cursor: not-allowed;
-}
-
-
-.graph-controls-container {
-  display: flex;
-  flex-direction: column;
-  gap: 29px;
-  margin-top: 7px;
 }
 
 .maze-controls-container {

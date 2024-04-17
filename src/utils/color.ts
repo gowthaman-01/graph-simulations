@@ -12,7 +12,7 @@ export const getColorByWeight = (weight: number): string => {
     // Normalize weight to a scale of 0.1 to 1
     const normalizedWeight = (Math.abs(weight) / MAX_WEIGHT) * (1 - 0.1) + 0.1;
 
-    const end = weight < 0 ? RED : BLUE;
+    const end = BLUE;
     const start = WHITE;
 
     // Calculate intermediate color based on weight
