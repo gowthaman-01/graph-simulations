@@ -7,8 +7,8 @@ import {
     START_NODE,
 } from '../src/common/constants';
 import { getColorByWeight } from '../src/utils/color';
-import { AlgorithmType } from '../src/common/types';
-import { createGraph } from '../src/utils/graph';
+import { AlgorithmType, GraphType } from '../src/common/types';
+import { createGraph, getNodeWithMaxWeight, getNodeWithMinWeight } from '../src/utils/graph';
 import {
     displayInitialNodeState,
     displayAllRunResults,
@@ -28,10 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const newGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
     const changeStartButton = document.getElementById('changeStart') as HTMLButtonElement;
     const changeEndButton = document.getElementById('changeEnd') as HTMLButtonElement;
-    const weight_checkbox = document.getElementById('weight-checkbox') as HTMLInputElement;
-    const weight_switch = document.getElementById('weight-switch') as HTMLLabelElement;
-    // const maze_checkbox = document.getElementById('maze-checkbox') as HTMLInputElement;
-    // const maze_switch = document.getElementById('maze-switch') as HTMLLabelElement;
+    const graphDropdown = document.getElementById('graph-dropdown') as HTMLInputElement;
     const legendCells = document.getElementsByClassName(
         'legend-cell',
     ) as HTMLCollectionOf<HTMLDivElement>;
@@ -48,8 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !newGraphButton ||
         !changeStartButton ||
         !changeEndButton ||
-        !weight_checkbox ||
-        !weight_switch ||
+        !graphDropdown ||
         // !maze_checkbox ||
         // !maze_switch ||
         !legendCells ||
@@ -61,8 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
 
     // Initialise variables.
-    let isMaze = false;
-    let orientation: 'H' | 'V' = 'H';
+    let graphType = GraphType.Unweighted;
 
     let maxWeight = 1;
     let stepDifference = DEFAULT_STEP_DIFFERENCE;
@@ -87,40 +82,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const disableWeightControls = () => {
         disableWeightSlider();
-        weight_switch.style.cursor = 'not-allowed';
-        weight_checkbox.disabled = true;
     };
 
     const enableWeightControls = () => {
         enableWeightSlider();
-        weight_switch.style.cursor = 'pointer';
-        weight_checkbox.disabled = false;
     };
 
     const disableGraphControls = () => {
         runButton.disabled = true;
-        runButton.style.cursor = 'not-allowed';
         newGraphButton.disabled = true;
-        newGraphButton.style.cursor = 'not-allowed';
         changeStartButton.disabled = true;
-        changeStartButton.style.cursor = 'not-allowed';
         changeEndButton.disabled = true;
-        changeEndButton.style.cursor = 'not-allowed';
-        // maze_switch.style.cursor = 'not-allowed';
-        // maze_checkbox.disabled = true;
     };
 
     const enableGraphControls = () => {
         runButton.disabled = false;
-        runButton.style.cursor = 'pointer';
         newGraphButton.disabled = false;
-        newGraphButton.style.cursor = 'pointer';
-        changeStartButton.disabled = false;
-        changeStartButton.style.cursor = 'pointer';
-        changeEndButton.disabled = false;
-        changeEndButton.style.cursor = 'pointer';
-        // maze_switch.style.cursor = 'pointer';
-        // maze_checkbox.disabled = false;
+        if (graphType !== GraphType.Directed) {
+            changeStartButton.disabled = false;
+            changeEndButton.disabled = false;
+        }
     };
 
     const setWeightColor = () => {
@@ -159,9 +140,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.documentElement.style.setProperty('--speed-slider-cursor', 'pointer');
     };
 
+    const disableStartEndNodeButton = () => {
+        changeStartButton.disabled = true;
+        changeEndButton.disabled = true;
+    };
+
+    const enableStartEndNodeButton = () => {
+        changeStartButton.disabled = false;
+        changeEndButton.disabled = false;
+    };
+
     const getRunResults = () => {
         const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
-            runAlgorithm(graph, nodes, startNode, endNode, algorithmType, stepDifference),
+            runAlgorithm(
+                graph,
+                graphType,
+                nodes,
+                startNode,
+                endNode,
+                algorithmType,
+                stepDifference,
+            ),
         );
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
@@ -176,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     resetStepsSlider();
     enableSpeedSlider();
 
-    let { graph, nodes } = createGraph(ROWS, COLS, maxWeight, isMaze, orientation);
+    let { graph, nodes } = createGraph(ROWS, COLS, maxWeight, graphType);
     let runResults = getRunResults();
 
     // Display graph.
@@ -219,13 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     newGraphButton.addEventListener('click', async () => {
-        const { graph: newGraph, nodes: newNodes } = createGraph(
-            ROWS,
-            COLS,
-            maxWeight,
-            isMaze,
-            orientation,
-        );
+        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
         graph = newGraph;
         nodes = newNodes;
         runResults = getRunResults();
@@ -268,68 +261,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetStepsSlider();
     });
 
-    weight_checkbox.addEventListener('change', async () => {
-        if (weight_checkbox.checked) {
+    graphDropdown.addEventListener('change', async () => {
+        graphType = graphDropdown.value as GraphType;
+        if (graphType === GraphType.Unweighted) {
+            graphType = GraphType.Unweighted;
+            maxWeight = 0;
+            setWeightColor();
+            disableWeightSlider();
+        } else {
+            graphType = graphDropdown.value as GraphType;
             maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
             setWeightColor();
             enableWeightSlider();
-
-            const { graph: newGraph, nodes: newNodes } = createGraph(
-                ROWS,
-                COLS,
-                maxWeight,
-                isMaze,
-                orientation,
-            );
-            graph = newGraph;
-            nodes = newNodes;
-            runResults = getRunResults();
-
-            displayInitialNodeState(
-                gridContainers,
-                nodes,
-                startNode,
-                endNode,
-                Object.values(AlgorithmType),
-            );
-            resetStepsSlider();
-        } else {
-            maxWeight = 1;
-            setWeightColor();
-            disableWeightSlider();
-
-            const { graph: newGraph, nodes: newNodes } = createGraph(
-                ROWS,
-                COLS,
-                maxWeight,
-                isMaze,
-                orientation,
-            );
-            graph = newGraph;
-            nodes = newNodes;
-            runResults = getRunResults();
-
-            displayInitialNodeState(
-                gridContainers,
-                nodes,
-                startNode,
-                endNode,
-                Object.values(AlgorithmType),
-            );
-            resetStepsSlider();
         }
+
+        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
+        graph = newGraph;
+        nodes = newNodes;
+        runResults = getRunResults();
+
+        if (graphType == GraphType.Directed) {
+            startNode = parseInt(getNodeWithMaxWeight(nodes).id);
+            endNode = parseInt(getNodeWithMinWeight(nodes).id);
+            disableStartEndNodeButton();
+        } else {
+            enableStartEndNodeButton();
+        }
+
+        displayInitialNodeState(
+            gridContainers,
+            nodes,
+            startNode,
+            endNode,
+            Object.values(AlgorithmType),
+        );
+        resetStepsSlider();
     });
 
     weightSlider.addEventListener('input', async () => {
+        graphType = GraphType.Weighted;
         maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
         setWeightColor();
-        const { graph: newGraph, nodes: newNodes } = createGraph(
-            ROWS,
-            COLS,
-            maxWeight,
-            isMaze,
-            orientation,
-        );
+        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
         graph = newGraph;
         nodes = newNodes;
         runResults = getRunResults();

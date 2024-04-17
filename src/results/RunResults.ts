@@ -1,6 +1,7 @@
 import { GRID_SIZE } from '../common/constants';
 import {
     AlgorithmType,
+    GraphType,
     NewNodeState,
     Node,
     NodeMetadata,
@@ -20,12 +21,14 @@ export class RunResults {
     private displayComplete: boolean = false;
     private stepDifference: number;
     private algorithmSteps: number = 0;
+    private graphType: GraphType;
 
     public constructor(
         nodes: Nodes,
         startNode: number,
         endNode: number,
         algorithmType: AlgorithmType,
+        graphType: GraphType,
         stepDifference: number,
     ) {
         this.nodes = nodes;
@@ -35,6 +38,7 @@ export class RunResults {
             steps: 0,
             nodeMetaDataMap: this.createNodeMetadataMap(nodes, startNode, endNode),
         });
+        this.graphType = graphType;
         this.algorithmType = algorithmType;
         this.stepDifference = stepDifference;
     }
@@ -130,9 +134,18 @@ export class RunResults {
     };
 
     public getTotalWeights = (): number => {
-        let totalWeight = 0;
-        this.shortestPath.forEach((node) => (totalWeight += node.weight));
-        return totalWeight;
+        switch (this.graphType) {
+            case GraphType.Unweighted:
+                return 0;
+            default:
+                return this.shortestPath.reduce((totalWeight, currentNode, i) => {
+                    totalWeight +=
+                        i !== 0
+                            ? Math.max(currentNode.weight - this.shortestPath[i - 1].weight, 0)
+                            : 0;
+                    return totalWeight;
+                }, 0);
+        }
     };
 
     public setDisplayComplete = () => {

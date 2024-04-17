@@ -1,9 +1,10 @@
 import { bfs } from '../algorithms/bfs';
 import { dijkstra } from '../algorithms/djikstra';
-import { AlgorithmType, Graph, Nodes } from '../common/types';
+import { AlgorithmType, Graph, GraphType, Nodes } from '../common/types';
 
 export const runAlgorithm = (
     graph: Graph,
+    graphType: GraphType,
     nodes: Nodes,
     startNode: number,
     endNode: number,
@@ -11,7 +12,7 @@ export const runAlgorithm = (
     stepDifference: number,
 ) => {
     const algorithm = getAlgorithmFromAlgorithmType(algorithmType);
-    const runResults = algorithm(graph, nodes, startNode, endNode, stepDifference);
+    const runResults = algorithm(graph, graphType, nodes, startNode, endNode, stepDifference);
     return runResults;
 };
 
