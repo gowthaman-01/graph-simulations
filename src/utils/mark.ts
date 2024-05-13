@@ -1,26 +1,28 @@
-import { getMarkFilters } from '../common/constants';
 import { AlgorithmType, NodeState } from '../common/types';
-import { delay } from './general';
 
 /**
  * Mark a node (cell) in the grid based on the specified type for a given algorithm.
  *
  * @param {string} nodeName - The name of the node (cell) to mark.
- * @param {NodeType} nodeType - The type of mark to apply.
- * @param {AlgorithmType} algorithm - The algorithm associated with the grid.
- * @param {number} [delayDuration] - Optional. The duration to delay before applying the mark, in milliseconds.
- * @returns {void} A promise that resolves once the cell is mark.
+ * @param {NodeType} nodeState - The state of the node. (Visted / Unvisited etc.)
+ * @param {AlgorithmType} algorithmType - The algorithm associated with the grid.
  */
 export const markCell = (
     nodeName: string,
     nodeState: NodeState,
     algorithmType: AlgorithmType,
 ): void => {
+    // Get cell HTML element.
     const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
     if (!cell) return;
 
-    unmarkCell(nodeName, algorithmType);
+    // Remove existing mark
+    const existingMark = document.getElementById(`${algorithmType}-cell-${nodeName}-mark`);
+    if (existingMark) {
+        cell.removeChild(existingMark);
+    }
 
+    // Set mark based on nodeState.
     const mark = document.createElement('img');
     mark.id = `${algorithmType}-cell-${nodeName}-mark`;
     switch (nodeState) {
@@ -39,15 +41,5 @@ export const markCell = (
     }
 
     mark.classList.add('mark');
-    // mark.style.filter = getMarkFilters(markType);
-
     cell.appendChild(mark);
-};
-
-export const unmarkCell = (nodeName: string, algorithmType: AlgorithmType): void => {
-    const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
-    const existingMark = document.getElementById(`${algorithmType}-cell-${nodeName}-mark`);
-    if (existingMark) {
-        cell.removeChild(existingMark);
-    }
 };

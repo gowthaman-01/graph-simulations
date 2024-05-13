@@ -1,4 +1,4 @@
-import { Color, NodeState } from './types';
+import { Color } from './types';
 
 // RGB Color values.
 export const BLUE: Color = { r: 0, g: 0, b: 200 };
@@ -9,23 +9,13 @@ export const WHITE: Color = { r: 240, g: 240, b: 240 };
 export const GREEN: Color = { r: 28, g: 172, b: 120 };
 export const GRAY: Color = { r: 44, g: 44, b: 44 };
 
-export const getMarkFilters = (markType: NodeState) => {
-    switch (markType) {
-        case NodeState.ShortestPath:
-            return 'invert(67%) sepia(59%) saturate(6047%) hue-rotate(126deg) brightness(96%) contrast(78%)';
-        case NodeState.Visited:
-            return 'invert(99%) sepia(63%) saturate(2988%) hue-rotate(349deg) brightness(94%) contrast(113%)';
-        case NodeState.Visiting:
-            return 'invert(72%) sepia(63%) saturate(3558%) hue-rotate(360deg) brightness(104%) contrast(106%)';
-    }
-};
 /**
  * Default delay in milliseconds for visualizations.
  * @type {number}
  */
 export const DEFAULT_DELAY = 1;
 
-export const DEFAULT_STEP_DIFFERENCE = 20;
+export const DEFAULT_STEP_INCREMENT = 20;
 
 /**
  * Number of rows in the grid.
@@ -46,19 +36,13 @@ export const COLS = 15;
 export const GRID_SIZE = ROWS * COLS;
 
 /**
- * Index of the start node in the grid.
- * @type {number}
- */
-export const START_NODE = () => Math.floor(Math.random() * GRID_SIZE);
-
-/**
- * Index of the end node in the grid.
- * @type {number}
- */
-export const END_NODE = () => Math.floor(Math.random() * GRID_SIZE);
-
-/**
  * Maximum weight used in calculations.
  * @type {number}
  */
 export const MAX_WEIGHT = 100;
+
+/**
+ * Maximum value for the weight slider.
+ * @type {number}
+ */
+export const MAX_SLIDER = 200;

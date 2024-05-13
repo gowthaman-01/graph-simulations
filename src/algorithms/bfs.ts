@@ -1,82 +1,62 @@
-import {
-    AlgorithmType,
-    Graph,
-    GraphType,
-    NewNodeState,
-    Node,
-    NodeState,
-    Nodes,
-    VisitedSet,
-} from '../common/types';
+import { AlgorithmType, NewNodeState, Node, NodeState, VisitedSet } from '../common/types';
 import { Queue } from '../data-structures/Queue';
-import { RunResults } from '../results/RunResults';
+import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
+import RunResults from '../results/RunResults';
+
+const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Finds the shortest path using Breadth-First Search (BFS) algorithm from startNode to endNode in the given graph.
+ * Finds the shortest path using Breadth-First Search (BFS) algorithm from the startNode to endNode in the given graph.
  *
- * @param {Graph} graph - The graph to search.
- * @param {GraphType} graphType - The type of graph.
- * @param {Nodes} nodes - The collection of nodes in the graph.
- * @param {string} startNode - The starting node for the search.
- * @param {string} endNode - The target node to find the shortest path to.
- * @param {number} stepDifference - The stepDifference of execution.
- * @returns {RunResults} A promise that resolves once the shortest path is found and marked.
+ * @returns {RunResults}
  */
-export const bfs = (
-    graph: Graph,
-    graphType: GraphType,
-    nodes: Nodes,
-    startNode: number,
-    endNode: number,
-    stepDifference: number,
-): RunResults => {
-    const runResults = new RunResults(
-        nodes,
-        startNode,
-        endNode,
-        AlgorithmType.Bfs,
-        graphType,
-        stepDifference,
-    );
+export const bfs = (): RunResults => {
+    const startNode = globalVariablesManager.getStartNode();
+    const endNode = globalVariablesManager.getEndNode();
+    const nodes = globalVariablesManager.getGraph().nodes;
+    const graph = globalVariablesManager.getGraph().graph;
+
+    const runResults = new RunResults(AlgorithmType.Bfs);
+    // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
 
-    // Initialize visited set, queue and parent map.
+    // Initialize visited set, queue and predecessors map.
     const visited: VisitedSet = {};
     const queue = new Queue<string>();
-    const parentMap: { [key: string]: string | null } = { [startNode]: null };
-    let shortestPath: Node[] = [];
+    const predecessorsMap: { [key: string]: string | null } = { [startNode]: null }; // 2 * O(1)
 
-    // Add startNode to queue.
-    queue.enqueue(startNode.toString());
+    // Add startNode to queue and mark it as visited.
+    queue.enqueue(startNode.toString()); // 2 * O(1)
     visited[startNode] = true;
 
-    steps += 6;
+    steps += 7;
 
     while (queue.getSize() > 0) {
-        // Dequeue node.
+        // Dequeue node at the front of the queue.
         const currentNode = queue.dequeue();
-        steps += 3;
+        steps += 3; // getSize() and > operations are O(1) each.
 
-        // Mark shortest path if endNode is reached.
+        // Set shortest path if endNode is reached. No steps are added here.
         if (currentNode === endNode.toString()) {
+            let shortestPath: Node[] = [];
             let current = currentNode;
             while (current !== null) {
-                shortestPath.push({ id: current, weight: nodes[current].weight });
-                current = parentMap[current];
+                shortestPath.unshift({ id: current, weight: nodes[current].weight });
+                current = predecessorsMap[current];
             }
-            shortestPath.reverse();
             runResults.setShortestPath(shortestPath);
             return runResults;
         }
 
         // Explore neighbors of the current node
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor.id]) continue;
+            if (visited[neighbor.id]) continue; // 2 * O(1)
             queue.enqueue(neighbor.id);
             visited[neighbor.id] = true;
-            parentMap[neighbor.id] = currentNode;
+            predecessorsMap[neighbor.id] = currentNode;
             steps += 5;
 
+            // Set visiting marker. Steps are not added here.
             if (neighbor.id !== startNode.toString() && neighbor.id !== endNode.toString()) {
                 const newNodeState: NewNodeState = {
                     id: neighbor.id,
@@ -86,6 +66,7 @@ export const bfs = (
             }
         }
 
+        // Set visited marker. Steps are not added here.
         if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
             const newNodeState: NewNodeState = {
                 id: currentNode,
@@ -95,6 +76,6 @@ export const bfs = (
         }
     }
 
-    // If endNode is not reachable from startNode
+    // Code will only reach here if endNode is not reachable from the startNode.
     return runResults;
 };

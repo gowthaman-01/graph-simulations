@@ -1,31 +1,30 @@
 import { randomWeight } from './general';
 import { Graph, GraphStructure, GraphType, Node, Nodes } from '../common/types';
-import { GRID_SIZE, MAX_WEIGHT } from '../common/constants';
+import { GRID_SIZE, COLS } from '../common/constants';
+import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
 
-export const createGraph = (
-    rows: number,
-    cols: number,
-    maxWeight: number,
-    graphType: GraphType,
-    // isMaze: boolean,
-    // orientation: 'H' | 'V',
-) => {
-    return createGridGraph(cols, maxWeight, graphType);
+/**
+ * Recreates the grid graph on subsequent renders based on global variables.
+ *
+ * @returns {GraphStructure} The created grid graph as well as the collection of nodes.
+ */
+export const recreateGridGraph = (): GraphStructure => {
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const maxWeight = globalVariablesManager.getMaxWeight();
+    const graphType = globalVariablesManager.getGraphType();
+    return createGridGraph(maxWeight, graphType);
 };
 
 /**
- * Creates a grid graph with the specified number of rows and columns.
+ * Creates a grid graph with the specified max weight and graphType on the first render.
  *
- * @param {number} cols - The number of columns in the grid.
- * @param {number} maxWeight - The maximum weight of each cell.
- * @param {GraphType} graphType - The type of graph to be created.
  * @returns {GraphStructure} The created grid graph as well as the collection of nodes.
  */
-const createGridGraph = (cols: number, maxWeight: number, graphType: GraphType): GraphStructure => {
+export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphStructure => {
     const graph: Graph = {};
     const nodes: Nodes = {};
 
-    // Create nodes.
+    // Create nodes with random weights.
     for (let i = 0; i < GRID_SIZE; i++) {
         nodes[i] = { id: i.toString(), weight: randomWeight(maxWeight) };
     }
@@ -35,10 +34,10 @@ const createGridGraph = (cols: number, maxWeight: number, graphType: GraphType):
         graph[i.toString()] = []; // Initialize each node with an empty array of neighbors
         const currentWeight = nodes[i].weight;
         // Direct neighbors
-        const up = i - cols;
-        const down = i + cols;
-        const left = i % cols !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
-        const right = (i + 1) % cols !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
+        const up = i - COLS;
+        const down = i + COLS;
+        const left = i % COLS !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
+        const right = (i + 1) % COLS !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
         if (up >= 0)
             addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, graphType);
@@ -77,6 +76,15 @@ const createGridGraph = (cols: number, maxWeight: number, graphType: GraphType):
     return { graph, nodes };
 };
 
+/**
+ * Adds an adjacent node to the graph with the specified properties.
+ * @param graph The graph structure.
+ * @param currentId The ID of the current node.
+ * @param neighborId The ID of the neighboring node.
+ * @param currentWeight The weight of the current node.
+ * @param neighborWeight The weight of the neighboring node.
+ * @param graphType The type of graph (e.g., unweighted, weighted, directed).
+ */
 const addAdjacentNode = (
     graph: Graph,
     currentId: number,
@@ -105,6 +113,11 @@ const addAdjacentNode = (
     }
 };
 
+/**
+ * Returns the node with the maximum weight from the given nodes.
+ * @param nodes The collection of nodes.
+ * @returns The node with the maximum weight.
+ */
 export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
     let maxWeightNode: Node;
     let maxWeight = 0;
@@ -120,6 +133,11 @@ export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
     return maxWeightNode;
 };
 
+/**
+ * Returns the node with the minimum weight from the given nodes.
+ * @param nodes The collection of nodes.
+ * @returns The node with the minimum weight.
+ */
 export const getNodeWithMinWeight = (nodes: Nodes): Node => {
     let minWeightNode: Node;
     let minWeight = Number.POSITIVE_INFINITY;
@@ -135,92 +153,14 @@ export const getNodeWithMinWeight = (nodes: Nodes): Node => {
     return minWeightNode;
 };
 
-// const createMazeGraph = (rows: number, cols: number, orientation: 'H' | 'V'): GraphStructure => {
-//     const { graph, nodes } = createGridGraph(cols, 0);
-//     return createMazerecursiveDivision(
-//         graph,
-//         nodes,
-//         rows,
-//         cols,
-//         0,
-//         0,
-//         cols - 1,
-//         rows - 1,
-//         orientation,
-//     );
-// };
+/**
+ * Generates a random start node index within the grid size.
+ * @returns A random start node index.
+ */
+export const generateStartNode = () => Math.floor(Math.random() * GRID_SIZE);
 
-// const createMazerecursiveDivision = (
-//     graph: Graph,
-//     nodes: Nodes,
-//     cols: number,
-//     rows: number,
-//     startX: number,
-//     startY: number,
-//     endX: number,
-//     endY: number,
-//     orientation: 'H' | 'V',
-// ) => {
-//     if (
-//         startX < 0 ||
-//         endX >= cols ||
-//         startY < 0 ||
-//         endY >= rows ||
-//         endX - startX < 2 ||
-//         endY - startY < 2
-//     ) {
-//         // The section is too small to divide further.
-//         return { graph, nodes };
-//     }
-
-//     let wallX: number, wallY: number, passageX: number, passageY: number;
-
-//     if (orientation === 'H') {
-//         // Choose a horizontal wall line and a vertical passage
-//         wallY = randomEven(startY + 1, endY - 1);
-//         passageX = randomOdd(startX, endX);
-//         // Iterate over the cols in the current section to place the wall.
-//         for (let x = startX; x <= endX; x++) {
-//             if (x !== passageX) {
-//                 // If the current col isn't the col for the passage.
-//                 let nodeIndex = wallY * cols + x;
-//                 if (nodeIndex >= GRID_SIZE) break;
-//                 nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
-//             }
-//         }
-
-//         // Recursively divide.
-//         createMazerecursiveDivision(graph, nodes, rows, cols, startX, startY, endX, wallY - 1, 'V');
-//         createMazerecursiveDivision(graph, nodes, rows, cols, startX, wallY + 1, endX, endY, 'V');
-//     } else {
-//         // Choose a vertical wall line and a horizontal passage
-//         wallX = randomEven(startX + 1, endX - 1);
-//         passageY = randomOdd(startY, endY);
-
-//         // Iterate over the rows in the current section to place the wall.
-//         for (let y = startY; y <= endY; y++) {
-//             if (y !== passageY) {
-//                 // If the current row isn't the row for the passage.
-//                 let nodeIndex = y * cols + wallX;
-//                 if (nodeIndex >= GRID_SIZE) break;
-//                 nodes[nodeIndex.toString()].weight = MAX_WEIGHT;
-//             }
-//         }
-
-//         // Recursively divide.
-//         createMazerecursiveDivision(graph, nodes, rows, cols, startX, startY, wallX - 1, endY, 'H');
-//         createMazerecursiveDivision(graph, nodes, rows, cols, wallX + 1, startY, endX, endY, 'H');
-//     }
-
-//     return { graph, nodes };
-// };
-
-// const randomEven = (start: number, end: number) => {
-//     let range = start + Math.floor(Math.random() * ((end - start) / 2));
-//     return 2 * range;
-// };
-
-// const randomOdd = (start: number, end: number) => {
-//     let range = start + Math.floor(Math.random() * ((end - start) / 2));
-//     return 2 * range + 1;
-// };
+/**
+ * Generates a random end node index within the grid size.
+ * @returns A random end node index.
+ */
+export const generateEndNode = () => Math.floor(Math.random() * GRID_SIZE);

@@ -1,71 +1,54 @@
-import {
-    COLS,
-    DEFAULT_STEP_DIFFERENCE,
-    END_NODE,
-    MAX_WEIGHT,
-    ROWS,
-    START_NODE,
-} from '../src/common/constants';
-import { getColorByWeight } from '../src/utils/color';
 import { AlgorithmType, GraphType } from '../src/common/types';
-import { createGraph, getNodeWithMaxWeight, getNodeWithMinWeight } from '../src/utils/graph';
+import { getGlobalVariablesManagerInstance } from '../src/globals/GlobalVariablesManager';
+import { getColorByWeight } from '../src/utils/color';
 import {
-    displayInitialNodeState,
+    displayEmptyGrid,
     displayAllRunResults,
     displayStep,
     displayTotalWeight,
     displayShortestPath,
 } from '../src/utils/display';
+import { getMaxWeight } from '../src/utils/general';
+import { recreateGridGraph } from '../src/utils/graph';
 import { runAlgorithm } from '../src/utils/run';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
-    // HTML elements
+    // Load HTML elements
+    const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
+    const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
+    const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
+    const graphTypeDropdown = document.getElementById('graphDropdown') as HTMLInputElement;
     const gridContainers = document.getElementsByClassName(
         'grid-container',
     ) as HTMLCollectionOf<HTMLDivElement>;
-    const runButton = document.getElementById('runAlgorithms') as HTMLButtonElement;
-    const newGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
-    const changeStartButton = document.getElementById('changeStart') as HTMLButtonElement;
-    const changeEndButton = document.getElementById('changeEnd') as HTMLButtonElement;
-    const graphDropdown = document.getElementById('graph-dropdown') as HTMLInputElement;
     const legendCells = document.getElementsByClassName(
         'legend-cell',
     ) as HTMLCollectionOf<HTMLDivElement>;
-    const weightSlider = document.getElementById('weight-slider') as HTMLInputElement;
-    const stepsSlider = document.getElementById('steps-slider') as HTMLInputElement;
-    const stepsCount = document.getElementById('steps-count') as HTMLParagraphElement;
-    const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
+    const runButton = document.getElementById('runAlgorithms') as HTMLButtonElement;
+    const speedSlider = document.getElementById('speedSlider') as HTMLInputElement;
+    const stepsCount = document.getElementById('stepCount') as HTMLParagraphElement;
+    const stepsSlider = document.getElementById('stepSlider') as HTMLInputElement;
+    const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
 
     // Return early if an element is undefined.
     if (
+        !changeEndNodeButton ||
+        !changeStartNodeButton ||
+        !generateNewGraphButton ||
+        !graphTypeDropdown ||
         !gridContainers ||
-        gridContainers.length === 0 ||
-        !runButton ||
-        !newGraphButton ||
-        !changeStartButton ||
-        !changeEndButton ||
-        !graphDropdown ||
-        // !maze_checkbox ||
-        // !maze_switch ||
         !legendCells ||
-        !weightSlider ||
-        !stepsSlider ||
+        !runButton ||
+        !speedSlider ||
         !stepsCount ||
-        !speedSlider
-    )
+        !stepsSlider ||
+        !weightSlider
+    ) {
         return;
+    }
 
-    // Initialise variables.
-    let graphType = GraphType.Unweighted;
-
-    let maxWeight = 1;
-    let stepDifference = DEFAULT_STEP_DIFFERENCE;
-
-    let startNode = START_NODE();
-    let endNode = END_NODE();
-
-    let firstRender = true;
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
 
     // Helper functions
     const disableWeightSlider = () => {
@@ -80,34 +63,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.documentElement.style.setProperty('--weight-slider-cursor', 'pointer');
     };
 
-    const disableWeightControls = () => {
-        disableWeightSlider();
-    };
-
-    const enableWeightControls = () => {
-        enableWeightSlider();
+    const setWeightColor = () => {
+        const weightColor = getColorByWeight(globalVariablesManager.getMaxWeight());
+        document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
+        document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
 
     const disableGraphControls = () => {
         runButton.disabled = true;
-        newGraphButton.disabled = true;
-        changeStartButton.disabled = true;
-        changeEndButton.disabled = true;
+        generateNewGraphButton.disabled = true;
+        changeStartNodeButton.disabled = true;
+        changeEndNodeButton.disabled = true;
     };
 
     const enableGraphControls = () => {
         runButton.disabled = false;
-        newGraphButton.disabled = false;
-        if (graphType !== GraphType.Directed) {
-            changeStartButton.disabled = false;
-            changeEndButton.disabled = false;
+        generateNewGraphButton.disabled = false;
+        if (globalVariablesManager.getGraphType() !== GraphType.Directed) {
+            // You can only change the start and end nodes if graph is not directed.
+            changeStartNodeButton.disabled = false;
+            changeEndNodeButton.disabled = false;
         }
-    };
-
-    const setWeightColor = () => {
-        const weightColor = getColorByWeight(maxWeight);
-        document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
-        document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
 
     const resetStepsSlider = () => {
@@ -141,221 +117,163 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const disableStartEndNodeButton = () => {
-        changeStartButton.disabled = true;
-        changeEndButton.disabled = true;
+        changeStartNodeButton.disabled = true;
+        changeEndNodeButton.disabled = true;
     };
 
     const enableStartEndNodeButton = () => {
-        changeStartButton.disabled = false;
-        changeEndButton.disabled = false;
+        changeStartNodeButton.disabled = false;
+        changeEndNodeButton.disabled = false;
     };
 
     const getRunResults = () => {
+        // Obtain run results for all algorithms.
         const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
-            runAlgorithm(
-                graph,
-                graphType,
-                nodes,
-                startNode,
-                endNode,
-                algorithmType,
-                stepDifference,
-            ),
+            runAlgorithm(algorithmType),
         );
+
+        // Set the slider's max value to be the maximum steps from all algorithms executed.
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
-
         return newRunResults;
     };
 
-    // Set slider thumb color.
-    setWeightColor();
-    disableWeightSlider();
-    resetStepsSlider();
-    enableSpeedSlider();
+    const resetGrid = () => {
+        runResults = getRunResults();
+        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        resetStepsSlider();
+    };
 
-    let { graph, nodes } = createGraph(ROWS, COLS, maxWeight, graphType);
+    // Setup of controls and sliders on initial page load.
+    setWeightColor();
+    resetStepsSlider();
+    enableStepsSlider();
+    enableSpeedSlider();
+    enableGraphControls();
+    disableWeightSlider(); // Weight slider disable for the default unweighted graph type.
+
+    // Generate graph and results from algorithms.
     let runResults = getRunResults();
 
     // Display graph.
-    displayInitialNodeState(
-        gridContainers,
-        nodes,
-        startNode,
-        endNode,
-        Object.values(AlgorithmType),
-    );
-
+    displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
     // Event listeners
     runButton.addEventListener('click', async () => {
         disableGraphControls();
-        disableWeightControls();
+        disableWeightSlider();
         disableStepsSlider();
         disableSpeedSlider();
 
-        if (!firstRender) {
+        // Reset grid for subsequent renders.
+        if (!globalVariablesManager.isFirstRender()) {
             runResults = getRunResults();
-
-            displayInitialNodeState(
-                gridContainers,
-                nodes,
-                startNode,
-                endNode,
-                Object.values(AlgorithmType),
-            );
+            displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
             resetStepsSlider();
         }
 
-        firstRender = false;
+        globalVariablesManager.setFirstRender(false);
 
-        await displayAllRunResults(runResults, stepsSlider, stepsCount, stepDifference);
+        // Displaying simulation.
+        await displayAllRunResults(runResults, stepsSlider, stepsCount);
 
         enableGraphControls();
-        enableWeightControls();
+        enableWeightSlider();
         enableStepsSlider();
         enableSpeedSlider();
     });
 
-    newGraphButton.addEventListener('click', async () => {
-        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
-        graph = newGraph;
-        nodes = newNodes;
-        runResults = getRunResults();
-
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
-        resetStepsSlider();
+    generateNewGraphButton.addEventListener('click', async () => {
+        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+        resetGrid();
     });
 
-    changeStartButton.addEventListener('click', () => {
-        startNode = START_NODE();
-        runResults = getRunResults();
-
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
-        resetStepsSlider();
+    changeStartNodeButton.addEventListener('click', () => {
+        console.log(globalVariablesManager.getStartNode());
+        globalVariablesManager.generateNewStartNode();
+        console.log(globalVariablesManager.getStartNode());
+        resetGrid();
     });
 
-    changeEndButton.addEventListener('click', async () => {
-        endNode = END_NODE();
-        runResults = getRunResults();
-
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
-        resetStepsSlider();
+    changeEndNodeButton.addEventListener('click', async () => {
+        globalVariablesManager.generateNewEndNode();
+        resetGrid();
     });
 
-    graphDropdown.addEventListener('change', async () => {
-        graphType = graphDropdown.value as GraphType;
+    graphTypeDropdown.addEventListener('change', async () => {
+        const graphType = graphTypeDropdown.value as GraphType;
+        globalVariablesManager.setGraphType(graphType);
         if (graphType === GraphType.Unweighted) {
-            graphType = GraphType.Unweighted;
-            maxWeight = 0;
-            setWeightColor();
+            globalVariablesManager.setMaxWeight(0);
             disableWeightSlider();
         } else {
-            graphType = graphDropdown.value as GraphType;
-            maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
-            setWeightColor();
+            globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
             enableWeightSlider();
         }
 
-        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
-        graph = newGraph;
-        nodes = newNodes;
-        runResults = getRunResults();
+        setWeightColor();
 
-        if (graphType == GraphType.Directed) {
-            startNode = parseInt(getNodeWithMaxWeight(nodes).id);
-            endNode = parseInt(getNodeWithMinWeight(nodes).id);
-            disableStartEndNodeButton();
-        } else {
-            enableStartEndNodeButton();
-        }
+        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
 
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
-        resetStepsSlider();
+        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+
+        // if (graphType == GraphType.Directed) {
+        //     // Start and end nodes are the cells with maximum and minimum weights respectively.
+        //     startNode = parseInt(getNodeWithMaxWeight(nodes).id);
+        //     endNode = parseInt(getNodeWithMinWeight(nodes).id);
+        //     disableStartEndNodeButton();
+        // } else {
+        //     enableStartEndNodeButton();
+        // }
+
+        resetGrid();
     });
 
     weightSlider.addEventListener('input', async () => {
-        graphType = GraphType.Weighted;
-        maxWeight = (Math.floor(parseInt(weightSlider.value)) / 100) * MAX_WEIGHT;
+        globalVariablesManager.setGraphType(GraphType.Weighted);
+        globalVariablesManager.setMaxWeight(parseInt(weightSlider.value));
         setWeightColor();
-        const { graph: newGraph, nodes: newNodes } = createGraph(ROWS, COLS, maxWeight, graphType);
-        graph = newGraph;
-        nodes = newNodes;
-        runResults = getRunResults();
 
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
-        resetStepsSlider();
+        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+
+        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+
+        resetGrid();
     });
 
     stepsSlider.addEventListener('input', async () => {
-        displayInitialNodeState(
-            gridContainers,
-            nodes,
-            startNode,
-            endNode,
-            Object.values(AlgorithmType),
-        );
+        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
 
-        stepsCount.innerHTML = `Steps: ${Math.min(
-            parseInt(stepsSlider.value),
-            Math.max(...runResults.map((result) => result.getAlgorithmSteps())),
-        ).toString()}`;
+        // Display the current step.
         runResults.forEach((runResult) => {
             displayStep(parseInt(stepsSlider.value), runResult);
         });
 
+        // When slider reaches the maximum value (extreme right).
         if (stepsSlider.value === stepsSlider.max) {
-            const maxSteps = Math.max(...runResults.map((result) => result.getTotalSteps()));
+            const maxStepsOfAllAlgorithms = Math.max(
+                ...runResults.map((result) => result.getTotalSteps()),
+            );
             runResults.forEach((runResult) => {
-                if (runResult.getTotalSteps() === maxSteps) {
+                // Show the shortest path for the slowest algorithm.
+                // Shortest paths for other algorithms are displayed as part of the run results.
+                if (runResult.getTotalSteps() === maxStepsOfAllAlgorithms) {
                     displayShortestPath(
                         gridContainers,
-                        nodes,
-                        startNode,
-                        endNode,
                         runResult.getShortestPath(),
                         runResult.getAlgorithmType(),
-                        stepDifference,
                     );
                 }
 
-                displayTotalWeight(runResult.getTotalWeights(), runResult.getAlgorithmType());
+                displayTotalWeight(runResult.getTotalWeight(), runResult.getAlgorithmType());
             });
         }
     });
 
     speedSlider.addEventListener('input', async () => {
-        stepDifference = parseInt(speedSlider.value);
-        runResults = getRunResults();
+        globalVariablesManager.setStepIncrement(parseInt(speedSlider.value));
+        resetGrid();
     });
 });

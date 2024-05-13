@@ -3,6 +3,7 @@ import { AlgorithmType, HeapNode, NewNodeState, Node, NodeState } from '../commo
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
 import RunResults from '../results/RunResults';
+import { calculateManhattanDistance } from '../utils/general';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
@@ -11,13 +12,13 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
  *
  * @returns {RunResults}
  */
-export const dijkstra = (): RunResults => {
+export const aStarSearch = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
 
-    const runResults = new RunResults(AlgorithmType.Djikstra);
+    const runResults = new RunResults(AlgorithmType.AStar);
     // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
 
@@ -59,14 +60,16 @@ export const dijkstra = (): RunResults => {
             const { id: neighborId, weight: neighborWeight } = neighbor;
             if (visited[neighborId]) continue;
             const newWeight = weights[currentNode] + neighborWeight;
+            const newWeightWithHeuristic =
+                newWeight +
+                Math.pow(1.5, calculateManhattanDistance(neighborId, endNode.toString()));
 
             steps += 4;
-
             // If a shorter path is found.
             if (newWeight < weights[neighborId]) {
                 weights[neighborId] = newWeight;
                 predecessors[neighborId] = currentNode;
-                heapPushSteps = heap.push({ id: neighborId, priority: newWeight });
+                heapPushSteps = heap.push({ id: neighborId, priority: newWeightWithHeuristic });
                 steps += heapPushSteps + 3;
                 if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
                     const newNodeState: NewNodeState = {
