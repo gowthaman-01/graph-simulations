@@ -56,10 +56,10 @@ export const displayEmptyGrid = (
             mark.classList.add('mark');
 
             if (i == startNode) {
-                mark.id = `${algorithmType}-cell-${i}-mark`;
+                mark.id = `${algorithmType}-cell-${i}-${NodeState.StartNode}`;
                 mark.src = `./assets/start.png`;
             } else if (i == endNode) {
-                mark.id = `${algorithmType}-cell-${i}-mark`;
+                mark.id = `${algorithmType}-cell-${i}-mark-${NodeState.EndNode}`;
                 mark.src = `./assets/end.png`;
             }
 

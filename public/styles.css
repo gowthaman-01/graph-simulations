@@ -52,11 +52,17 @@ select {
     position: relative;
 }
 
+.grid-cell:hover .mark-hover {
+    opacity: 1 !important;
+    cursor: pointer;
+}
+
 .mark {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transition: transform 0.3s ease;
 }
 
 .bottom-container {
@@ -210,4 +216,8 @@ select {
     gap: 25px;
     justify-content: center;
     margin-bottom: 16px;
+}
+
+.mark-hover:hover {
+    opacity: 1;
 }

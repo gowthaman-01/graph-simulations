@@ -73,3 +73,7 @@ export const getAlgorithmDisplayName = (algorithmType: AlgorithmType) => {
             return 'A* Search';
     }
 };
+
+export const getNodeIdFromCellElementId = (cellElementId: string) => {
+    return parseInt(cellElementId.split('-')[2]);
+};

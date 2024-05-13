@@ -1,8 +1,10 @@
+import { GRID_SIZE } from '../src/common/constants';
 import {
     AStarHeuristicInfluence,
     AStarHeuristicType,
     AlgorithmType,
     GraphType,
+    NodeState,
 } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
@@ -13,8 +15,9 @@ import {
     displayTotalWeight,
     displayShortestPath,
 } from '../src/utils/display';
-import { getMaxWeight } from '../src/utils/general';
+import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
 import { recreateGridGraph } from '../src/utils/graph';
+import { markCell, setMarkImage, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 
 // Script that runs when DOM is loaded.
@@ -161,6 +164,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetStepsSlider();
     };
 
+    const markCellsForUserInput = (nodeState: NodeState) => {
+        for (const algorithmType of Object.values(AlgorithmType)) {
+            for (let i = 0; i < GRID_SIZE; i++) {
+                // When the user clicks the 'Change Start Node' button, all cells will
+                // temporarily show the startNode image except the endNode and vice versa.
+                if (
+                    (nodeState === NodeState.StartNode &&
+                        i === globalVariablesManager.getEndNode()) ||
+                    (nodeState === NodeState.EndNode && i === globalVariablesManager.getStartNode())
+                ) {
+                    continue;
+                }
+
+                const cell = document.getElementById(`${algorithmType}-cell-${i}`);
+                if (!cell) return;
+
+                unmarkCell(cell);
+
+                // Set mark based on nodeState.
+                const mark = document.createElement('img');
+                mark.id = `${algorithmType}-cell-${i}-${nodeState}`;
+                setMarkImage(mark, nodeState);
+
+                // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
+                mark.style.opacity = `0.2`;
+
+                mark.classList.add('mark');
+                mark.classList.add('mark-hover');
+
+                cell.appendChild(mark);
+
+                // Once user clicks on the new node, the graph is reset with the new Start / End node.
+                cell.addEventListener('mousedown', () => {
+                    if (nodeState === NodeState.StartNode) {
+                        globalVariablesManager.setStartNode(getNodeIdFromCellElementId(cell.id));
+                    } else {
+                        globalVariablesManager.setEndNode(getNodeIdFromCellElementId(cell.id));
+                    }
+                    resetGridAndRerun();
+                });
+            }
+        }
+    };
+
     // Setup of controls and sliders on initial page load.
     setWeightColor();
     resetStepsSlider();
@@ -206,15 +253,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     changeStartNodeButton.addEventListener('click', () => {
-        console.log(globalVariablesManager.getStartNode());
-        globalVariablesManager.generateNewStartNode();
-        console.log(globalVariablesManager.getStartNode());
-        resetGridAndRerun();
+        markCellsForUserInput(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
-        globalVariablesManager.generateNewEndNode();
-        resetGridAndRerun();
+        markCellsForUserInput(NodeState.EndNode);
     });
 
     graphTypeDropdown.addEventListener('change', async () => {

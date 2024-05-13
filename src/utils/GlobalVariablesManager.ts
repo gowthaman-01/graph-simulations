@@ -56,16 +56,16 @@ class GlobalVariablesManager {
         return this.runResults;
     }
 
-    public generateNewStartNode(): void {
-        this.startNode = generateStartNode();
+    public setStartNode(newStartNode: number): void {
+        this.startNode = newStartNode;
     }
 
     public getStartNode(): number {
         return this.startNode;
     }
 
-    public generateNewEndNode(): void {
-        this.endNode = generateEndNode();
+    public setEndNode(newEndNode: number): void {
+        this.endNode = newEndNode;
     }
 
     public getEndNode(): number {

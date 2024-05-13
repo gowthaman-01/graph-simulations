@@ -1,30 +1,42 @@
 import { AlgorithmType, NodeState } from '../common/types';
 
 /**
- * Mark a node (cell) in the grid based on the specified type for a given algorithm.
+ * Mark a node (cell) in the grid based on the specified nodeType.
  *
  * @param {string} nodeName - The name of the node (cell) to mark.
  * @param {NodeType} nodeState - The state of the node. (Visted / Unvisited etc.)
  * @param {AlgorithmType} algorithmType - The algorithm associated with the grid.
+ * @param {number} opacity - Optional opacity value for the mark image.
  */
 export const markCell = (
     nodeName: string,
     nodeState: NodeState,
     algorithmType: AlgorithmType,
-): void => {
+): HTMLElement => {
     // Get cell HTML element.
     const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
     if (!cell) return;
 
-    // Remove existing mark
-    const existingMark = document.getElementById(`${algorithmType}-cell-${nodeName}-mark`);
-    if (existingMark) {
-        cell.removeChild(existingMark);
-    }
+    unmarkCell(cell);
 
     // Set mark based on nodeState.
     const mark = document.createElement('img');
-    mark.id = `${algorithmType}-cell-${nodeName}-mark`;
+    mark.id = `${algorithmType}-cell-${nodeName}-${nodeState}`;
+    setMarkImage(mark, nodeState);
+
+    mark.classList.add('mark');
+    cell.appendChild(mark);
+    return cell;
+};
+
+/**
+ * Adds the mark image to the node based on its state.
+ *
+ * @param {HTMLImageElement} mark - The cell <img> element to mark.
+ * @param {NodeState} nodeState - The state of the node. (Visted / Unvisited etc.)
+ * @param {number} opacity - Optional opacity value for the mark image.
+ */
+export const setMarkImage = (mark: HTMLImageElement, nodeState: NodeState) => {
     switch (nodeState) {
         case NodeState.StartNode:
         case NodeState.EndNode:
@@ -39,7 +51,15 @@ export const markCell = (
             mark.style.opacity = '0.55';
             break;
     }
+};
 
-    mark.classList.add('mark');
-    cell.appendChild(mark);
+/**
+ * Clears the mark image from the cell.
+ *
+ * @param {HTMLElement} cell - The cell <img> element to mark.
+ */
+export const unmarkCell = (cell: HTMLElement) => {
+    // Remove existing mark
+    const childNodes = cell.childNodes;
+    childNodes.forEach((childNode) => cell.removeChild(childNode));
 };
