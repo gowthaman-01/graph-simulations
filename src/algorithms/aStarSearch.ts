@@ -1,11 +1,29 @@
 import { GRID_SIZE } from '../common/constants';
-import { AlgorithmType, HeapNode, NewNodeState, Node, NodeState } from '../common/types';
+import {
+    AStarHeuristicInfluence,
+    AStarHeuristicType,
+    AlgorithmType,
+    HeapNode,
+    NewNodeState,
+    Node,
+    NodeState,
+} from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
 import RunResults from '../results/RunResults';
-import { calculateManhattanDistance } from '../utils/general';
+import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
+const calculateHeuristicInfluence = (aStarHeuristicInfluence: AStarHeuristicInfluence) => {
+    switch (aStarHeuristicInfluence) {
+        case AStarHeuristicInfluence.Strong:
+            return 2;
+        case AStarHeuristicInfluence.Balanced:
+            return 1.5;
+        case AStarHeuristicInfluence.Mild:
+            return 1.2;
+    }
+};
 
 /**
  * Finds the shortest path using Dijkstra's algorithm from startNode to endNode in the given graph.
@@ -17,7 +35,13 @@ export const aStarSearch = (): RunResults => {
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
-
+    const heuristicAlgorithm =
+        globalVariablesManager.getAStarHeuristicType() === AStarHeuristicType.Manhattan
+            ? calculateManhattanDistance
+            : calculateEuclideanDistance;
+    const heuristicInfluence = calculateHeuristicInfluence(
+        globalVariablesManager.getAStartHeuristicInfluence(),
+    );
     const runResults = new RunResults(AlgorithmType.AStar);
     // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
@@ -62,7 +86,7 @@ export const aStarSearch = (): RunResults => {
             const newWeight = weights[currentNode] + neighborWeight;
             const newWeightWithHeuristic =
                 newWeight +
-                Math.pow(1.5, calculateManhattanDistance(neighborId, endNode.toString()));
+                Math.pow(heuristicInfluence, heuristicAlgorithm(neighborId, endNode.toString()));
 
             steps += 4;
             // If a shorter path is found.

@@ -1,4 +1,9 @@
-import { AlgorithmType, GraphType } from '../src/common/types';
+import {
+    AStarHeuristicInfluence,
+    AStarHeuristicType,
+    AlgorithmType,
+    GraphType,
+} from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/globals/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
@@ -15,12 +20,18 @@ import { runAlgorithm } from '../src/utils/run';
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
     // Load HTML elements
+    const aStarHeuristicTypeDropDown = document.getElementById(
+        'aStarHeuristicTypeDropdown',
+    ) as HTMLInputElement;
+    const aStarHeuristicInfluenceDropdown = document.getElementById(
+        'aStarHeuristicInfluenceDropdown',
+    ) as HTMLInputElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
     const graphTypeDropdown = document.getElementById('graphDropdown') as HTMLInputElement;
     const gridContainers = document.getElementsByClassName(
-        'grid-container',
+        'grid',
     ) as HTMLCollectionOf<HTMLDivElement>;
     const legendCells = document.getElementsByClassName(
         'legend-cell',
@@ -33,6 +44,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Return early if an element is undefined.
     if (
+        !aStarHeuristicTypeDropDown ||
+        !aStarHeuristicInfluenceDropdown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
         !generateNewGraphButton ||
@@ -74,16 +87,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         generateNewGraphButton.disabled = true;
         changeStartNodeButton.disabled = true;
         changeEndNodeButton.disabled = true;
+        graphTypeDropdown.disabled = true;
+        aStarHeuristicTypeDropDown.disabled = true;
+        aStarHeuristicInfluenceDropdown.disabled = true;
     };
 
     const enableGraphControls = () => {
         runButton.disabled = false;
         generateNewGraphButton.disabled = false;
-        if (globalVariablesManager.getGraphType() !== GraphType.Directed) {
-            // You can only change the start and end nodes if graph is not directed.
-            changeStartNodeButton.disabled = false;
-            changeEndNodeButton.disabled = false;
-        }
+        changeStartNodeButton.disabled = false;
+        changeEndNodeButton.disabled = false;
+        graphTypeDropdown.disabled = false;
+        aStarHeuristicTypeDropDown.disabled = false;
+        aStarHeuristicInfluenceDropdown.disabled = false;
     };
 
     const resetStepsSlider = () => {
@@ -139,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return newRunResults;
     };
 
-    const resetGrid = () => {
+    const resetGridAndRerun = () => {
         runResults = getRunResults();
         displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
         resetStepsSlider();
@@ -186,19 +202,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateNewGraphButton.addEventListener('click', async () => {
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
-        resetGrid();
+        resetGridAndRerun();
     });
 
     changeStartNodeButton.addEventListener('click', () => {
         console.log(globalVariablesManager.getStartNode());
         globalVariablesManager.generateNewStartNode();
         console.log(globalVariablesManager.getStartNode());
-        resetGrid();
+        resetGridAndRerun();
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
         globalVariablesManager.generateNewEndNode();
-        resetGrid();
+        resetGridAndRerun();
     });
 
     graphTypeDropdown.addEventListener('change', async () => {
@@ -215,19 +231,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         setWeightColor();
 
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
 
-        // if (graphType == GraphType.Directed) {
-        //     // Start and end nodes are the cells with maximum and minimum weights respectively.
-        //     startNode = parseInt(getNodeWithMaxWeight(nodes).id);
-        //     endNode = parseInt(getNodeWithMinWeight(nodes).id);
-        //     disableStartEndNodeButton();
-        // } else {
-        //     enableStartEndNodeButton();
-        // }
-
-        resetGrid();
+        resetGridAndRerun();
     });
 
     weightSlider.addEventListener('input', async () => {
@@ -239,7 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
 
-        resetGrid();
+        resetGridAndRerun();
     });
 
     stepsSlider.addEventListener('input', async () => {
@@ -274,6 +280,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     speedSlider.addEventListener('input', async () => {
         globalVariablesManager.setStepIncrement(parseInt(speedSlider.value));
-        resetGrid();
+        resetGridAndRerun();
+    });
+
+    aStarHeuristicTypeDropDown.addEventListener('change', async () => {
+        const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
+        globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
+
+        resetGridAndRerun();
+    });
+
+    aStarHeuristicInfluenceDropdown.addEventListener('change', async () => {
+        const aStarHeuristicInfluence =
+            aStarHeuristicInfluenceDropdown.value as AStarHeuristicInfluence;
+        globalVariablesManager.setAStartHeuristicInfluence(aStarHeuristicInfluence);
+
+        resetGridAndRerun();
     });
 });

@@ -1,7 +1,7 @@
 import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
 import { AlgorithmType, Nodes, Node, StepMetadata, NodeState } from '../common/types';
 import { getColorByWeight } from './color';
-import { delay } from './general';
+import { delay, getAlgorithmDisplayName } from './general';
 import { markCell } from './mark';
 import RunResults from '../results/RunResults';
 import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
@@ -33,12 +33,12 @@ export const displayEmptyGrid = (
         const weightParagraphElement = document.getElementById(
             `${algorithmType}-weight`,
         ) as HTMLParagraphElement;
-        weightParagraphElement.innerHTML = '&nbsp';
+        weightParagraphElement.innerHTML = getAlgorithmDisplayName(algorithmType);
 
         // Create grid container.
         gridContainer.innerHTML = '';
         gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+        gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 140fr)`;
         gridContainer.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
 
         // Create grid cells.
@@ -127,7 +127,9 @@ export const displayTotalWeight = (totalWeight: number, algorithmType: Algorithm
     const weightParagraphElement = document.getElementById(
         `${algorithmType}-weight`,
     ) as HTMLParagraphElement;
-    weightParagraphElement.innerHTML = `<b>Total Weight: ${totalWeight}</b>`;
+    weightParagraphElement.innerHTML = `${getAlgorithmDisplayName(
+        algorithmType,
+    )} | Total weight = ${totalWeight}`;
 };
 
 /**

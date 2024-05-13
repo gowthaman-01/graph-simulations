@@ -1,5 +1,10 @@
 import { DEFAULT_STEP_INCREMENT } from '../common/constants';
-import { GraphStructure, GraphType } from '../common/types';
+import {
+    AStarHeuristicInfluence,
+    AStarHeuristicType,
+    GraphStructure,
+    GraphType,
+} from '../common/types';
 import RunResults from '../results/RunResults';
 import { createGridGraph, generateEndNode, generateStartNode } from '../utils/graph';
 
@@ -13,6 +18,8 @@ class GlobalVariablesManager {
     private maxWeight: number;
     private stepIncrement: number;
     private firstRender: boolean;
+    private aStarHeuristicType: AStarHeuristicType = AStarHeuristicType.Manhattan;
+    private aStartHeuristicInfluence: AStarHeuristicInfluence = AStarHeuristicInfluence.Balanced;
 
     private constructor() {
         // Initialize default values
@@ -95,6 +102,22 @@ class GlobalVariablesManager {
 
     public isFirstRender(): boolean {
         return this.firstRender;
+    }
+
+    public getAStarHeuristicType(): AStarHeuristicType {
+        return this.aStarHeuristicType;
+    }
+
+    public setAStarHeuristicType(newType: AStarHeuristicType) {
+        this.aStarHeuristicType = newType;
+    }
+
+    public getAStartHeuristicInfluence(): AStarHeuristicInfluence {
+        return this.aStartHeuristicInfluence;
+    }
+
+    public setAStartHeuristicInfluence(newInfluence: AStarHeuristicInfluence) {
+        this.aStartHeuristicInfluence = newInfluence;
     }
 }
 

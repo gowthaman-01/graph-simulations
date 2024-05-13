@@ -7,29 +7,40 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 </body>
-    <h1>Graph Simulations</h1>
     <div>
         <!-- Grid containers for displaying graphs -->
         <div class="grid-containers">
             <div>
-                <p>BFS</p>
-                <div class="grid-container" id="bfs"></div>
-                <p id="bfs-weight">&nbsp</p>
+                <div>
+                    <p id="bfs-weight">BFS</p>
+                    <div class="grid" id="bfs"></div>
+                </div>
+                <div >
+                    <p id="djikstra-weight" style="margin-top: 35px;">Djikstra</p>
+                    <div class="grid" id="djikstra" style="margin-top: 33px;"></div>           
+                </div>
             </div>
             <div>
-                <p>Bellman-Ford</p>
-                <div class="grid-container" id="bellmanFord"></div>
-                <p id="bellmanFord-weight">&nbsp</p>
-            </div>
-            <div>
-                <p>Djikstras</p>
-                <div class="grid-container" id="djikstra"></div>
-                <p id="djikstra-weight">&nbsp</p>
-            </div>
-             <div>
-                <p>A* search</p>
-                <div class="grid-container" id="aStar"></div>
-                <p id="aStar-weight">&nbsp</p>
+                <div>
+                    <p id="bellmanFord-weight">Bellman-Ford</p>
+                    <div class="grid" id="bellmanFord"></div>
+                </div>
+                <div>
+                    <div class="aStar-header">
+                        <p id="aStar-weight">A* Search</p>
+                        <select id="aStarHeuristicTypeDropdown" class="dropdown" style="margin-top: 6px;">
+                            <option value="manhattan">Manhattan</option>
+                            <option value="euclidean">Eucledian</option>
+                        </select>
+                        <select id="aStarHeuristicInfluenceDropdown" class="dropdown" style="margin-top: 6px;">
+                            <option value="balanced">Balanced influence</option>
+                            <option value="strong">Strong influence</option>
+                            <option value="mild">Mild influence</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid" id="aStar"></div>
+                </div>
             </div>
         </div>
         

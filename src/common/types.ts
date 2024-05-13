@@ -115,3 +115,14 @@ export interface NewNodeState {
     id: string;
     newState: NodeState;
 }
+
+export enum AStarHeuristicType {
+    Manhattan = 'manhattan',
+    Euclidean = 'eucledian',
+}
+
+export enum AStarHeuristicInfluence {
+    Strong = 'strong',
+    Balanced = 'balanced',
+    Mild = 'mild',
+}

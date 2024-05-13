@@ -1,4 +1,5 @@
 import { COLS, MAX_SLIDER, MAX_WEIGHT } from '../common/constants';
+import { AlgorithmType } from '../common/types';
 
 /**
  * Delays execution for a specified duration.
@@ -51,4 +52,24 @@ const findRowAndColumn = (cellId: string): { row: number; col: number } => {
     const row = Math.floor(numericId / COLS);
     const col = numericId % COLS;
     return { row, col };
+};
+
+/**
+ * Get the display name of the algorithm based on its type.
+ *
+ * @param algorithmType - The type of the algorithm.
+ * @returns The display name of the algorithm.
+ */
+
+export const getAlgorithmDisplayName = (algorithmType: AlgorithmType) => {
+    switch (algorithmType) {
+        case AlgorithmType.Bfs:
+            return 'BFS';
+        case AlgorithmType.Djikstra:
+            return 'Djikstra';
+        case AlgorithmType.BellmanFord:
+            return 'Bellman-Ford';
+        case AlgorithmType.AStar:
+            return 'A* Search';
+    }
 };
