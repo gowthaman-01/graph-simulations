@@ -253,10 +253,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     changeStartNodeButton.addEventListener('click', () => {
+        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
         markCellsForUserInput(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
+        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
         markCellsForUserInput(NodeState.EndNode);
     });
 
