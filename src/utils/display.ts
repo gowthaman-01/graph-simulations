@@ -3,8 +3,8 @@ import { AlgorithmType, Nodes, Node, StepMetadata, NodeState } from '../common/t
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { markCell } from './mark';
-import RunResults from '../results/RunResults';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
+import RunResults from './RunResults';
+import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

@@ -9,8 +9,8 @@ import {
     NodeState,
 } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
-import RunResults from '../results/RunResults';
+import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import RunResults from '../utils/RunResults';
 import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();

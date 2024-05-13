@@ -1,7 +1,7 @@
 import { GRID_SIZE } from '../common/constants';
 import { AlgorithmType, Node, NodeState } from '../common/types';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
-import RunResults from '../results/RunResults';
+import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import RunResults from '../utils/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

@@ -4,7 +4,7 @@ import {
     AlgorithmType,
     GraphType,
 } from '../src/common/types';
-import { getGlobalVariablesManagerInstance } from '../src/globals/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
     displayEmptyGrid,

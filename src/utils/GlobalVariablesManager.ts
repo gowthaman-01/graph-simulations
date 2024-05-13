@@ -5,8 +5,8 @@ import {
     GraphStructure,
     GraphType,
 } from '../common/types';
-import RunResults from '../results/RunResults';
-import { createGridGraph, generateEndNode, generateStartNode } from '../utils/graph';
+import RunResults from './RunResults';
+import { createGridGraph, generateEndNode, generateStartNode } from './graph';
 
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;

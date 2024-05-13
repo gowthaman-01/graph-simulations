@@ -10,7 +10,7 @@ import {
     Nodes,
     StepMetadata,
 } from '../common/types';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

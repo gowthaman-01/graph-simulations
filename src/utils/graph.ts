@@ -1,7 +1,7 @@
 import { randomWeight } from './general';
 import { Graph, GraphStructure, GraphType, Node, Nodes } from '../common/types';
 import { GRID_SIZE, COLS } from '../common/constants';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 /**
  * Recreates the grid graph on subsequent renders based on global variables.

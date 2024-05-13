@@ -1,8 +1,8 @@
 import { GRID_SIZE } from '../common/constants';
 import { AlgorithmType, HeapNode, NewNodeState, Node, NodeState } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
-import { getGlobalVariablesManagerInstance } from '../globals/GlobalVariablesManager';
-import RunResults from '../results/RunResults';
+import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import RunResults from '../utils/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
