@@ -1,23 +1,48 @@
 import { GRID_SIZE } from '../common/constants';
-import { AlgorithmType, HeapNode, NewNodeState, Node, NodeState } from '../common/types';
+import {
+    AStarHeuristicInfluence,
+    AStarHeuristicType,
+    AlgorithmType,
+    HeapNode,
+    NewNodeState,
+    Node,
+    NodeState,
+} from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
+import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
+const calculateHeuristicInfluence = (aStarHeuristicInfluence: AStarHeuristicInfluence) => {
+    switch (aStarHeuristicInfluence) {
+        case AStarHeuristicInfluence.Strong:
+            return 2;
+        case AStarHeuristicInfluence.Balanced:
+            return 1.5;
+        case AStarHeuristicInfluence.Mild:
+            return 1.2;
+    }
+};
 
 /**
  * Finds the shortest path using Dijkstra's algorithm from startNode to endNode in the given graph.
  *
  * @returns {RunResults}
  */
-export const dijkstra = (): RunResults => {
+export const aStarSearch = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
-
-    const runResults = new RunResults(AlgorithmType.Djikstra);
+    const heuristicAlgorithm =
+        globalVariablesManager.getAStarHeuristicType() === AStarHeuristicType.Manhattan
+            ? calculateManhattanDistance
+            : calculateEuclideanDistance;
+    const heuristicInfluence = calculateHeuristicInfluence(
+        globalVariablesManager.getAStartHeuristicInfluence(),
+    );
+    const runResults = new RunResults(AlgorithmType.AStar);
     // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
 
@@ -59,14 +84,16 @@ export const dijkstra = (): RunResults => {
             const { id: neighborId, weight: neighborWeight } = neighbor;
             if (visited[neighborId]) continue;
             const newWeight = weights[currentNode] + neighborWeight;
+            const newWeightWithHeuristic =
+                newWeight +
+                Math.pow(heuristicInfluence, heuristicAlgorithm(neighborId, endNode.toString()));
 
             steps += 4;
-
             // If a shorter path is found.
             if (newWeight < weights[neighborId]) {
                 weights[neighborId] = newWeight;
                 predecessors[neighborId] = currentNode;
-                heapPushSteps = heap.push({ id: neighborId, priority: newWeight });
+                heapPushSteps = heap.push({ id: neighborId, priority: newWeightWithHeuristic });
                 steps += heapPushSteps + 3;
                 if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
                     const newNodeState: NewNodeState = {

@@ -7,19 +7,40 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 </body>
-    <h1>Graph Simulations</h1>
     <div>
         <!-- Grid containers for displaying graphs -->
         <div class="grid-containers">
             <div>
-                <p>BFS</p>
-                <div class="grid-container" id="bfs"></div>
-                <p id="bfs-weight">&nbsp</p>
+                <div>
+                    <p id="bfs-weight">BFS</p>
+                    <div class="grid" id="bfs"></div>
+                </div>
+                <div >
+                    <p id="djikstra-weight" style="margin-top: 35px;">Djikstra</p>
+                    <div class="grid" id="djikstra" style="margin-top: 33px;"></div>           
+                </div>
             </div>
             <div>
-                <p>Djikstras</p>
-                <div class="grid-container" id="djikstra"></div>
-                <p id="djikstra-weight">&nbsp</p>
+                <div>
+                    <p id="bellmanFord-weight">Bellman-Ford</p>
+                    <div class="grid" id="bellmanFord"></div>
+                </div>
+                <div>
+                    <div class="aStar-header">
+                        <p id="aStar-weight">A* Search</p>
+                        <select id="aStarHeuristicTypeDropdown" class="dropdown" style="margin-top: 6px;">
+                            <option value="manhattan">Manhattan</option>
+                            <option value="euclidean">Eucledian</option>
+                        </select>
+                        <select id="aStarHeuristicInfluenceDropdown" class="dropdown" style="margin-top: 6px;">
+                            <option value="balanced">Balanced influence</option>
+                            <option value="strong">Strong influence</option>
+                            <option value="mild">Mild influence</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid" id="aStar"></div>
+                </div>
             </div>
         </div>
         
@@ -61,9 +82,9 @@
             
             <div class="middle-container">
                 <div class="steps-slider-container">
-                    <input type="range" id="steps-slider" min="0" max="1000" step="1">
+                    <input type="range" id="stepSlider" min="0" max="1000" step="1">
                 </div>
-                <p id="steps-count">Steps: 0</p>
+                <p id="stepCount">Steps: 0</p>
                 <button id="runAlgorithms">Run</button>
   
             </div>
@@ -71,21 +92,21 @@
             <div class="right-container">
                  <div class="graph-controls-container">
                     <div class="graph-control-container"> 
-                        <p id="graph-type-text">Graph type</p>
-                        <select id="graph-dropdown" class="dropdown">
+                        <p id="graphTypeText">Graph type</p>
+                        <select id="graphDropdown" class="dropdown">
                             <option value="unweighted">Unweighted</option>
-                            <option value="weighted">Weighted</option>
-                            <option value="negative-weighted">Negative weights</option>
-                            <option value="directed">Directed</option>
+                            <option value="weighted">Weighted with no negative weights</option>
+                            <option value="negative-weighted">Weighted with negative weights</option>
+                            <!-- <option value="directed">Directed </option> -->
                         </select>
                     </div>
                     <div class="weight-slider-container">
                         <p style="text-align: start;">Weight distribution</p>
-                        <input type="range" id="weight-slider" min="1" max="200" step="1">
+                        <input type="range" id="weightSlider" min="1" max="200" step="1">
                     </div>
                     <div class="speed-slider-container">
                         <p style="text-align: start;"">Speed</p>
-                        <input type="range" id="speed-slider" min="1" max="50" step="1">
+                        <input type="range" id="speedSlider" min="1" max="50" step="1">
                     </div>
                 </div>
                 <div class="graph-buttons-container">

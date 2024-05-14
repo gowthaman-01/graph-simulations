@@ -23,6 +23,64 @@ export class MinHeap<T> {
         this.comparator = comparator;
     }
 
+    /**
+     * Checks if the heap is empty.
+     * @returns True if the heap is empty, otherwise false.
+     */
+
+    public isEmpty(): boolean {
+        return this.heap.length == 0;
+    }
+
+    /**
+     * Retrieves the top element of the heap without removing it.
+     * @returns The top element of the heap, or null if the heap is empty.
+     */
+    public peek(): T | null {
+        if (this.heap.length === 0) {
+            return null;
+        }
+        return this.heap[0];
+    }
+
+    /**
+     * Removes and returns the top element of the heap.
+     * @returns An array containing the removed element and the number of steps taken to perform the operation, or null if the heap is empty.
+     */
+    public pop(): [T, number] | null {
+        if (this.heap.length === 0) {
+            return null;
+        }
+        const top: T = this.heap[0];
+        this.heap[0] = this.heap[this.heap.length - 1];
+        this.heap.pop();
+        let steps = 4;
+
+        steps += this.heapifyDown();
+
+        return [top, steps];
+    }
+
+    /**
+     * Inserts a new element into the heap.
+     * @param item The element to insert into the heap.
+     * @returns The number of steps taken to perform the operation.
+     */
+    public push(item: T): number {
+        this.heap.push(item);
+        let steps = 1;
+        steps += this.heapifyUp();
+        return steps;
+    }
+
+    /**
+     * Returns a list representation of the heap.
+     * @returns An array containing the elements of the heap.
+     */
+    public list() {
+        return this.heap;
+    }
+
     private getLeftChildIndex(parentIndex: number): number {
         return 2 * parentIndex + 1;
     }
@@ -63,42 +121,6 @@ export class MinHeap<T> {
         const temp: T = this.heap[i];
         this.heap[i] = this.heap[j];
         this.heap[j] = temp;
-    }
-
-    isEmpty(): boolean {
-        return this.heap.length == 0;
-    }
-
-    peek(): T | null {
-        if (this.heap.length === 0) {
-            return null;
-        }
-        return this.heap[0];
-    }
-
-    pop(): [T, number] | null {
-        if (this.heap.length === 0) {
-            return null;
-        }
-        const top: T = this.heap[0];
-        this.heap[0] = this.heap[this.heap.length - 1];
-        this.heap.pop();
-        let steps = 4;
-
-        steps += this.heapifyDown();
-
-        return [top, steps];
-    }
-
-    push(item: T): number {
-        this.heap.push(item);
-        let steps = 1;
-        steps += this.heapifyUp();
-        return steps;
-    }
-
-    list() {
-        return this.heap;
     }
 
     private heapifyUp(): number {

@@ -58,6 +58,8 @@ export interface Color {
 export enum AlgorithmType {
     Bfs = 'bfs',
     Djikstra = 'djikstra',
+    AStar = 'aStar',
+    BellmanFord = 'bellmanFord',
 }
 
 /**
@@ -72,6 +74,9 @@ export enum NodeState {
     EndNode = 'end',
 }
 
+/**
+ * Enumerates different types of graph structures.
+ */
 export enum GraphType {
     Unweighted = 'unweighted',
     Weighted = 'weighted',
@@ -79,22 +84,45 @@ export enum GraphType {
     Directed = 'directed',
 }
 
+/**
+ * Metadata associated with a node in the graph.
+ */
 export interface NodeMetadata {
     id: string;
     state: NodeState;
     weight: number;
 }
 
+/**
+ * Map containing metadata for each node in the graph.
+ */
 export interface NodeMetadataMap {
     [id: string]: NodeMetadata;
 }
 
+/**
+ * Metadata associated with each step in the algorithm.
+ */
 export interface StepMetadata {
     steps: number;
     nodeMetaDataMap: NodeMetadataMap;
 }
 
+/**
+ * Represents a change in state for a specific node.
+ */
 export interface NewNodeState {
     id: string;
     newState: NodeState;
+}
+
+export enum AStarHeuristicType {
+    Manhattan = 'manhattan',
+    Euclidean = 'eucledian',
+}
+
+export enum AStarHeuristicInfluence {
+    Strong = 'strong',
+    Balanced = 'balanced',
+    Mild = 'mild',
 }
