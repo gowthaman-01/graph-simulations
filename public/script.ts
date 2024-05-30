@@ -9,10 +9,9 @@ import {
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
-    displayEmptyGrid,
+    resetGrid,
     displayAllRunResults,
     displayStep,
-    displayTotalWeight,
     displayShortestPath,
 } from '../src/utils/display';
 import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
@@ -155,12 +154,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
+
+        globalVariablesManager.setRunResults(newRunResults);
+
         return newRunResults;
     };
 
     const resetGridAndRerun = () => {
         runResults = getRunResults();
-        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        resetGrid(gridContainers, Object.values(AlgorithmType));
         resetStepsSlider();
     };
 
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let runResults = getRunResults();
 
     // Display graph.
-    displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+    resetGrid(gridContainers, Object.values(AlgorithmType));
     // Event listeners
     runButton.addEventListener('click', async () => {
         disableGraphControls();
@@ -231,7 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Reset grid for subsequent renders.
         if (!globalVariablesManager.isFirstRender()) {
             runResults = getRunResults();
-            displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+            resetGrid(gridContainers, Object.values(AlgorithmType));
             resetStepsSlider();
         }
 
@@ -253,12 +255,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     changeStartNodeButton.addEventListener('click', () => {
-        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        resetGrid(gridContainers, Object.values(AlgorithmType));
         markCellsForUserInput(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
-        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        resetGrid(gridContainers, Object.values(AlgorithmType));
         markCellsForUserInput(NodeState.EndNode);
     });
 
@@ -294,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     stepsSlider.addEventListener('input', async () => {
-        displayEmptyGrid(gridContainers, Object.values(AlgorithmType));
+        resetGrid(gridContainers, Object.values(AlgorithmType));
         stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
 
         // Display the current step.
@@ -317,8 +319,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         runResult.getAlgorithmType(),
                     );
                 }
-
-                displayTotalWeight(runResult.getTotalWeight(), runResult.getAlgorithmType());
             });
         }
     });

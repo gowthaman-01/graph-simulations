@@ -13,13 +13,14 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
  * @param gridContainers The collection of grid containers to display the graphs in.
  * @param algorithms The list of algorithms whose grid graphs need to be cleared.
  */
-export const displayEmptyGrid = (
+export const resetGrid = (
     gridContainers: HTMLCollectionOf<HTMLDivElement>,
     algorithms: AlgorithmType[],
 ) => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
+    const runResults = globalVariablesManager.getRunResults();
 
     for (const gridContainer of Array.from(gridContainers)) {
         const algorithmType: AlgorithmType = gridContainer.id as AlgorithmType;
@@ -29,11 +30,23 @@ export const displayEmptyGrid = (
             continue;
         }
 
-        // Clear total weight display.
-        const weightParagraphElement = document.getElementById(
+        // Reset statistics table.
+        const weightTableElement = document.getElementById(
             `${algorithmType}-weight`,
+        ) as HTMLTableCellElement;
+        const stepsTableElement = document.getElementById(
+            `${algorithmType}-steps`,
+        ) as HTMLTableCellElement;
+        const bestAlgorithmParagraphElement = document.getElementById(
+            'best-algorithm',
         ) as HTMLParagraphElement;
-        weightParagraphElement.innerHTML = getAlgorithmDisplayName(algorithmType);
+
+        const runResult = runResults.find((r) => r.getAlgorithmType() === algorithmType);
+        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
+        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
+        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
+            getBestAlgorithm(),
+        )}`;
 
         // Create grid container.
         gridContainer.innerHTML = '';
@@ -97,7 +110,6 @@ export const displayAllRunResults = async (
         for (const runResult of runResultList) {
             if (runResult.isDisplayComplete()) continue;
             if (step >= runResult.getTotalSteps()) {
-                displayTotalWeight(runResult.getTotalWeight(), runResult.getAlgorithmType());
                 runResult.setDisplayComplete();
                 continue;
             }
@@ -109,27 +121,6 @@ export const displayAllRunResults = async (
         stepsSlider.value = step.toString();
         await delay(DEFAULT_DELAY);
     }
-
-    // Display the total weight for the slowest algorithm.
-    runResultList
-        .filter((runResult) => !runResult.isDisplayComplete())
-        .forEach((runResult) =>
-            displayTotalWeight(runResult.getTotalWeight(), runResult.getAlgorithmType()),
-        );
-};
-
-/**
- * Displays the total weight of the path found by the algorithm.
- * @param totalWeight The total weight of the path.
- * @param algorithmType The type of algorithm used to find the path.
- */
-export const displayTotalWeight = (totalWeight: number, algorithmType: AlgorithmType) => {
-    const weightParagraphElement = document.getElementById(
-        `${algorithmType}-weight`,
-    ) as HTMLParagraphElement;
-    weightParagraphElement.innerHTML = `${getAlgorithmDisplayName(
-        algorithmType,
-    )} | Total weight = ${totalWeight}`;
 };
 
 /**
@@ -188,7 +179,7 @@ export const displayShortestPath = async (
 ) => {
     const stepIncrement = globalVariablesManager.getStepIncrement();
 
-    displayEmptyGrid(gridContainers, [algorithmType]);
+    resetGrid(gridContainers, [algorithmType]);
     for (let i = 0; i < shortestPath.length; i++) {
         const node = shortestPath[i];
         // Mark every shortest path node except the start and the end.
@@ -197,4 +188,20 @@ export const displayShortestPath = async (
             await delay(stepIncrement);
         }
     }
+};
+
+const getBestAlgorithm = (): AlgorithmType => {
+    let runResults = globalVariablesManager.getRunResults();
+    // Get algorithms with the lowest weight (shortest path).
+    const lowestWeight = Math.min(...runResults.map((runResult) => runResult.getTotalWeight()));
+    runResults = runResults.filter((runResult) => runResult.getTotalWeight() === lowestWeight);
+
+    // Get algorithm that executes the fastest.
+    const lowestStep = Math.min(...runResults.map((runResult) => runResult.getAlgorithmSteps()));
+
+    const bestAlgorithm = runResults
+        .find((runResult) => runResult.getAlgorithmSteps() === lowestStep)
+        .getAlgorithmType();
+
+    return bestAlgorithm;
 };
