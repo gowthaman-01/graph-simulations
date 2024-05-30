@@ -85,8 +85,7 @@ export const aStarSearch = (): RunResults => {
             if (visited[neighborId]) continue;
             const newWeight = weights[currentNode] + neighborWeight;
             const newWeightWithHeuristic =
-                newWeight +
-                Math.pow(heuristicInfluence, heuristicAlgorithm(neighborId, endNode.toString()));
+                newWeight + heuristicAlgorithm(neighborId, endNode.toString());
 
             steps += 4;
             // If a shorter path is found.

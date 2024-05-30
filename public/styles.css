@@ -73,6 +73,8 @@ select {
 
 .left-container {
     margin-left: 4px;
+    display: grid;
+    gap: 7px;
 }
 
 .left-container p {
@@ -96,16 +98,11 @@ select {
 
 .middle-container {
     margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0px;
     margin-right: 30px;
 }
 
 .steps-slider-container {
-    margin-top: 5px;
-    width: 450px;
+    width: 400px;
 }
 
 .right-container {
@@ -138,8 +135,9 @@ select {
     display: flex;
     flex-direction: column;
     margin-top: 7px;
-    gap: 30px;
+    gap: 53px;
 }
+
 
 .graph-control-container {
     display: flex;
@@ -148,11 +146,16 @@ select {
     gap: 15px;
 }
 
-.orientation-control-container {
-    display: flex;
-    justify-content: center;
-    margin-right: 10px;
-    gap: 5px;
+.weight-slider-container {
+    margin-top: -10px;
+}
+
+.speed-slider-container {
+    margin-top: 4px;
+}
+
+.steps-slider-container {
+    margin-top: 5px;
 }
 
 /* Typography */
@@ -220,4 +223,19 @@ select {
 
 .mark-hover:hover {
     opacity: 1;
+}
+
+table {
+    font-family: arial, sans-serif;
+    color: #666;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+  border: 1px solid #d3d3d3;
+  text-align: center;
+  padding: 10px;
+  width: 100px;
 }
