@@ -79,7 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setWeightColor = () => {
-        const weightColor = getColorByWeight(globalVariablesManager.getMaxWeight());
+        const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+
         document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
         document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
@@ -179,9 +180,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
+                const graphType = globalVariablesManager.getGraphType();
                 // If graph is a maze, only path cells will be highlighted.
                 if (
-                    globalVariablesManager.getGraphType() === GraphType.Maze &&
+                    (graphType === GraphType.MazeDfs ||
+                        graphType === GraphType.MazeRandom ||
+                        graphType === GraphType.MazeRecursiveDivision) &&
                     globalVariablesManager.getGraph().nodes[i].weight === MAX_WEIGHT
                 ) {
                     continue;
@@ -277,7 +281,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const graphType = graphTypeDropdown.value as GraphType;
         globalVariablesManager.setGraphType(graphType);
 
-        if (graphType === GraphType.Maze) {
+        if (
+            graphType === GraphType.MazeDfs ||
+            graphType === GraphType.MazeRandom ||
+            graphType === GraphType.MazeRecursiveDivision
+        ) {
             globalVariablesManager.setMaxWeight(MAX_WEIGHT);
             disableWeightSlider();
         } else if (graphType === GraphType.Unweighted) {
@@ -298,7 +306,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     weightSlider.addEventListener('input', async () => {
         globalVariablesManager.setGraphType(GraphType.Weighted);
-        globalVariablesManager.setMaxWeight(parseInt(weightSlider.value));
+        globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+
         setWeightColor();
 
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();

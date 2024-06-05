@@ -61,7 +61,7 @@ export const resetGrid = (
             const color = getColorByWeight(weight);
             cell.id = `${gridContainer.id}-cell-${i}`;
             cell.className = 'grid-cell';
-            cell.style.border = `solid 1px #59595d`;
+            cell.style.border = `solid 1px #0C3547`;
             cell.style.backgroundColor = color;
 
             const mark = document.createElement('img');

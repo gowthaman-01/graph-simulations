@@ -1,13 +1,11 @@
 import { Color } from './types';
 
 // RGB Color values.
+export const WHITE: Color = { r: 255, g: 255, b: 255 };
+export const LIGHT_GRAY: Color = { r: 250, g: 250, b: 250 };
+export const LIGHT_BLUE: Color = { r: 175, g: 216, b: 248 };
 export const BLUE: Color = { r: 0, g: 0, b: 200 };
-export const YELLOW: Color = { r: 253, g: 238, b: 0 };
-export const ORANGE: Color = { r: 255, g: 165, b: 0 };
-export const RED: Color = { r: 224, g: 71, b: 76 };
-export const WHITE: Color = { r: 240, g: 240, b: 240 };
-export const GREEN: Color = { r: 28, g: 172, b: 120 };
-export const GRAY: Color = { r: 44, g: 44, b: 44 };
+export const DARK_BLUE: Color = { r: 12, g: 53, b: 71 };
 
 /**
  * Default delay in milliseconds for visualizations.
@@ -21,13 +19,13 @@ export const DEFAULT_STEP_INCREMENT = 20;
  * Number of rows in the grid.
  * @type {number}
  */
-export const ROWS = 15;
+export const ROWS = 18;
 
 /**
  * Number of columns in the grid.
  * @type {number}
  */
-export const COLS = 15;
+export const COLS = 18;
 
 /**
  * Total number of cells in the grid.

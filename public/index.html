@@ -12,22 +12,22 @@
         <div class="grid-containers">
             <div>
                 <div>
-                    <p>BFS</p>
+                    <p><b>BFS</b></p>
                     <div class="grid" id="bfs"></div>
                 </div>
                 <div >
-                    <p style="margin-top: 35px;">Djikstra</p>
+                    <p style="margin-top: 35px;"><b>Djikstra</b></p>
                     <div class="grid" id="djikstra" style="margin-top: 33px;"></div>           
                 </div>
             </div>
             <div>
                 <div>
-                    <p>Bellman-Ford</p>
+                    <p><b>Bellman-Ford</b></p>
                     <div class="grid" id="bellmanFord"></div>
                 </div>
                 <div>
                     <div class="aStar-header">
-                        <p>A* Search</p>
+                        <p><b>A* Search</b></p>
                         <select id="aStarHeuristicTypeDropdown" class="dropdown" style="margin-top: 6px;">
                             <option value="manhattan">Manhattan</option>
                             <option value="euclidean">Eucledian</option>
@@ -118,8 +118,10 @@
                         <select id="graphDropdown" class="dropdown">
                             <option value="unweighted">Unweighted</option>
                             <option value="weighted">Weighted with no negative weights</option>
-                            <option value="negative-weighted">Weighted with negative weights</option>
-                            <option value="maze">Maze</option>
+                            <option value="maze-random">Maze &#40;Random&#41;</option>
+                            <option value="maze-dfs">Maze &#40;DFS&#41;</option>
+                            <option value="maze-recursive-division">Maze &#40;Recursive Division&#41;</option>
+                            <!-- <option value="negative-weighted">Weighted with negative weights</option> -->
                         </select>
                     </div>
                     <div class="weight-slider-container">

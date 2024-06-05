@@ -82,7 +82,9 @@ export enum GraphType {
     Weighted = 'weighted',
     NegativeWeight = 'negative-weighted',
     Directed = 'directed',
-    Maze = 'maze',
+    MazeDfs = 'maze-dfs',
+    MazeRandom = 'maze-random',
+    MazeRecursiveDivision = 'maze-recursive-division',
 }
 
 /**
