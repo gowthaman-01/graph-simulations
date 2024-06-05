@@ -1,4 +1,4 @@
-import { GRID_SIZE } from '../src/common/constants';
+import { GRID_SIZE, MAX_WEIGHT } from '../src/common/constants';
 import {
     AStarHeuristicInfluence,
     AStarHeuristicType,
@@ -16,7 +16,7 @@ import {
 } from '../src/utils/display';
 import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
 import { recreateGridGraph } from '../src/utils/graph';
-import { markCell, setMarkImage, unmarkCell } from '../src/utils/mark';
+import { setMarkImage, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 
 // Script that runs when DOM is loaded.
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
-    const aStarHeuristicInfluenceDropdown = document.getElementById(
-        'aStarHeuristicInfluenceDropdown',
-    ) as HTMLInputElement;
+    // const aStarHeuristicInfluenceDropdown = document.getElementById(
+    //     'aStarHeuristicInfluenceDropdown',
+    // ) as HTMLInputElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Return early if an element is undefined.
     if (
         !aStarHeuristicTypeDropDown ||
-        !aStarHeuristicInfluenceDropdown ||
+        // !aStarHeuristicInfluenceDropdown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
         !generateNewGraphButton ||
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = true;
         graphTypeDropdown.disabled = true;
         aStarHeuristicTypeDropDown.disabled = true;
-        aStarHeuristicInfluenceDropdown.disabled = true;
+        // aStarHeuristicInfluenceDropdown.disabled = true;
     };
 
     const enableGraphControls = () => {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = false;
         graphTypeDropdown.disabled = false;
         aStarHeuristicTypeDropDown.disabled = false;
-        aStarHeuristicInfluenceDropdown.disabled = false;
+        // aStarHeuristicInfluenceDropdown.disabled = false;
     };
 
     const resetStepsSlider = () => {
@@ -179,6 +179,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
+                // If graph is a maze, only path cells will be highlighted.
+                if (
+                    globalVariablesManager.getGraphType() === GraphType.Maze &&
+                    globalVariablesManager.getGraph().nodes[i].weight === MAX_WEIGHT
+                ) {
+                    continue;
+                }
+
                 const cell = document.getElementById(`${algorithmType}-cell-${i}`);
                 if (!cell) return;
 
@@ -216,13 +224,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     enableStepsSlider();
     enableSpeedSlider();
     enableGraphControls();
-    disableWeightSlider(); // Weight slider disable for the default unweighted graph type.
+    disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
 
     // Generate graph and results from algorithms.
     let runResults = getRunResults();
 
     // Display graph.
     resetGrid(gridContainers, Object.values(AlgorithmType));
+
     // Event listeners
     runButton.addEventListener('click', async () => {
         disableGraphControls();
@@ -267,7 +276,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     graphTypeDropdown.addEventListener('change', async () => {
         const graphType = graphTypeDropdown.value as GraphType;
         globalVariablesManager.setGraphType(graphType);
-        if (graphType === GraphType.Unweighted) {
+
+        if (graphType === GraphType.Maze) {
+            globalVariablesManager.setMaxWeight(MAX_WEIGHT);
+            disableWeightSlider();
+        } else if (graphType === GraphType.Unweighted) {
             globalVariablesManager.setMaxWeight(0);
             disableWeightSlider();
         } else {
@@ -335,11 +348,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetGridAndRerun();
     });
 
-    aStarHeuristicInfluenceDropdown.addEventListener('change', async () => {
-        const aStarHeuristicInfluence =
-            aStarHeuristicInfluenceDropdown.value as AStarHeuristicInfluence;
-        globalVariablesManager.setAStartHeuristicInfluence(aStarHeuristicInfluence);
+    // aStarHeuristicInfluenceDropdown.addEventListener('change', async () => {
+    //     const aStarHeuristicInfluence =
+    //         aStarHeuristicInfluenceDropdown.value as AStarHeuristicInfluence;
+    //     globalVariablesManager.setAStartHeuristicInfluence(aStarHeuristicInfluence);
 
-        resetGridAndRerun();
-    });
+    //     resetGridAndRerun();
+    // });
 });
