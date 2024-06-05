@@ -57,6 +57,7 @@ export const dijkstra = (): RunResults => {
 
         for (const neighbor of graph[currentNode]) {
             const { id: neighborId, weight: neighborWeight } = neighbor;
+
             if (visited[neighborId]) continue;
             const newWeight = weights[currentNode] + neighborWeight;
 
