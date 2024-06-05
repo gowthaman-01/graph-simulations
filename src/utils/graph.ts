@@ -1,7 +1,9 @@
-import { getCellIdFromRowAndColumn, getNodeIdFromCellElementId, randomWeight } from './general';
+import { getCellIdFromRowAndColumn, randomWeight } from './general';
 import { Graph, GraphStructure, GraphType, Node, Nodes } from '../common/types';
 import { GRID_SIZE, COLS, ROWS, MAX_WEIGHT } from '../common/constants';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import aStarExampleGraphs from '../examples/aStar-data.json';
+import djikstraExampleGraphs from '../examples/djikstra-data.json';
 
 /**
  * Recreates the grid graph on subsequent renders based on global variables.
@@ -38,7 +40,6 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
     for (let i = 0; i < GRID_SIZE; i++) {
         nodes[i] = { id: i.toString(), weight: randomWeight(maxWeight) };
     }
-
     // Create graph.
     for (let i = 0; i < GRID_SIZE; i++) {
         graph[i.toString()] = []; // Initialize each node with an empty array of neighbors
@@ -412,8 +413,23 @@ const addAdjacentNode = (
             break;
     }
 
-    if (weight !== null) {
+    if (weight) {
         graph[currentId].push({ id: neighborId.toString(), weight: weight });
+    }
+};
+
+export const getExampleGraph = (graphType: GraphType) => {
+    switch (graphType) {
+        case GraphType.AStarExample:
+            return aStarExampleGraphs[
+                Math.floor(Math.random() * aStarExampleGraphs.length)
+            ] as GraphStructure;
+        case GraphType.DjikstraExample:
+            return djikstraExampleGraphs[
+                Math.floor(Math.random() * aStarExampleGraphs.length)
+            ] as GraphStructure;
+        default:
+            return createGridGraph(0, GraphType.Unweighted);
     }
 };
 
@@ -423,7 +439,7 @@ const addAdjacentNode = (
  * @returns The node with the maximum weight.
  */
 export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
-    let maxWeightNode: Node;
+    let maxWeightNode: Node = nodes[0];
     let maxWeight = 0;
 
     for (const id in nodes) {
@@ -443,7 +459,7 @@ export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
  * @returns The node with the minimum weight.
  */
 export const getNodeWithMinWeight = (nodes: Nodes): Node => {
-    let minWeightNode: Node;
+    let minWeightNode: Node = nodes[0];
     let minWeight = Number.POSITIVE_INFINITY;
 
     for (const id in nodes) {

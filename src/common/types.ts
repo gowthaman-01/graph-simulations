@@ -85,6 +85,8 @@ export enum GraphType {
     MazeDfs = 'maze-dfs',
     MazeRandom = 'maze-random',
     MazeRecursiveDivision = 'maze-recursive-division',
+    DjikstraExample = 'djikstra-example',
+    AStarExample = 'aStar-example',
 }
 
 /**
