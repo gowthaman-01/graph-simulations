@@ -1,3 +1,5 @@
 /node_modules
 /public/bundle.js
 .DS_STORE
+/dist
+/src/utils/storage.ts

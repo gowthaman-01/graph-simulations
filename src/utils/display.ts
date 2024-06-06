@@ -42,11 +42,18 @@ export const resetGrid = (
         ) as HTMLParagraphElement;
 
         const runResult = runResults.find((r) => r.getAlgorithmType() === algorithmType);
-        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
-        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
-        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
-            getBestAlgorithm(),
-        )}`;
+        if (!runResult) continue;
+
+        const shortestPath = runResult.getShortestPath();
+
+        weightTableElement.innerHTML =
+            shortestPath.length === 0 ? 'NA' : runResult.getTotalWeight().toString();
+        stepsTableElement.innerHTML =
+            shortestPath.length === 0 ? 'NA' : runResult.getAlgorithmSteps().toString();
+        bestAlgorithmParagraphElement.innerHTML =
+            shortestPath.length === 0
+                ? 'End node unreachable. Regenerate graph or <br>change start / end nodes'
+                : `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`;
 
         // Create grid container.
         gridContainer.innerHTML = '';
@@ -190,7 +197,7 @@ export const displayShortestPath = async (
     }
 };
 
-const getBestAlgorithm = (): AlgorithmType => {
+export const getBestAlgorithm = (): AlgorithmType => {
     let runResults = globalVariablesManager.getRunResults();
     // Get algorithms with the lowest weight (shortest path).
     const lowestWeight = Math.min(...runResults.map((runResult) => runResult.getTotalWeight()));
@@ -199,9 +206,9 @@ const getBestAlgorithm = (): AlgorithmType => {
     // Get algorithm that executes the fastest.
     const lowestStep = Math.min(...runResults.map((runResult) => runResult.getAlgorithmSteps()));
 
-    const bestAlgorithm = runResults
-        .find((runResult) => runResult.getAlgorithmSteps() === lowestStep)
-        .getAlgorithmType();
+    const bestAlgorithmRun = runResults.find(
+        (runResult) => runResult.getAlgorithmSteps() === lowestStep,
+    );
 
-    return bestAlgorithm;
+    return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.Bfs;
 };

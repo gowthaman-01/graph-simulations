@@ -6,7 +6,7 @@ import {
     GraphType,
 } from '../common/types';
 import RunResults from './RunResults';
-import { createGridGraph, generateEndNode, generateStartNode } from './graph';
+import { createGridGraph, generateStartAndEndNode } from './graph';
 
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;
@@ -24,8 +24,9 @@ class GlobalVariablesManager {
     private constructor() {
         // Initialize default values
         this.runResults = [];
-        this.startNode = generateStartNode();
-        this.endNode = generateEndNode();
+        const { startNode, endNode } = generateStartAndEndNode();
+        this.startNode = startNode;
+        this.endNode = endNode;
         this.graphType = GraphType.Unweighted;
         this.maxWeight = 0;
         this.stepIncrement = DEFAULT_STEP_INCREMENT;

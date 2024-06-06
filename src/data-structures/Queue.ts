@@ -35,8 +35,10 @@ export class Queue<T> {
             this.head = newNode;
             this.tail = newNode;
         } else {
-            this.tail.next = newNode;
-            this.tail = newNode;
+            if (this.tail) {
+                this.tail.next = newNode;
+                this.tail = newNode;
+            }
         }
         this.size++;
     }
@@ -46,7 +48,7 @@ export class Queue<T> {
      * @returns {T | null} The data of the element removed from the queue, or null if the queue is empty.
      */
     dequeue(): T | null {
-        if (!this.size) {
+        if (!this.size || !this.head) {
             return null;
         }
         const removedNode = this.head;
@@ -63,7 +65,7 @@ export class Queue<T> {
      * @returns {T | null} The data of the element at the front of the queue, or null if the queue is empty.
      */
     peek(): T | null {
-        return this.size ? this.head.data : null;
+        return this.size && this.head ? this.head.data : null;
     }
 
     /**

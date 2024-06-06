@@ -1,11 +1,5 @@
 import { GRID_SIZE, MAX_WEIGHT } from '../src/common/constants';
-import {
-    AStarHeuristicInfluence,
-    AStarHeuristicType,
-    AlgorithmType,
-    GraphType,
-    NodeState,
-} from '../src/common/types';
+import { AStarHeuristicType, AlgorithmType, GraphType, NodeState } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
@@ -15,7 +9,7 @@ import {
     displayShortestPath,
 } from '../src/utils/display';
 import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
-import { recreateGridGraph } from '../src/utils/graph';
+import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
 import { setMarkImage, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 
@@ -181,7 +175,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // If graph is a maze, only path cells will be highlighted.
                 if (
-                    globalVariablesManager.getGraphType() === GraphType.Maze &&
+                    (graphType === GraphType.MazeDfs ||
+                        graphType === GraphType.RandomWalls ||
+                        graphType === GraphType.MazeRecursiveDivision) &&
                     globalVariablesManager.getGraph().nodes[i].weight === MAX_WEIGHT
                 ) {
                     continue;
@@ -255,11 +251,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         enableWeightSlider();
         enableStepsSlider();
         enableSpeedSlider();
+
+        const graphType = graphTypeDropdown.value as GraphType;
+        const isExampleGraph =
+            graphType === GraphType.AStarExample ||
+            graphType === GraphType.DjikstraExample ||
+            graphType === GraphType.BellmanFordExample ||
+            graphType === GraphType.BfsExample;
+
+        if (isExampleGraph) {
+            disableStartEndNodeButton();
+        } else {
+            enableStartEndNodeButton();
+        }
     });
 
     generateNewGraphButton.addEventListener('click', async () => {
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+        const graphType = graphTypeDropdown.value as GraphType;
+        const isExampleGraph =
+            graphType === GraphType.AStarExample ||
+            graphType === GraphType.DjikstraExample ||
+            graphType === GraphType.BellmanFordExample ||
+            graphType === GraphType.BfsExample;
+
+        if (!isExampleGraph) {
+            enableStartEndNodeButton();
+            const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+            globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+        } else {
+            disableStartEndNodeButton();
+            const exampleGraph = getExampleGraph(graphType);
+            if (exampleGraph) {
+                const {
+                    graph: newGraph,
+                    nodes: newNodes,
+                    startNode: newStartNode,
+                    endNode: newEndNode,
+                } = exampleGraph;
+                globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+                globalVariablesManager.setStartNode(newStartNode);
+                globalVariablesManager.setEndNode(newEndNode);
+            }
+        }
+
         resetGridAndRerun();
     });
 
@@ -277,21 +311,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         const graphType = graphTypeDropdown.value as GraphType;
         globalVariablesManager.setGraphType(graphType);
 
-        if (graphType === GraphType.Maze) {
-            globalVariablesManager.setMaxWeight(MAX_WEIGHT);
-            disableWeightSlider();
-        } else if (graphType === GraphType.Unweighted) {
-            globalVariablesManager.setMaxWeight(0);
-            disableWeightSlider();
-        } else {
-            globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-            enableWeightSlider();
+        switch (graphType) {
+            case GraphType.MazeDfs:
+            case GraphType.RandomWalls:
+            case GraphType.MazeRecursiveDivision:
+                globalVariablesManager.setMaxWeight(MAX_WEIGHT);
+                disableWeightSlider();
+                break;
+            case GraphType.Unweighted:
+                globalVariablesManager.setMaxWeight(0);
+                disableWeightSlider();
+                break;
+            case GraphType.AStarExample:
+            case GraphType.DjikstraExample:
+                break;
+            case GraphType.Weighted:
+                globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+                enableWeightSlider();
         }
 
         setWeightColor();
 
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+        const isExampleGraph =
+            graphType === GraphType.AStarExample ||
+            graphType === GraphType.DjikstraExample ||
+            graphType === GraphType.BellmanFordExample ||
+            graphType === GraphType.BfsExample;
+
+        if (!isExampleGraph) {
+            enableStartEndNodeButton();
+            const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+            globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+        } else {
+            disableStartEndNodeButton();
+            const exampleGraph = getExampleGraph(graphType);
+            if (exampleGraph) {
+                const {
+                    graph: newGraph,
+                    nodes: newNodes,
+                    startNode: newStartNode,
+                    endNode: newEndNode,
+                } = exampleGraph;
+                globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+                globalVariablesManager.setStartNode(newStartNode);
+                globalVariablesManager.setEndNode(newEndNode);
+            }
+        }
 
         resetGridAndRerun();
     });
