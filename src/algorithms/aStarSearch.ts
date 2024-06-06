@@ -64,10 +64,7 @@ export const aStarSearch = (): RunResults => {
 
     while (!heap.isEmpty()) {
         // Pop the node with the minimum weight and mark it as visited.
-        const heapPopResult = heap.pop();
-        if (heapPopResult === null) continue;
-        let [{ id: currentNode }, heapPopSteps] = heapPopResult;
-
+        let [{ id: currentNode }, heapPopSteps] = heap.pop();
         visited[currentNode] = true; // O(1)
 
         steps += heapPopSteps + 2;
@@ -75,10 +72,9 @@ export const aStarSearch = (): RunResults => {
         // If the end node is reached.
         if (currentNode === endNode.toString()) {
             let shortestPath: Node[] = [];
-            let predecessor: string | null = currentNode;
-            while (predecessor !== null) {
-                shortestPath.unshift({ id: predecessor, weight: nodes[predecessor].weight });
-                predecessor = predecessors[predecessor];
+            while (currentNode !== null) {
+                shortestPath.unshift({ id: currentNode, weight: nodes[currentNode].weight });
+                currentNode = predecessors[currentNode];
             }
             runResults.setShortestPath(shortestPath);
             return runResults;

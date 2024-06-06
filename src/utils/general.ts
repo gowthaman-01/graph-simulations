@@ -25,20 +25,20 @@ export const randomWeight = (maxWeight: number) => {
  * @returns The maximum weight based on the slider value.
  */
 export const getMaxWeight = (weightSliderValue: string) => {
-    return (Math.floor(Math.pow(parseInt(weightSliderValue), 1.2)) / MAX_SLIDER) * MAX_WEIGHT;
+    return (Math.floor(parseInt(weightSliderValue)) / MAX_SLIDER) * MAX_WEIGHT;
 };
 
 export const calculateEuclideanDistance = (startNode: string, endNode: string): number => {
-    const { row: startRow, col: startCol } = getRowAndColumnFromCellId(startNode);
-    const { row: endRow, col: endCol } = getRowAndColumnFromCellId(endNode);
+    const { row: startRow, col: startCol } = findRowAndColumn(startNode);
+    const { row: endRow, col: endCol } = findRowAndColumn(endNode);
     const dx = endRow - startRow;
     const dy = endCol - startCol;
     return Math.sqrt(dx * dx + dy * dy);
 };
 
 export const calculateManhattanDistance = (startNode: string, endNode: string): number => {
-    const { row: startRow, col: startCol } = getRowAndColumnFromCellId(startNode);
-    const { row: endRow, col: endCol } = getRowAndColumnFromCellId(endNode);
+    const { row: startRow, col: startCol } = findRowAndColumn(startNode);
+    const { row: endRow, col: endCol } = findRowAndColumn(endNode);
     return Math.abs(endRow - startRow) + Math.abs(endCol - startCol);
 };
 
@@ -47,21 +47,11 @@ export const calculateManhattanDistance = (startNode: string, endNode: string): 
  * @param cellId The ID of the cell.
  * @returns An object containing the row and column of the cell.
  */
-const getRowAndColumnFromCellId = (cellId: string): { row: number; col: number } => {
+const findRowAndColumn = (cellId: string): { row: number; col: number } => {
     const numericId = parseInt(cellId);
     const row = Math.floor(numericId / COLS);
     const col = numericId % COLS;
     return { row, col };
-};
-
-/**
- * Finds the cellId of a cell given its row and column in a grid graph.
- * @param row The row of the cell.
- * @param col The col of the cell.
- * @returns An object containing the row and column of the cell.
- */
-export const getCellIdFromRowAndColumn = (row: number, col: number): string => {
-    return (row * COLS + col).toString();
 };
 
 /**

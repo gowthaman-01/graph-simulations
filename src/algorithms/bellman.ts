@@ -88,9 +88,9 @@ export const bellmanFord = (): RunResults => {
     }
 
     // Construct the path if there's no negative cycle
-    let currentNode: string | null = endNode.toString();
+    let currentNode = endNode.toString();
     const shortestPath: Node[] = [];
-    while (currentNode !== null && currentNode !== undefined) {
+    while (currentNode !== null) {
         shortestPath.unshift({ id: currentNode, weight: nodes[currentNode].weight });
         currentNode = predecessors[currentNode];
     }

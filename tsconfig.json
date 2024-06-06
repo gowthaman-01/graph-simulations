@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "outDir": "./public/",
     "sourceMap": true,
     "noImplicitAny": true,
-    "module": "CommonJS",
+    "module": "es6",
     "target": "es5",
     "allowJs": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node"
   },
   "include": [
     "./src/**/*"  ]
