@@ -1,4 +1,4 @@
-import { BLUE, MAX_WEIGHT, WHITE } from '../common/constants';
+import { BLUE, DARK_BLUE, LIGHT_GRAY, MAX_WEIGHT, WHITE } from '../common/constants';
 import { Color } from '../common/types';
 
 /**
@@ -9,11 +9,11 @@ import { Color } from '../common/types';
  * @returns {string} The interpolated color in RGB format (e.g., "rgb(255, 0, 0)").
  */
 export const getColorByWeight = (weight: number): string => {
-    // Normalize weight to a scale of 0.1 to 1
-    const normalizedWeight = (Math.abs(weight) / MAX_WEIGHT) * (1 - 0.1) + 0.1;
+    // Normalize weight to a scale of 0.01 to 1
+    const normalizedWeight = Math.min((weight / MAX_WEIGHT) * (1 - 0.01) + 0.01, 1);
 
     const startColor = WHITE;
-    const endColor = BLUE;
+    const endColor = DARK_BLUE;
 
     // Calculate intermediate color based on weight
     const r = Math.round(startColor.r + (endColor.r - startColor.r) * normalizedWeight);

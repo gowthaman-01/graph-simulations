@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     enableGraphControls();
     disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
 
+    console.log('helloe');
     // Generate graph and results from algorithms.
     let runResults = getRunResults();
 
