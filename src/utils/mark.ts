@@ -11,10 +11,10 @@ export const markCell = (
     nodeName: string,
     nodeState: NodeState,
     algorithmType: AlgorithmType,
-): HTMLElement => {
+): HTMLElement | null => {
     // Get cell HTML element.
     const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
-    if (!cell) return;
+    if (!cell) return null;
 
     unmarkCell(cell);
 

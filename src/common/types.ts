@@ -28,6 +28,13 @@ export interface GraphStructure {
     nodes: Nodes;
 }
 
+export interface GraphStorage {
+    graph: Graph;
+    nodes: Nodes;
+    startNode: number;
+    endNode: number;
+}
+
 /**
  * Represents a set of visited nodes.
  */
@@ -83,8 +90,12 @@ export enum GraphType {
     NegativeWeight = 'negative-weighted',
     Directed = 'directed',
     MazeDfs = 'maze-dfs',
-    MazeRandom = 'maze-random',
+    RandomWalls = 'random-walls',
     MazeRecursiveDivision = 'maze-recursive-division',
+    DjikstraExample = 'djikstra-example',
+    AStarExample = 'aStar-example',
+    BellmanFordExample = 'bellman-example',
+    BfsExample = 'bfs-example',
 }
 
 /**

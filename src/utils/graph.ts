@@ -1,7 +1,11 @@
-import { getCellIdFromRowAndColumn, getNodeIdFromCellElementId, randomWeight } from './general';
-import { Graph, GraphStructure, GraphType, Node, Nodes } from '../common/types';
+import { getCellIdFromRowAndColumn, randomWeight } from './general';
+import { Graph, GraphStorage, GraphStructure, GraphType, Node, Nodes } from '../common/types';
 import { GRID_SIZE, COLS, ROWS, MAX_WEIGHT } from '../common/constants';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import aStarExampleGraphs from '../examples/aStar-data.json';
+import djikstraExampleGraphs from '../examples/djikstra-data.json';
+import bellmanFordExampleGraphs from '../examples/bellmanFord-data.json';
+import bfsExampleGraphs from '../examples/bfs-data.json';
 
 /**
  * Recreates the grid graph on subsequent renders based on global variables.
@@ -16,7 +20,7 @@ export const recreateGridGraph = (): GraphStructure => {
     switch (graphType) {
         case GraphType.MazeDfs:
             return createMazeGraphUsingDfs();
-        case GraphType.MazeRandom:
+        case GraphType.RandomWalls:
             return createMazeGraphWithRandomWalls();
         case GraphType.MazeRecursiveDivision:
             return createMazeGraphUsingRecursiveDivision();
@@ -305,13 +309,13 @@ export const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
         }
     }
 
-    let startNode = generateStartNode();
-    let endNode = generateEndNode();
+    let { startNode, endNode } = generateStartAndEndNode();
+
     while (walls.has(startNode)) {
-        startNode = generateStartNode();
+        startNode = generateStartAndEndNode().startNode;
     }
     while (walls.has(endNode)) {
-        endNode = generateEndNode();
+        endNode = generateStartAndEndNode().endNode;
     }
 
     globalVariablesManager.setStartNode(startNode);
@@ -412,8 +416,32 @@ const addAdjacentNode = (
             break;
     }
 
-    if (weight !== null) {
+    if (weight !== null && weight !== undefined) {
         graph[currentId].push({ id: neighborId.toString(), weight: weight });
+    }
+};
+
+export const getExampleGraph = (graphType: GraphType) => {
+    switch (graphType) {
+        case GraphType.AStarExample:
+            return aStarExampleGraphs[
+                Math.floor(Math.random() * aStarExampleGraphs.length)
+            ] as GraphStorage;
+        case GraphType.DjikstraExample:
+            return djikstraExampleGraphs[
+                Math.floor(Math.random() * djikstraExampleGraphs.length)
+            ] as GraphStorage;
+            break;
+        case GraphType.BellmanFordExample:
+            return bellmanFordExampleGraphs[
+                Math.floor(Math.random() * bellmanFordExampleGraphs.length)
+            ] as GraphStorage;
+            break;
+        case GraphType.BfsExample:
+            return bfsExampleGraphs[
+                Math.floor(Math.random() * bellmanFordExampleGraphs.length)
+            ] as GraphStorage;
+            break;
     }
 };
 
@@ -423,7 +451,7 @@ const addAdjacentNode = (
  * @returns The node with the maximum weight.
  */
 export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
-    let maxWeightNode: Node;
+    let maxWeightNode: Node = nodes[0];
     let maxWeight = 0;
 
     for (const id in nodes) {
@@ -443,7 +471,7 @@ export const getNodeWithMaxWeight = (nodes: Nodes): Node => {
  * @returns The node with the minimum weight.
  */
 export const getNodeWithMinWeight = (nodes: Nodes): Node => {
-    let minWeightNode: Node;
+    let minWeightNode: Node = nodes[0];
     let minWeight = Number.POSITIVE_INFINITY;
 
     for (const id in nodes) {
@@ -457,14 +485,19 @@ export const getNodeWithMinWeight = (nodes: Nodes): Node => {
     return minWeightNode;
 };
 
+interface StartEndNodes {
+    startNode: number;
+    endNode: number;
+}
 /**
- * Generates a random start node index within the grid size.
- * @returns A random start node index.
+ * Generates a random start and end node indices within the grid size.
+ * @returns An object containing both start and end node indices
  */
-export const generateStartNode = () => Math.floor(Math.random() * GRID_SIZE);
-
-/**
- * Generates a random end node index within the grid size.
- * @returns A random end node index.
- */
-export const generateEndNode = () => Math.floor(Math.random() * GRID_SIZE);
+export const generateStartAndEndNode = (): StartEndNodes => {
+    const newStartNode = Math.floor(Math.random() * GRID_SIZE);
+    let newEndNode;
+    do {
+        newEndNode = Math.floor(Math.random() * GRID_SIZE);
+    } while (newStartNode === newEndNode);
+    return { startNode: newStartNode, endNode: newEndNode };
+};

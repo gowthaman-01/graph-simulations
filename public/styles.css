@@ -178,6 +178,10 @@ select {
     max-height: 40px;
 }
 
+#graphDropdown {
+    width: 75%;
+}
+
 /* Background and Borders */
 .steps-slider-container input[type="range"],
 .weight-slider-container input[type="range"],

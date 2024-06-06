@@ -29,8 +29,8 @@
                     <div class="aStar-header">
                         <p><b>A* Search</b></p>
                         <select id="aStarHeuristicTypeDropdown" class="dropdown" style="margin-top: 6px;">
-                            <option value="manhattan">Manhattan</option>
-                            <option value="euclidean">Eucledian</option>
+                            <option value="manhattan">Manhattan distance</option>
+                            <option value="euclidean">Eucledian distance</option>
                         </select>
                         <!-- <select id="aStarHeuristicInfluenceDropdown" class="dropdown" style="margin-top: 6px;">
                             <option value="balanced">Balanced influence</option>
@@ -117,10 +117,14 @@
                         <p id="graphTypeText">Graph type</p>
                         <select id="graphDropdown" class="dropdown">
                             <option value="unweighted">Unweighted</option>
-                            <option value="weighted">Weighted with no negative weights</option>
-                            <option value="maze-random">Maze &#40;Random&#41;</option>
+                            <option value="weighted">Weighted</option>
+                            <option value="random-walls">Random walls</option>
                             <option value="maze-dfs">Maze &#40;DFS&#41;</option>
                             <option value="maze-recursive-division">Maze &#40;Recursive Division&#41;</option>
+                            <option value="djikstra-example">Djikstra optimised</option>
+                            <option value="aStar-example">A* optimised</option>
+                            <option value="bellman-example">Bellman-Ford optimised</option>
+                            <option value="bfs-example">BFS optimised</option>
                             <!-- <option value="negative-weighted">Weighted with negative weights</option> -->
                         </select>
                     </div>

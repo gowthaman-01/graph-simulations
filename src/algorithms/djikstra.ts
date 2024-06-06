@@ -39,7 +39,10 @@ export const dijkstra = (): RunResults => {
 
     while (!heap.isEmpty()) {
         // Pop the node with the minimum weight and mark it as visited.
-        let [{ id: currentNode }, heapPopSteps] = heap.pop();
+        const heapPopResult = heap.pop();
+        if (heapPopResult === null) continue;
+        let [{ id: currentNode }, heapPopSteps] = heapPopResult;
+
         visited[currentNode] = true; // O(1)
 
         steps += heapPopSteps + 2;
@@ -47,9 +50,10 @@ export const dijkstra = (): RunResults => {
         // If the end node is reached.
         if (currentNode === endNode.toString()) {
             let shortestPath: Node[] = [];
-            while (currentNode !== null) {
-                shortestPath.unshift({ id: currentNode, weight: nodes[currentNode].weight });
-                currentNode = predecessors[currentNode];
+            let predecessor: string | null = currentNode;
+            while (predecessor !== null) {
+                shortestPath.unshift({ id: predecessor, weight: nodes[predecessor].weight });
+                predecessor = predecessors[predecessor];
             }
             runResults.setShortestPath(shortestPath);
             return runResults;
