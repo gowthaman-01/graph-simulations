@@ -16,7 +16,7 @@ export const recreateGridGraph = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const maxWeight = globalVariablesManager.getMaxWeight();
     const graphType = globalVariablesManager.getGraphType();
-
+  
     switch (graphType) {
         case GraphType.MazeDfs:
             return createMazeGraphUsingDfs();
@@ -91,7 +91,45 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
     return { graph, nodes };
 };
 
-const createMazeGraphUsingDfs = (): GraphStructure => {
+/**
+ * Adds an adjacent node to the graph with the specified properties.
+ * @param graph The graph structure.
+ * @param currentId The ID of the current node.
+ * @param neighborId The ID of the neighboring node.
+ * @param currentWeight The weight of the current node.
+ * @param neighborWeight The weight of the neighboring node.
+ * @param graphType The type of graph (e.g., unweighted, weighted, directed).
+ */
+const addAdjacentNode = (
+    graph: Graph,
+    currentId: number,
+    neighborId: number,
+    currentWeight: number,
+    neighborWeight: number,
+    graphType: GraphType,
+): void => {
+    let weight;
+    switch (graphType) {
+        case GraphType.Unweighted:
+            weight = 1;
+            break;
+        case GraphType.Weighted:
+            weight = Math.max(neighborWeight - currentWeight, 0);
+            break;
+        case GraphType.NegativeWeight:
+            weight = neighborWeight - currentWeight;
+            break;
+        case GraphType.Directed:
+            weight = neighborWeight - currentWeight <= 0 ? neighborWeight - currentWeight : null;
+            break;
+    }
+
+    if (weight !== null) {
+        graph[currentId].push({ id: neighborId.toString(), weight: weight });
+    }
+};
+
+const createMazeGraph = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
 
     // The maze graph's start and end nodes can be on one of each corner of the grid.
