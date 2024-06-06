@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setWeightColor = () => {
-        const weightColor = getColorByWeight(globalVariablesManager.getMaxWeight());
+        const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+
         document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
         document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
@@ -173,6 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
+                const graphType = globalVariablesManager.getGraphType();
                 // If graph is a maze, only path cells will be highlighted.
                 if (
                     (graphType === GraphType.MazeDfs ||
@@ -363,7 +365,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     weightSlider.addEventListener('input', async () => {
         globalVariablesManager.setGraphType(GraphType.Weighted);
-        globalVariablesManager.setMaxWeight(parseInt(weightSlider.value));
+        globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+
         setWeightColor();
 
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
