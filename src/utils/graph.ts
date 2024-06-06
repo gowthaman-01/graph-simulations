@@ -16,7 +16,7 @@ export const recreateGridGraph = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const maxWeight = globalVariablesManager.getMaxWeight();
     const graphType = globalVariablesManager.getGraphType();
-  
+
     switch (graphType) {
         case GraphType.MazeDfs:
             return createMazeGraphUsingDfs();
