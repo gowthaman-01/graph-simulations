@@ -1,21 +1,20 @@
 import { AlgorithmType, NodeState } from '../common/types';
 
 /**
- * Mark a node (cell) in the grid based on the specified nodeType.
+ * Mark a node (cell) in the grid based on the specified nodeState.
  *
  * @param {string} nodeName - The name of the node (cell) to mark.
- * @param {NodeType} nodeState - The state of the node. (Visted / Unvisited etc.)
+ * @param {NodeState} nodeState - The state of the node. (Visted / Unvisited etc.)
  * @param {AlgorithmType} algorithmType - The algorithm associated with the grid.
- * @param {number} opacity - Optional opacity value for the mark image.
  */
 export const markCell = (
     nodeName: string,
     nodeState: NodeState,
     algorithmType: AlgorithmType,
-): HTMLElement => {
+): HTMLElement | null => {
     // Get cell HTML element.
     const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
-    if (!cell) return;
+    if (!cell) return null;
 
     unmarkCell(cell);
 
@@ -48,7 +47,7 @@ export const setMarkImage = (mark: HTMLImageElement, nodeState: NodeState) => {
         default:
             mark.src = `./assets/${nodeState}.svg`;
             mark.style.width = '60%';
-            mark.style.opacity = '0.55';
+            mark.style.opacity = '0.7';
             break;
     }
 };

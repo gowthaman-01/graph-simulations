@@ -1,11 +1,5 @@
 import { GRID_SIZE, MAX_WEIGHT } from '../src/common/constants';
-import {
-    AStarHeuristicInfluence,
-    AStarHeuristicType,
-    AlgorithmType,
-    GraphType,
-    NodeState,
-} from '../src/common/types';
+import { AStarHeuristicType, AlgorithmType, GraphType, NodeState } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
@@ -15,7 +9,7 @@ import {
     displayShortestPath,
 } from '../src/utils/display';
 import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
-import { recreateGridGraph } from '../src/utils/graph';
+import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
 import { setMarkImage, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 
@@ -79,7 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setWeightColor = () => {
-        const weightColor = getColorByWeight(globalVariablesManager.getMaxWeight());
+        const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+
         document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
         document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
     };
@@ -179,9 +174,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
+                const graphType = globalVariablesManager.getGraphType();
                 // If graph is a maze, only path cells will be highlighted.
                 if (
-                    globalVariablesManager.getGraphType() === GraphType.Maze &&
+                    (graphType === GraphType.MazeDfs ||
+                        graphType === GraphType.MazeRandom ||
+                        graphType === GraphType.MazeRecursiveDivision) &&
                     globalVariablesManager.getGraph().nodes[i].weight === MAX_WEIGHT
                 ) {
                     continue;
@@ -258,7 +256,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     generateNewGraphButton.addEventListener('click', async () => {
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+        const graphType = graphTypeDropdown.value as GraphType;
+        const isExampleGraph =
+            graphType === GraphType.AStarExample || graphType === GraphType.DjikstraExample;
+
+        const { graph: newGraph, nodes: newNodes } = isExampleGraph
+            ? getExampleGraph(graphType)
+            : recreateGridGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
         resetGridAndRerun();
     });
@@ -277,20 +281,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         const graphType = graphTypeDropdown.value as GraphType;
         globalVariablesManager.setGraphType(graphType);
 
-        if (graphType === GraphType.Maze) {
-            globalVariablesManager.setMaxWeight(MAX_WEIGHT);
-            disableWeightSlider();
-        } else if (graphType === GraphType.Unweighted) {
-            globalVariablesManager.setMaxWeight(0);
-            disableWeightSlider();
-        } else {
-            globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-            enableWeightSlider();
+        const isExampleGraph =
+            graphType === GraphType.AStarExample || graphType === GraphType.DjikstraExample;
+
+        switch (graphType) {
+            case GraphType.MazeDfs:
+            case GraphType.MazeRandom:
+            case GraphType.MazeRecursiveDivision:
+                globalVariablesManager.setMaxWeight(MAX_WEIGHT);
+                disableWeightSlider();
+                break;
+            case GraphType.Unweighted:
+                globalVariablesManager.setMaxWeight(0);
+                disableWeightSlider();
+                break;
+            case GraphType.AStarExample:
+            case GraphType.DjikstraExample:
+                break;
+            case GraphType.Weighted:
+                globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+                enableWeightSlider();
         }
 
         setWeightColor();
+        const { graph: newGraph, nodes: newNodes } = isExampleGraph
+            ? getExampleGraph(graphType)
+            : recreateGridGraph();
 
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
 
         resetGridAndRerun();
@@ -298,7 +315,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     weightSlider.addEventListener('input', async () => {
         globalVariablesManager.setGraphType(GraphType.Weighted);
-        globalVariablesManager.setMaxWeight(parseInt(weightSlider.value));
+        globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+
         setWeightColor();
 
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();

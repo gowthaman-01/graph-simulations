@@ -34,15 +34,17 @@ export const bfs = (): RunResults => {
     while (queue.getSize() > 0) {
         // Dequeue node at the front of the queue.
         const currentNode = queue.dequeue();
+        if (!currentNode) continue;
+
         steps += 3; // getSize() and > operations are O(1) each.
 
         // Set shortest path if endNode is reached. No steps are added here.
         if (currentNode === endNode.toString()) {
             let shortestPath: Node[] = [];
-            let current = currentNode;
-            while (current !== null) {
-                shortestPath.unshift({ id: current, weight: nodes[current].weight });
-                current = predecessorsMap[current];
+            let predecessor: string | null = currentNode;
+            while (predecessor !== null) {
+                shortestPath.unshift({ id: predecessor, weight: nodes[predecessor].weight });
+                predecessor = predecessorsMap[predecessor];
             }
             runResults.setShortestPath(shortestPath);
             return runResults;

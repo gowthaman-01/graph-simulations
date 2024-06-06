@@ -42,6 +42,7 @@ export const resetGrid = (
         ) as HTMLParagraphElement;
 
         const runResult = runResults.find((r) => r.getAlgorithmType() === algorithmType);
+        if (!runResult) continue;
         weightTableElement.innerHTML = runResult.getTotalWeight().toString();
         stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
         bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
@@ -61,7 +62,7 @@ export const resetGrid = (
             const color = getColorByWeight(weight);
             cell.id = `${gridContainer.id}-cell-${i}`;
             cell.className = 'grid-cell';
-            cell.style.border = `solid 1px #59595d`;
+            cell.style.border = `solid 1px #0C3547`;
             cell.style.backgroundColor = color;
 
             const mark = document.createElement('img');
@@ -190,7 +191,7 @@ export const displayShortestPath = async (
     }
 };
 
-const getBestAlgorithm = (): AlgorithmType => {
+export const getBestAlgorithm = (): AlgorithmType => {
     let runResults = globalVariablesManager.getRunResults();
     // Get algorithms with the lowest weight (shortest path).
     const lowestWeight = Math.min(...runResults.map((runResult) => runResult.getTotalWeight()));
@@ -199,9 +200,9 @@ const getBestAlgorithm = (): AlgorithmType => {
     // Get algorithm that executes the fastest.
     const lowestStep = Math.min(...runResults.map((runResult) => runResult.getAlgorithmSteps()));
 
-    const bestAlgorithm = runResults
-        .find((runResult) => runResult.getAlgorithmSteps() === lowestStep)
-        .getAlgorithmType();
+    const bestAlgorithmRun = runResults.find(
+        (runResult) => runResult.getAlgorithmSteps() === lowestStep,
+    );
 
-    return bestAlgorithm;
+    return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.Bfs;
 };
