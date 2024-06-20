@@ -151,17 +151,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         ).toString();
 
         globalVariablesManager.setRunResults(newRunResults);
-
-        return newRunResults;
     };
 
     const resetGridAndRerun = () => {
-        runResults = getRunResults();
+        getRunResults();
         resetGrid(gridContainers, Object.values(AlgorithmType));
         resetStepsSlider();
     };
 
-    const markCellsForUserInput = (nodeState: NodeState) => {
+    const setNewStartEndNode = (nodeState: NodeState) => {
         for (const algorithmType of Object.values(AlgorithmType)) {
             for (let i = 0; i < GRID_SIZE; i++) {
                 // When the user clicks the 'Change Start Node' button, all cells will
@@ -216,60 +214,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Setup of controls and sliders on initial page load.
-    setWeightColor();
-    resetStepsSlider();
-    enableStepsSlider();
-    enableSpeedSlider();
-    enableGraphControls();
-    disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
-
-    // Generate graph and results from algorithms.
-    let runResults = getRunResults();
-
-    // Display graph.
-    resetGrid(gridContainers, Object.values(AlgorithmType));
-
-    // Event listeners
-    runButton.addEventListener('click', async () => {
-        disableGraphControls();
-        disableWeightSlider();
-        disableStepsSlider();
-        disableSpeedSlider();
-
-        // Reset grid for subsequent renders.
-        if (!globalVariablesManager.isFirstRender()) {
-            runResults = getRunResults();
-            resetGrid(gridContainers, Object.values(AlgorithmType));
-            resetStepsSlider();
-        }
-
-        globalVariablesManager.setFirstRender(false);
-
-        // Displaying simulation.
-        await displayAllRunResults(runResults, stepsSlider, stepsCount);
-
-        enableGraphControls();
-        enableWeightSlider();
-        enableStepsSlider();
-        enableSpeedSlider();
-
-        const graphType = graphTypeDropdown.value as GraphType;
-        const isExampleGraph =
-            graphType === GraphType.AStarExample ||
-            graphType === GraphType.DjikstraExample ||
-            graphType === GraphType.BellmanFordExample ||
-            graphType === GraphType.BfsExample;
-
-        if (isExampleGraph) {
-            disableStartEndNodeButton();
-        } else {
-            enableStartEndNodeButton();
-        }
-    });
-
-    generateNewGraphButton.addEventListener('click', async () => {
-        const graphType = graphTypeDropdown.value as GraphType;
+    const generateNewGraph = () => {
+        const graphType = globalVariablesManager.getGraphType();
         const isExampleGraph =
             graphType === GraphType.AStarExample ||
             graphType === GraphType.DjikstraExample ||
@@ -295,18 +241,72 @@ document.addEventListener('DOMContentLoaded', async () => {
                 globalVariablesManager.setEndNode(newEndNode);
             }
         }
+    };
 
-        resetGridAndRerun();
+    // Setup of controls and sliders on initial page load.
+    setWeightColor();
+    resetStepsSlider();
+    enableStepsSlider();
+    enableSpeedSlider();
+    enableGraphControls();
+    disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
+
+    // Generate graph and results from algorithms and display graph.
+    resetGridAndRerun();
+
+    // Event listeners
+    runButton.addEventListener('click', async () => {
+        disableGraphControls();
+        disableWeightSlider();
+        disableStepsSlider();
+        disableSpeedSlider();
+
+        // Reset grid for subsequent renders.
+        if (!globalVariablesManager.isFirstRender()) {
+            getRunResults();
+            resetGrid(gridContainers, Object.values(AlgorithmType));
+            resetStepsSlider();
+        }
+
+        globalVariablesManager.setFirstRender(false);
+
+        // Displaying simulation.
+        await displayAllRunResults(stepsSlider, stepsCount);
+
+        enableGraphControls();
+        enableWeightSlider();
+        enableStepsSlider();
+        enableSpeedSlider();
+
+        const graphType = graphTypeDropdown.value as GraphType;
+        const isExampleGraph =
+            graphType === GraphType.AStarExample ||
+            graphType === GraphType.DjikstraExample ||
+            graphType === GraphType.BellmanFordExample ||
+            graphType === GraphType.BfsExample;
+
+        if (isExampleGraph) {
+            disableStartEndNodeButton();
+        } else {
+            enableStartEndNodeButton();
+        }
+    });
+
+    generateNewGraphButton.addEventListener('click', async () => {
+        do {
+            generateNewGraph();
+            resetGridAndRerun();
+        } while (!globalVariablesManager.getEndNodeReachable());
     });
 
     changeStartNodeButton.addEventListener('click', () => {
         resetGrid(gridContainers, Object.values(AlgorithmType));
-        markCellsForUserInput(NodeState.StartNode);
+        setNewStartEndNode(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
         resetGrid(gridContainers, Object.values(AlgorithmType));
-        markCellsForUserInput(NodeState.EndNode);
+        setNewStartEndNode(NodeState.EndNode);
     });
 
     graphTypeDropdown.addEventListener('change', async () => {
@@ -333,34 +333,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         setWeightColor();
-
-        const isExampleGraph =
-            graphType === GraphType.AStarExample ||
-            graphType === GraphType.DjikstraExample ||
-            graphType === GraphType.BellmanFordExample ||
-            graphType === GraphType.BfsExample;
-
-        if (!isExampleGraph) {
-            enableStartEndNodeButton();
-            const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-            globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
-        } else {
-            disableStartEndNodeButton();
-            const exampleGraph = getExampleGraph(graphType);
-            if (exampleGraph) {
-                const {
-                    graph: newGraph,
-                    nodes: newNodes,
-                    startNode: newStartNode,
-                    endNode: newEndNode,
-                } = exampleGraph;
-                globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
-                globalVariablesManager.setStartNode(newStartNode);
-                globalVariablesManager.setEndNode(newEndNode);
-            }
-        }
-
-        resetGridAndRerun();
+        do {
+            generateNewGraph();
+            resetGridAndRerun();
+        } while (!globalVariablesManager.getEndNodeReachable());
     });
 
     weightSlider.addEventListener('input', async () => {
@@ -379,6 +355,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     stepsSlider.addEventListener('input', async () => {
         resetGrid(gridContainers, Object.values(AlgorithmType));
         stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
+
+        const runResults = globalVariablesManager.getRunResults();
 
         // Display the current step.
         runResults.forEach((runResult) => {

@@ -93,6 +93,8 @@ export default class RunResults {
         this.algorithmSteps = this.getTotalSteps();
         this.shortestPath = shortestPath;
 
+        globalVariablesManager.setEndNodeReachable(this.shortestPath.length !== 0);
+
         const blankNodeMetadataMap = this.createNodeMetadataMap(
             globalVariablesManager.getGraph().nodes,
             globalVariablesManager.getStartNode(),

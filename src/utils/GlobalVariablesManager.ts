@@ -18,6 +18,7 @@ class GlobalVariablesManager {
     private maxWeight: number;
     private stepIncrement: number;
     private firstRender: boolean;
+    private endNodeReachable: boolean;
     private aStarHeuristicType: AStarHeuristicType = AStarHeuristicType.Manhattan;
     private aStartHeuristicInfluence: AStarHeuristicInfluence = AStarHeuristicInfluence.Balanced;
 
@@ -31,6 +32,7 @@ class GlobalVariablesManager {
         this.maxWeight = 0;
         this.stepIncrement = DEFAULT_STEP_INCREMENT;
         this.firstRender = true;
+        this.endNodeReachable = false;
         this.graph = createGridGraph(0, GraphType.Unweighted); // The default graph is unweighted, with 0 max weight.
     }
 
@@ -103,6 +105,14 @@ class GlobalVariablesManager {
 
     public isFirstRender(): boolean {
         return this.firstRender;
+    }
+
+    public setEndNodeReachable(endNodeReachable: boolean): void {
+        this.endNodeReachable = endNodeReachable;
+    }
+
+    public getEndNodeReachable(): boolean {
+        return this.endNodeReachable;
     }
 
     public getAStarHeuristicType(): AStarHeuristicType {

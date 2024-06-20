@@ -44,16 +44,11 @@ export const resetGrid = (
         const runResult = runResults.find((r) => r.getAlgorithmType() === algorithmType);
         if (!runResult) continue;
 
-        const shortestPath = runResult.getShortestPath();
-
-        weightTableElement.innerHTML =
-            shortestPath.length === 0 ? 'NA' : runResult.getTotalWeight().toString();
-        stepsTableElement.innerHTML =
-            shortestPath.length === 0 ? 'NA' : runResult.getAlgorithmSteps().toString();
-        bestAlgorithmParagraphElement.innerHTML =
-            shortestPath.length === 0
-                ? 'End node unreachable. Regenerate graph or <br>change start / end nodes'
-                : `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`;
+        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
+        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
+        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
+            getBestAlgorithm(),
+        )}`;
 
         // Create grid container.
         gridContainer.innerHTML = '';
@@ -94,15 +89,14 @@ export const resetGrid = (
 
 /**
  * Displays all run results step by step.
- * @param runResultList The list of run results to display.
  * @param stepsSlider The steps slider element.
  * @param stepsCount The paragraph element displaying the current steps count.
  */
 export const displayAllRunResults = async (
-    runResultList: RunResults[],
     stepsSlider: HTMLInputElement,
     stepsCount: HTMLParagraphElement,
 ) => {
+    const runResultList = globalVariablesManager.getRunResults();
     const stepIncrement = globalVariablesManager.getStepIncrement();
 
     const maxTotalSteps = Math.max(...runResultList.map((result) => result.getTotalSteps()));
