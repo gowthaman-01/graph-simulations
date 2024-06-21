@@ -20,9 +20,6 @@ export interface Graph {
     [id: string]: Node[];
 }
 
-/**
- * Contains essential information regarding the graph.
- */
 export interface GraphStructure {
     graph: Graph;
     nodes: Nodes;
@@ -60,57 +57,6 @@ export interface Color {
 }
 
 /**
- * Enumerates different types of graph traversal algorithms.
- */
-export enum AlgorithmType {
-    Bfs = 'bfs',
-    Djikstra = 'djikstra',
-    AStar = 'aStar',
-    BellmanFord = 'bellmanFord',
-}
-
-/**
- * Enumerates different types of node state for visualization purposes. For v3.
- */
-export enum NodeState {
-    Unvisited = 'unvisited',
-    Visiting = 'visiting',
-    Exploring = 'exploring',
-    Visited = 'visited',
-    ShortestPath = 'shortest-path',
-    StartNode = 'start',
-    EndNode = 'end',
-}
-
-export enum PrimaryGraphType {
-    Standard = 'standard',
-    Maze = 'maze',
-    Ideal = 'ideal',
-}
-
-export type SecondaryGraphType = MazeType | AlgorithmType;
-
-export enum MazeType {
-    RecrusiveDivision = 'Recursive Division',
-    Dfs = 'DFS',
-    RandomWalls = 'Random walls',
-}
-
-/**
- * Enumerates different types of graph structures.
- */
-export enum GraphType {
-    Standard,
-    Dfs,
-    RandomWalls,
-    RecursiveDivision,
-    IdealBfs,
-    IdealDjikstra,
-    IdealBellmanFord,
-    IdealAStar,
-}
-
-/**
  * Metadata associated with a node in the graph.
  */
 export interface NodeMetadata {
@@ -142,13 +88,49 @@ export interface NewNodeState {
     newState: NodeState;
 }
 
+export enum AlgorithmType {
+    Bfs = 'bfs',
+    Dijkstra = 'dijkstra',
+    AStar = 'aStar',
+    BellmanFord = 'bellmanFord',
+}
+
+export enum NodeState {
+    Unvisited = 'unvisited',
+    Visiting = 'visiting',
+    Exploring = 'exploring',
+    Visited = 'visited',
+    ShortestPath = 'shortest-path',
+    StartNode = 'start',
+    EndNode = 'end',
+}
+
+export enum PrimaryGraphType {
+    Standard = 'standard',
+    Maze = 'maze',
+    Ideal = 'ideal',
+}
+
+export enum MazeType {
+    RecrusiveDivision = 'Recursive Division',
+    Dfs = 'DFS',
+    RandomWalls = 'Random walls',
+}
+
+export enum GraphType {
+    Standard,
+    Dfs,
+    RandomWalls,
+    RecursiveDivision,
+    IdealBfs,
+    IdealDijkstra,
+    IdealBellmanFord,
+    IdealAStar,
+}
+
 export enum AStarHeuristicType {
     Manhattan = 'manhattan',
     Euclidean = 'eucledian',
 }
 
-export enum AStarHeuristicInfluence {
-    Strong = 'strong',
-    Balanced = 'balanced',
-    Mild = 'mild',
-}
+export type SecondaryGraphType = MazeType | AlgorithmType;

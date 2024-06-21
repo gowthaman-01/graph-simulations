@@ -1,13 +1,12 @@
 import { DEFAULT_STEP_INCREMENT } from '../common/constants';
-import {
-    AStarHeuristicInfluence,
-    AStarHeuristicType,
-    GraphStructure,
-    GraphType,
-} from '../common/types';
+import { AStarHeuristicType, GraphStructure, GraphType } from '../common/types';
 import RunResults from './RunResults';
 import { createGridGraph, generateStartAndEndNode } from './graph';
 
+/**
+ * Manages global variables for the graph and algorithm settings.
+ * Implements a singleton pattern to ensure a single instance.
+ */
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;
     private graph: GraphStructure;
@@ -20,11 +19,10 @@ class GlobalVariablesManager {
     private stepIncrement: number;
     private firstRender: boolean;
     private endNodeReachable: boolean;
-    private aStarHeuristicType: AStarHeuristicType = AStarHeuristicType.Manhattan;
-    private aStartHeuristicInfluence: AStarHeuristicInfluence = AStarHeuristicInfluence.Balanced;
+    private aStarHeuristicType: AStarHeuristicType;
 
     private constructor() {
-        // Initialize default values
+        this.graph = createGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
         this.runResults = [];
         const { startNode, endNode } = generateStartAndEndNode();
         this.startNode = startNode;
@@ -35,7 +33,7 @@ class GlobalVariablesManager {
         this.stepIncrement = DEFAULT_STEP_INCREMENT;
         this.firstRender = true;
         this.endNodeReachable = false;
-        this.graph = createGridGraph(0, this.isWeighted); // The default graph is unweighted, with 0 max weight.
+        this.aStarHeuristicType = AStarHeuristicType.Manhattan;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -121,7 +119,7 @@ class GlobalVariablesManager {
         this.endNodeReachable = endNodeReachable;
     }
 
-    public getEndNodeReachable(): boolean {
+    public isEndNodeReachable(): boolean {
         return this.endNodeReachable;
     }
 
@@ -133,18 +131,10 @@ class GlobalVariablesManager {
         this.aStarHeuristicType = newType;
     }
 
-    public getAStartHeuristicInfluence(): AStarHeuristicInfluence {
-        return this.aStartHeuristicInfluence;
-    }
-
-    public setAStartHeuristicInfluence(newInfluence: AStarHeuristicInfluence) {
-        this.aStartHeuristicInfluence = newInfluence;
-    }
-
     public isExampleGraph() {
         return (
             this.graphType === GraphType.IdealAStar ||
-            this.graphType === GraphType.IdealDjikstra ||
+            this.graphType === GraphType.IdealDijkstra ||
             this.graphType === GraphType.IdealBellmanFord ||
             this.graphType === GraphType.IdealBfs
         );
@@ -159,6 +149,10 @@ class GlobalVariablesManager {
     }
 }
 
+/**
+ * Returns the singleton instance of the GlobalVariablesManager.
+ * @returns {GlobalVariablesManager} The singleton instance.
+ */
 export const getGlobalVariablesManagerInstance = (): GlobalVariablesManager => {
     return GlobalVariablesManager.getInstance();
 };

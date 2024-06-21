@@ -1,6 +1,5 @@
 import { GRID_SIZE } from '../common/constants';
 import {
-    AStarHeuristicInfluence,
     AStarHeuristicType,
     AlgorithmType,
     HeapNode,
@@ -14,16 +13,6 @@ import RunResults from '../utils/RunResults';
 import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
-const calculateHeuristicInfluence = (aStarHeuristicInfluence: AStarHeuristicInfluence) => {
-    switch (aStarHeuristicInfluence) {
-        case AStarHeuristicInfluence.Strong:
-            return 2;
-        case AStarHeuristicInfluence.Balanced:
-            return 1.5;
-        case AStarHeuristicInfluence.Mild:
-            return 1.2;
-    }
-};
 
 /**
  * Finds the shortest path using Dijkstra's algorithm from startNode to endNode in the given graph.

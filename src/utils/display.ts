@@ -2,21 +2,22 @@ import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
 import { AlgorithmType, Nodes, Node, StepMetadata, NodeState } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
-import { markCell } from './mark';
+import { createMark, markCell } from './mark';
 import RunResults from './RunResults';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getBestAlgorithm } from './run';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Displays an empty grid graph for the given algorithms.
- * @param gridContainers The collection of grid containers to display the graphs in.
- * @param algorithms The list of algorithms whose grid graphs need to be cleared.
+ * Displays an empty grid graph for the given algorithms, and updates the statistics table.
+ * @param {HTMLCollectionOf<HTMLDivElement>} gridContainers - The collection of grid containers to display the graphs in.
+ * @param {AlgorithmType[]} algorithms - The list of algorithms whose grid graphs need to be cleared.
  */
-export const resetGrid = (
+export const resetGridAndStatisticTable = (
     gridContainers: HTMLCollectionOf<HTMLDivElement>,
     algorithms: AlgorithmType[],
-) => {
+): void => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
@@ -25,35 +26,10 @@ export const resetGrid = (
     for (const gridContainer of Array.from(gridContainers)) {
         const algorithmType: AlgorithmType = gridContainer.id as AlgorithmType;
 
-        // If algorithmType not the list of algorithms to be cleared.
+        // If algorithmType not the list of algorithms to be cleared, we skip it.
         if (!algorithms.includes(algorithmType)) {
             continue;
         }
-
-        // Reset statistics table.
-        const weightTableElement = document.getElementById(
-            `${algorithmType}-weight`,
-        ) as HTMLTableCellElement;
-        const stepsTableElement = document.getElementById(
-            `${algorithmType}-steps`,
-        ) as HTMLTableCellElement;
-        const nodesTableElement = document.getElementById(
-            `${algorithmType}-nodes`,
-        ) as HTMLTableCellElement;
-        const bestAlgorithmParagraphElement = document.getElementById(
-            'best-algorithm',
-        ) as HTMLParagraphElement;
-
-        const runResult = runResults.find((r) => r.getAlgorithmType() === algorithmType);
-        if (!runResult) continue;
-
-        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
-        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
-        nodesTableElement.innerHTML = runResult.getShortestPath().length.toString();
-
-        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
-            getBestAlgorithm(),
-        )}`;
 
         // Create grid container.
         gridContainer.innerHTML = '';
@@ -71,24 +47,42 @@ export const resetGrid = (
             cell.style.border = `solid 1px #0C3547`;
             cell.style.backgroundColor = color;
 
-            const mark = document.createElement('img');
-            mark.style.width = '90%';
-            mark.classList.add('mark');
-
-            if (i == startNode) {
-                mark.id = `${algorithmType}-cell-${i}-${NodeState.StartNode}`;
-                mark.src = `./assets/start.png`;
-            } else if (i == endNode) {
-                mark.id = `${algorithmType}-cell-${i}-mark-${NodeState.EndNode}`;
-                mark.src = `./assets/end.png`;
-            }
-
+            // Mark the start and end nodes with the appropriate image.
             if (i == startNode || i == endNode) {
+                const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
+                const mark = createMark(algorithmType, i.toString(), nodeState);
                 cell.appendChild(mark);
             }
 
             gridContainer.appendChild(cell);
         }
+
+        // Update statistics table.
+        const weightTableElement = document.getElementById(
+            `${algorithmType}-weight`,
+        ) as HTMLTableCellElement;
+        const stepsTableElement = document.getElementById(
+            `${algorithmType}-steps`,
+        ) as HTMLTableCellElement;
+        const nodesTableElement = document.getElementById(
+            `${algorithmType}-nodes`,
+        ) as HTMLTableCellElement;
+        const bestAlgorithmParagraphElement = document.getElementById(
+            'best-algorithm',
+        ) as HTMLParagraphElement;
+
+        const runResult = runResults.find(
+            (runResult) => runResult.getAlgorithmType() === algorithmType,
+        );
+        if (!runResult) continue;
+
+        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
+        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
+        // Number of nodes in the shortest path is equal to its length.
+        nodesTableElement.innerHTML = runResult.getShortestPath().length.toString();
+        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
+            getBestAlgorithm(),
+        )}`;
     }
 };
 
@@ -100,14 +94,16 @@ export const resetGrid = (
 export const displayAllRunResults = async (
     stepsSlider: HTMLInputElement,
     stepsCount: HTMLParagraphElement,
-) => {
+): Promise<void> => {
     const runResultList = globalVariablesManager.getRunResults();
     const stepIncrement = globalVariablesManager.getStepIncrement();
 
-    const maxTotalSteps = Math.max(...runResultList.map((result) => result.getTotalSteps()));
+    // maxAlgorithmSteps represent the number of steps that the algorithm took to run, excluding the steps that display the shortest path.
+    const maxTotalSteps = Math.max(...runResultList.map((result) => result.getLatestTotalSteps()));
     const maxAlgorithmSteps = Math.max(
         ...runResultList.map((result) => result.getAlgorithmSteps()),
     );
+
     let step = parseInt(stepsSlider.value);
     stepsSlider.max = maxAlgorithmSteps.toString();
 
@@ -115,7 +111,7 @@ export const displayAllRunResults = async (
     while (step <= maxTotalSteps) {
         for (const runResult of runResultList) {
             if (runResult.isDisplayComplete()) continue;
-            if (step >= runResult.getTotalSteps()) {
+            if (step >= runResult.getLatestTotalSteps()) {
                 runResult.setDisplayComplete();
                 continue;
             }
@@ -123,18 +119,19 @@ export const displayAllRunResults = async (
         }
 
         step += stepIncrement;
-        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
         stepsSlider.value = step.toString();
+        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
+
         await delay(DEFAULT_DELAY);
     }
 };
 
 /**
  * Displays a single step of the algorithm visualization.
- * @param step The step number to display.
- * @param runResult The run result object.
+ * @param {number} step - The step number to display.
+ * @param {RunResults} runResult - The run result object.
  */
-export const displayStep = (step: number, runResult: RunResults) => {
+export const displayStep = (step: number, runResult: RunResults): void => {
     const currentStep = findNearestStep(runResult.getStepMetadataList(), step);
     Object.values(currentStep.nodeMetaDataMap).forEach((nodeMetaData) => {
         markCell(nodeMetaData.id, nodeMetaData.state, runResult.getAlgorithmType());
@@ -143,11 +140,11 @@ export const displayStep = (step: number, runResult: RunResults) => {
 
 /**
  * Finds the nearest step metadata to the provided step number.
- * @param stepMetadataList The list of step metadata.
- * @param currentStep The current step number.
- * @returns The nearest step metadata to the current step.
+ * @param {StepMetadata[]} stepMetadataList - The list of step metadata.
+ * @param {number} currentStep - The current step number.
+ * @returns {StepMetadata} The nearest step metadata to the current step.
  */
-const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number) => {
+const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number): StepMetadata => {
     let start = 0;
     let end = stepMetadataList.length - 1;
     let nearestStep = stepMetadataList[0];
@@ -170,44 +167,24 @@ const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number) 
 
 /**
  * Displays the shortest path of the algorithm.
- * @param gridContainers The collection of grid containers to display the grid in.
- * @param nodes The collection of nodes.
- * @param startNode The index of the starting node.
- * @param endNode The index of the ending node.
- * @param shortestPath The nodes in the shortest path.
- * @param algorithmType The algorithm type to display the shortest path.
- * @param stepIncrement The step increment for visualization.
+ * @param {HTMLCollectionOf<HTMLDivElement>} gridContainers - The collection of grid containers to display the grid in.
+ * @param {Node[]} shortestPath - The nodes in the shortest path.
+ * @param {AlgorithmType} algorithmType - The algorithm type to display the shortest path.
  */
 export const displayShortestPath = async (
     gridContainers: HTMLCollectionOf<HTMLDivElement>,
     shortestPath: Node[],
     algorithmType: AlgorithmType,
-) => {
-    const stepIncrement = globalVariablesManager.getStepIncrement();
+): Promise<void> => {
+    // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
+    resetGridAndStatisticTable(gridContainers, [algorithmType]);
 
-    resetGrid(gridContainers, [algorithmType]);
     for (let i = 0; i < shortestPath.length; i++) {
         const node = shortestPath[i];
         // Mark every shortest path node except the start and the end.
         if (i !== 0 && i !== shortestPath.length - 1) {
             markCell(node.id, NodeState.ShortestPath, algorithmType);
-            await delay(stepIncrement);
+            await delay(DEFAULT_DELAY * 3);
         }
     }
-};
-
-export const getBestAlgorithm = (): AlgorithmType => {
-    let runResults = globalVariablesManager.getRunResults();
-    // Get algorithms with the lowest weight (shortest path).
-    const lowestWeight = Math.min(...runResults.map((runResult) => runResult.getTotalWeight()));
-    runResults = runResults.filter((runResult) => runResult.getTotalWeight() === lowestWeight);
-
-    // Get algorithm that executes the fastest.
-    const lowestStep = Math.min(...runResults.map((runResult) => runResult.getAlgorithmSteps()));
-
-    const bestAlgorithmRun = runResults.find(
-        (runResult) => runResult.getAlgorithmSteps() === lowestStep,
-    );
-
-    return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.Bfs;
 };

@@ -3,7 +3,7 @@ import { Graph, GraphStorage, GraphStructure, GraphType, Node, Nodes } from '../
 import { GRID_SIZE, COLS, ROWS, MAX_WEIGHT } from '../common/constants';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import aStarExampleGraphs from '../examples/aStar-data.json';
-import djikstraExampleGraphs from '../examples/djikstra-data.json';
+import dijkstraExampleGraphs from '../examples/dijkstra-data.json';
 import bellmanFordExampleGraphs from '../examples/bellmanFord-data.json';
 import bfsExampleGraphs from '../examples/bfs-data.json';
 
@@ -509,9 +509,9 @@ export const getExampleGraph = (graphType: GraphType) => {
             return aStarExampleGraphs[
                 Math.floor(Math.random() * aStarExampleGraphs.length)
             ] as GraphStorage;
-        case GraphType.IdealDjikstra:
-            return djikstraExampleGraphs[
-                Math.floor(Math.random() * djikstraExampleGraphs.length)
+        case GraphType.IdealDijkstra:
+            return dijkstraExampleGraphs[
+                Math.floor(Math.random() * dijkstraExampleGraphs.length)
             ] as GraphStorage;
             break;
         case GraphType.IdealBellmanFord:

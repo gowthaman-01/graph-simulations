@@ -11,7 +11,7 @@ import {
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
-    resetGrid,
+    resetGridAndStatisticTable,
     displayAllRunResults,
     displayStep,
     displayShortestPath,
@@ -22,7 +22,7 @@ import {
     getNodeIdFromCellElementId,
 } from '../src/utils/general';
 import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
-import { setMarkImage, unmarkCell } from '../src/utils/mark';
+import { createMark, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 
 // Script that runs when DOM is loaded.
@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
-    // const aStarHeuristicInfluenceDropdown = document.getElementById(
-    //     'aStarHeuristicInfluenceDropdown',
-    // ) as HTMLInputElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
@@ -83,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const globalVariablesManager = getGlobalVariablesManagerInstance();
 
-    // Helper functions
     const setWeightColor = () => {
         const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
         document.documentElement.style.setProperty('--weight-color', weightColor);
@@ -107,14 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         weightSlider.style.display = 'block';
     };
 
-    const hideWeightControls = () => {
-        weightControls.style.display = 'none';
-    };
-
-    const showWeightControls = () => {
-        weightControls.style.display = 'block';
-    };
-
     const disableWeightControls = () => {
         weightCheckbox.disabled = true;
         weightSwitch.style.cursor = 'not-allowed';
@@ -125,6 +113,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         weightCheckbox.disabled = false;
         weightSwitch.style.cursor = 'pointer';
         enableWeightSlider();
+    };
+
+    const hideWeightControls = () => {
+        weightControls.style.display = 'none';
+    };
+
+    const showWeightControls = () => {
+        weightControls.style.display = 'block';
     };
 
     const disableGraphControls = () => {
@@ -199,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             runAlgorithm(algorithmType),
         );
 
-        // Set the slider's max value to be the maximum steps from all algorithms executed.
+        // Set the slider's max value to the maximum steps from all algorithms executed.
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
@@ -209,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const resetGridAndRerun = () => {
         getRunResults();
-        resetGrid(gridContainers, Object.values(AlgorithmType));
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
         resetStepsSlider();
     };
 
@@ -226,12 +222,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
-                const graphType = globalVariablesManager.getGraphType();
                 // If graph is a maze, only path cells will be highlighted.
                 if (
-                    (graphType === GraphType.Dfs ||
-                        graphType === GraphType.RandomWalls ||
-                        graphType === GraphType.RecursiveDivision) &&
+                    globalVariablesManager.isMazeGraph() &&
                     !(globalVariablesManager.getGraph().nodes[i].weight === 1)
                 ) {
                     continue;
@@ -243,14 +236,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 unmarkCell(cell);
 
                 // Set mark based on nodeState.
-                const mark = document.createElement('img');
-                mark.id = `${algorithmType}-cell-${i}-${nodeState}`;
-                setMarkImage(mark, nodeState);
+                const mark = createMark(algorithmType, i.toString(), nodeState);
 
                 // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
                 mark.style.opacity = `0.2`;
-
-                mark.classList.add('mark');
                 mark.classList.add('mark-hover');
 
                 cell.appendChild(mark);
@@ -274,6 +263,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideWeightControls();
             // Generating new start and end nodes for example graphs is not allowed.
             disableStartEndNodeButton();
+
             const exampleGraph = getExampleGraph(globalVariablesManager.getGraphType());
             if (exampleGraph) {
                 const {
@@ -289,6 +279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Other types of graphs.
         showWeightControls();
         enableStartEndNodeButton();
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
@@ -296,18 +287,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const generateNewGraphWithReachableEndNode = () => {
+        // Generates new graphs until one where the end node is reachable from the start node is obtained.
         do {
             generateNewGraph();
             resetGridAndRerun();
-        } while (!globalVariablesManager.getEndNodeReachable());
+        } while (!globalVariablesManager.isEndNodeReachable());
     };
 
     const setSecondaryGraphDropdown = (primaryGraphType: PrimaryGraphType) => {
-        // Reset dropdown
+        // Reset dropdown.
         secondaryGraphTypeDropdown.options.length = 0;
 
         switch (primaryGraphType) {
             case PrimaryGraphType.Standard:
+                // There is no secondary graph type for standard graphs.
                 disableSecondaryGraphTypeDropdown();
                 break;
             case PrimaryGraphType.Maze:
@@ -335,19 +328,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Setup of controls and sliders on initial page load.
+    // Setup of controls on initial page load.
     hideWeightSlider();
     resetStepsSlider();
     enableStepsSlider();
     enableSpeedSlider();
     enableGraphControls();
-    disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
+    disableWeightSlider(); // Weight slider disabled for the default standard unweighted graph type.
     disableSecondaryGraphTypeDropdown(); // Secondary graph type dropdown disabled for default standard graph type.
 
     // Generate graph and run results.
     resetGridAndRerun();
 
-    // Event listeners
+    // Add event listeners
     runButton.addEventListener('click', async () => {
         // These controls are disabled when the simulations are running.
         disableGraphControls();
@@ -362,7 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         globalVariablesManager.setFirstRender(false);
 
-        // Displaying simulation.
+        // Display simulation.
         await displayAllRunResults(stepsSlider, stepsCount);
 
         // Enable controls once simulations are completed.
@@ -384,35 +377,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     changeStartNodeButton.addEventListener('click', () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
         setNewStartEndNode(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
         setNewStartEndNode(NodeState.EndNode);
     });
 
     primaryGraphTypeDropdown.addEventListener('change', async () => {
         const primaryGraphType = primaryGraphTypeDropdown.value as PrimaryGraphType;
         const weighted = weightCheckbox.checked;
+        const newMaxWeight = weighted ? getMaxWeight(weightSlider.value) : 0;
+        globalVariablesManager.setMaxWeight(newMaxWeight);
+
         let graphType = GraphType.Standard;
 
         switch (primaryGraphType) {
-            case PrimaryGraphType.Standard:
-                if (weighted) {
-                    globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-                } else {
-                    globalVariablesManager.setMaxWeight(0);
-                }
-                break;
             case PrimaryGraphType.Maze:
                 graphType = GraphType.RecursiveDivision;
-                if (weighted) {
-                    globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-                } else {
-                    globalVariablesManager.setMaxWeight(MAX_WEIGHT);
-                }
                 break;
             case PrimaryGraphType.Ideal:
                 graphType = GraphType.IdealBfs;
@@ -421,21 +403,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
         }
 
-        globalVariablesManager.setGraphType(graphType);
-        setSecondaryGraphDropdown(primaryGraphType);
-
         // We hide the weight slider for Maze graphs.
         if (globalVariablesManager.isMazeGraph()) {
             hideWeightSlider();
-            setWeightColor();
+        } else {
+            showWeightSlider();
         }
+        setWeightColor();
 
+        globalVariablesManager.setGraphType(graphType);
+        setSecondaryGraphDropdown(primaryGraphType);
         generateNewGraphWithReachableEndNode();
     });
 
     secondaryGraphTypeDropdown.addEventListener('change', async () => {
         const secondaryGraphType = secondaryGraphTypeDropdown.value as SecondaryGraphType;
         let newGraphType: GraphType = GraphType.Standard;
+
         switch (secondaryGraphType) {
             case MazeType.Dfs:
                 newGraphType = GraphType.Dfs;
@@ -452,8 +436,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             case AlgorithmType.BellmanFord:
                 newGraphType = GraphType.IdealBellmanFord;
                 break;
-            case AlgorithmType.Djikstra:
-                newGraphType = GraphType.IdealDjikstra;
+            case AlgorithmType.Dijkstra:
+                newGraphType = GraphType.IdealDijkstra;
                 break;
             case AlgorithmType.Bfs:
                 newGraphType = GraphType.IdealBfs;
@@ -461,27 +445,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             default:
                 break;
         }
-        console.log(secondaryGraphType, newGraphType);
+
         globalVariablesManager.setGraphType(newGraphType);
         generateNewGraphWithReachableEndNode();
     });
 
     weightCheckbox.addEventListener('change', () => {
-        if (weightCheckbox.checked) {
+        const isWeighted = weightCheckbox.checked;
+        globalVariablesManager.setIsWeighted(isWeighted);
+        globalVariablesManager.setMaxWeight(isWeighted ? getMaxWeight(weightSlider.value) : 0);
+
+        if (isWeighted) {
             enableWeightSlider();
             // We don't show the weight slider for maze graphs.
             if (!globalVariablesManager.isMazeGraph()) {
                 showWeightSlider();
-                setWeightColor();
             }
-            globalVariablesManager.setIsWeighted(true);
-            globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
         } else {
             disableWeightSlider();
             hideWeightSlider();
-            globalVariablesManager.setIsWeighted(false);
-            globalVariablesManager.setMaxWeight(0);
         }
+        setWeightColor();
 
         generateNewGraphWithReachableEndNode();
     });
@@ -492,8 +476,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     stepsSlider.addEventListener('input', async () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
-        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+        stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
 
         const runResults = globalVariablesManager.getRunResults();
 
@@ -502,15 +486,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             displayStep(parseInt(stepsSlider.value), runResult);
         });
 
-        // When slider reaches the maximum value (extreme right).
+        // When slider reaches the maximum value.
         if (stepsSlider.value === stepsSlider.max) {
             const maxStepsOfAllAlgorithms = Math.max(
-                ...runResults.map((result) => result.getTotalSteps()),
+                ...runResults.map((result) => result.getLatestTotalSteps()),
             );
             runResults.forEach((runResult) => {
                 // Show the shortest path for the slowest algorithm.
                 // Shortest paths for other algorithms are displayed as part of the run results.
-                if (runResult.getTotalSteps() === maxStepsOfAllAlgorithms) {
+                if (runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
                     displayShortestPath(
                         gridContainers,
                         runResult.getShortestPath(),
@@ -529,7 +513,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     aStarHeuristicTypeDropDown.addEventListener('change', async () => {
         const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
         globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
-
         resetGridAndRerun();
     });
 });

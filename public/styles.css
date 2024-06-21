@@ -37,7 +37,21 @@ select {
     font-size: 16px;
 }
 
-/* Layout and Structure */
+table {
+    font-family: arial, sans-serif;
+    color: #666;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+  border: 1px solid #d3d3d3;
+  text-align: center;
+  padding: 10px;
+  width: 70px;
+}
+
 .grid-containers { 
     display: flex;
     gap: 50px;
@@ -289,19 +303,4 @@ select {
 
 .mark-hover:hover {
     opacity: 1;
-}
-
-table {
-    font-family: arial, sans-serif;
-    color: #666;
-    font-size: 16px;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-  border: 1px solid #d3d3d3;
-  text-align: center;
-  padding: 10px;
-  width: 70px;
 }

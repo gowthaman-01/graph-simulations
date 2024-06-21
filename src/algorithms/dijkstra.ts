@@ -17,7 +17,7 @@ export const dijkstra = (): RunResults => {
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
 
-    const runResults = new RunResults(AlgorithmType.Djikstra);
+    const runResults = new RunResults(AlgorithmType.Dijkstra);
     // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
 
