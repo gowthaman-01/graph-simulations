@@ -47,6 +47,14 @@ export const dijkstra = (): RunResults => {
 
         steps += heapPopSteps + 2;
 
+        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+            const newNodeState: NewNodeState = {
+                id: currentNode,
+                newState: NodeState.Visiting,
+            };
+            runResults.addStep(steps, [newNodeState]);
+        }
+
         // If the end node is reached.
         if (currentNode === endNode.toString()) {
             let shortestPath: Node[] = [];
@@ -76,7 +84,7 @@ export const dijkstra = (): RunResults => {
                 if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
                     const newNodeState: NewNodeState = {
                         id: neighbor.id,
-                        newState: NodeState.Visiting,
+                        newState: NodeState.Exploring,
                     };
                     runResults.addStep(steps, [newNodeState]);
                 }

@@ -35,7 +35,13 @@ export const bfs = (): RunResults => {
         // Dequeue node at the front of the queue.
         const currentNode = queue.dequeue();
         if (!currentNode) continue;
-
+        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+            const newNodeState: NewNodeState = {
+                id: currentNode,
+                newState: NodeState.Visiting,
+            };
+            runResults.addStep(steps, [newNodeState]);
+        }
         steps += 3; // getSize() and > operations are O(1) each.
 
         // Set shortest path if endNode is reached. No steps are added here.
@@ -65,7 +71,7 @@ export const bfs = (): RunResults => {
             if (neighbor.id !== startNode.toString() && neighbor.id !== endNode.toString()) {
                 const newNodeState: NewNodeState = {
                     id: neighbor.id,
-                    newState: NodeState.Visiting,
+                    newState: NodeState.Exploring,
                 };
                 runResults.addStep(steps, [newNodeState]);
             }

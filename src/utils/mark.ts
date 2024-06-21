@@ -1,4 +1,6 @@
 import { AlgorithmType, NodeState } from '../common/types';
+import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getColorByWeight } from './color';
 
 /**
  * Mark a node (cell) in the grid based on the specified nodeState.
@@ -21,10 +23,23 @@ export const markCell = (
     // Set mark based on nodeState.
     const mark = document.createElement('img');
     mark.id = `${algorithmType}-cell-${nodeName}-${nodeState}`;
-    setMarkImage(mark, nodeState);
 
+    const nodes = getGlobalVariablesManagerInstance().getGraph().nodes;
+    const weight = nodes[nodeName].weight;
+
+    if (nodeState === NodeState.Visiting) {
+        // Cells currently being explored will be highlighted yellow.
+        cell.style.background = '#f8f87c';
+    } else {
+        // Set cell background back to original color.
+        cell.style.backgroundColor = getColorByWeight(weight);
+    }
+
+    // Mark cell image.
+    setMarkImage(mark, nodeState);
     mark.classList.add('mark');
     cell.appendChild(mark);
+
     return cell;
 };
 
@@ -33,7 +48,6 @@ export const markCell = (
  *
  * @param {HTMLImageElement} mark - The cell <img> element to mark.
  * @param {NodeState} nodeState - The state of the node. (Visted / Unvisited etc.)
- * @param {number} opacity - Optional opacity value for the mark image.
  */
 export const setMarkImage = (mark: HTMLImageElement, nodeState: NodeState) => {
     switch (nodeState) {

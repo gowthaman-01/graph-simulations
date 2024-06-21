@@ -75,6 +75,7 @@ export enum AlgorithmType {
 export enum NodeState {
     Unvisited = 'unvisited',
     Visiting = 'visiting',
+    Exploring = 'exploring',
     Visited = 'visited',
     ShortestPath = 'shortest-path',
     StartNode = 'start',

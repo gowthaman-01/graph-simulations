@@ -19,13 +19,13 @@ export const DEFAULT_STEP_INCREMENT = 20;
  * Number of rows in the grid.
  * @type {number}
  */
-export const ROWS = 18;
+export const ROWS = 20;
 
 /**
  * Number of columns in the grid.
  * @type {number}
  */
-export const COLS = 18;
+export const COLS = 20;
 
 /**
  * Total number of cells in the grid.
