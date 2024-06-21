@@ -81,21 +81,32 @@ export enum NodeState {
     EndNode = 'end',
 }
 
+export enum PrimaryGraphType {
+    Standard = 'standard',
+    Maze = 'maze',
+    Ideal = 'ideal',
+}
+
+export type SecondaryGraphType = MazeType | AlgorithmType;
+
+export enum MazeType {
+    RecrusiveDivision = 'Recursive Division',
+    Dfs = 'DFS',
+    RandomWalls = 'Random walls',
+}
+
 /**
  * Enumerates different types of graph structures.
  */
 export enum GraphType {
-    Unweighted = 'unweighted',
-    Weighted = 'weighted',
-    NegativeWeight = 'negative-weighted',
-    Directed = 'directed',
-    MazeDfs = 'maze-dfs',
-    RandomWalls = 'random-walls',
-    MazeRecursiveDivision = 'maze-recursive-division',
-    DjikstraExample = 'djikstra-example',
-    AStarExample = 'aStar-example',
-    BellmanFordExample = 'bellman-example',
-    BfsExample = 'bfs-example',
+    Standard,
+    Dfs,
+    RandomWalls,
+    RecursiveDivision,
+    IdealBfs,
+    IdealDjikstra,
+    IdealBellmanFord,
+    IdealAStar,
 }
 
 /**

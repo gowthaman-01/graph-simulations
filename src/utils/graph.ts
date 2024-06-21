@@ -16,16 +16,17 @@ export const recreateGridGraph = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const maxWeight = globalVariablesManager.getMaxWeight();
     const graphType = globalVariablesManager.getGraphType();
+    const isWeighted = globalVariablesManager.getIsWeighted();
 
     switch (graphType) {
-        case GraphType.MazeDfs:
+        case GraphType.Dfs:
             return createMazeGraphUsingDfs();
         case GraphType.RandomWalls:
             return createMazeGraphWithRandomWalls();
-        case GraphType.MazeRecursiveDivision:
+        case GraphType.RecursiveDivision:
             return createMazeGraphUsingRecursiveDivision();
         default:
-            return createGridGraph(maxWeight, graphType);
+            return createGridGraph(maxWeight, isWeighted);
     }
 };
 
@@ -34,7 +35,7 @@ export const recreateGridGraph = (): GraphStructure => {
  *
  * @returns {GraphStructure} The created grid graph as well as the collection of nodes.
  */
-export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphStructure => {
+export const createGridGraph = (maxWeight: number, isWeighted: boolean): GraphStructure => {
     const graph: Graph = {};
     const nodes: Nodes = {};
 
@@ -55,7 +56,7 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
         const right = (i + 1) % COLS !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
         if (up >= 0)
-            addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, graphType);
+            addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, isWeighted);
 
         if (down < GRID_SIZE)
             addAdjacentNode(
@@ -64,7 +65,7 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
                 down,
                 currentWeight,
                 nodes[down.toString()].weight,
-                graphType,
+                isWeighted,
             );
 
         if (left !== -1)
@@ -74,7 +75,7 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
                 left,
                 currentWeight,
                 nodes[left.toString()].weight,
-                graphType,
+                isWeighted,
             );
 
         if (right !== -1)
@@ -84,7 +85,7 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
                 right,
                 currentWeight,
                 nodes[right.toString()].weight,
-                graphType,
+                isWeighted,
             );
     }
 
@@ -93,26 +94,14 @@ export const createGridGraph = (maxWeight: number, graphType: GraphType): GraphS
 
 const createMazeGraphUsingDfs = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const isWeighted = globalVariablesManager.getIsWeighted();
 
-    // The maze graph's start and end nodes can be on one of each corner of the grid.
-    const possibleMazeGraphStartEndIndices = [
-        0, // Top left
-        COLS - 1, // Top right
-        (ROWS - 1) * COLS, // Bottom left
-        GRID_SIZE - 1, // Bottom right
-    ];
-
-    const startNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    let endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    // Ensure startNode and endNode are different.
-    while (startNode === endNode) {
-        endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    }
+    const { startNode, endNode } = generateStartAndEndNodeForMazeGraph();
 
     globalVariablesManager.setStartNode(startNode);
     globalVariablesManager.setEndNode(endNode);
 
-    const { graph, nodes } = createGridGraph(0, GraphType.Unweighted);
+    const { graph, nodes } = createGridGraph(0, false);
 
     let endNodeReached = false;
     const visited = new Set<number>();
@@ -155,13 +144,20 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
         // We mark nodes that are not in the final DFS path with the max weight.
         if (!finalPath.has(i)) {
             nodes[i] = { id: i.toString(), weight: wallWeight };
-            continue;
+            // If maze is not weighted, the nodes that are not in the final DFS path will not be added to the graph.
+            if (!isWeighted) {
+                continue;
+            }
+        } else {
+            // We add the neighbors of nodes that are in the final DFS path.
+            // These nodes will have 0 weight.
+            nodes[i] = { id: i.toString(), weight: pathWeight };
         }
+    }
 
-        // We add the neighbors of nodes that are in the final DFS path.
-        // These nodes will have 0 weight.
-        nodes[i] = { id: i.toString(), weight: pathWeight };
+    for (let i = 0; i < GRID_SIZE; i++) {
         graph[i.toString()] = [];
+        const currentWeight = nodes[i].weight;
 
         // Direct neighbors
         const up = i - COLS;
@@ -169,21 +165,38 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
         const left = i % COLS !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
         const right = (i + 1) % COLS !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
-        if (up >= 0 && finalPath.has(up)) {
-            graph[i].push({ id: up.toString(), weight: pathWeight });
-        }
+        if (up >= 0 && (isWeighted || (!isWeighted && finalPath.has(up))))
+            addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, isWeighted);
 
-        if (down < GRID_SIZE && finalPath.has(down)) {
-            graph[i].push({ id: down.toString(), weight: pathWeight });
-        }
+        if (down < GRID_SIZE && (isWeighted || (!isWeighted && finalPath.has(down))))
+            addAdjacentNode(
+                graph,
+                i,
+                down,
+                currentWeight,
+                nodes[down.toString()].weight,
+                isWeighted,
+            );
 
-        if (left !== -1 && finalPath.has(left)) {
-            graph[i].push({ id: left.toString(), weight: pathWeight });
-        }
+        if (left !== -1 && (isWeighted || (!isWeighted && finalPath.has(left))))
+            addAdjacentNode(
+                graph,
+                i,
+                left,
+                currentWeight,
+                nodes[left.toString()].weight,
+                isWeighted,
+            );
 
-        if (right !== -1 && finalPath.has(right)) {
-            graph[i].push({ id: right.toString(), weight: pathWeight });
-        }
+        if (right !== -1 && (isWeighted || (!isWeighted && finalPath.has(right))))
+            addAdjacentNode(
+                graph,
+                i,
+                right,
+                currentWeight,
+                nodes[right.toString()].weight,
+                isWeighted,
+            );
     }
 
     return { graph, nodes };
@@ -191,21 +204,9 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
 
 const createMazeGraphWithRandomWalls = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const isWeighted = globalVariablesManager.getIsWeighted();
 
-    // The maze graph's start and end nodes can be on one of each corner of the grid.
-    const possibleMazeGraphStartEndIndices = [
-        0, // Top left
-        COLS - 1, // Top right
-        (ROWS - 1) * COLS, // Bottom left
-        GRID_SIZE - 1, // Bottom right
-    ];
-
-    const startNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    let endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    // Ensure startNode and endNode are different.
-    while (startNode === endNode) {
-        endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
-    }
+    const { startNode, endNode } = generateStartAndEndNodeForMazeGraph();
 
     globalVariablesManager.setStartNode(startNode);
     globalVariablesManager.setEndNode(endNode);
@@ -231,11 +232,17 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
         // We mark walls with the max weight.
         if (walls.has(i)) {
             nodes[i] = { id: i.toString(), weight: wallWeight };
-            continue;
+            // If maze is not weighted, the walls will not be added to the graph.
+            if (!globalVariablesManager.getIsWeighted()) {
+                continue;
+            }
+        } else {
+            // The rest of the nodes will have 0 weight.
+            nodes[i] = { id: i.toString(), weight: pathWeight };
         }
-
-        // The rest of the nodes will have 0 weight.
-        nodes[i] = { id: i.toString(), weight: pathWeight };
+    }
+    for (let i = 0; i < GRID_SIZE; i++) {
+        const currentWeight = nodes[i].weight;
 
         // Direct neighbors
         const up = i - COLS;
@@ -243,27 +250,45 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
         const left = i % COLS !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
         const right = (i + 1) % COLS !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
-        if (up >= 0 && !walls.has(up)) {
-            graph[i].push({ id: up.toString(), weight: pathWeight });
-        }
+        if (up >= 0 && (isWeighted || (!isWeighted && !walls.has(up))))
+            addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, isWeighted);
 
-        if (down < GRID_SIZE && !walls.has(down)) {
-            graph[i].push({ id: down.toString(), weight: pathWeight });
-        }
+        if (down < GRID_SIZE && (isWeighted || (!isWeighted && !walls.has(down))))
+            addAdjacentNode(
+                graph,
+                i,
+                down,
+                currentWeight,
+                nodes[down.toString()].weight,
+                isWeighted,
+            );
 
-        if (left !== -1 && !walls.has(left)) {
-            graph[i].push({ id: left.toString(), weight: pathWeight });
-        }
+        if (left !== -1 && (isWeighted || (!isWeighted && !walls.has(left))))
+            addAdjacentNode(
+                graph,
+                i,
+                left,
+                currentWeight,
+                nodes[left.toString()].weight,
+                isWeighted,
+            );
 
-        if (right !== -1 && !walls.has(right)) {
-            graph[i].push({ id: right.toString(), weight: pathWeight });
-        }
+        if (right !== -1 && (isWeighted || (!isWeighted && !walls.has(right))))
+            addAdjacentNode(
+                graph,
+                i,
+                right,
+                currentWeight,
+                nodes[right.toString()].weight,
+                isWeighted,
+            );
     }
     return { graph, nodes };
 };
 
 export const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const isWeighted = globalVariablesManager.getIsWeighted();
 
     const graph: Graph = {};
     const nodes: Nodes = {};
@@ -280,11 +305,18 @@ export const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
         // We mark walls with the max weight.
         if (walls.has(i)) {
             nodes[i] = { id: i.toString(), weight: wallWeight };
-            continue;
+            // If maze is not weighted, the walls will not be added to the graph.
+            if (!globalVariablesManager.getIsWeighted()) {
+                continue;
+            }
+        } else {
+            // The rest of the nodes will have 0 weight.
+            nodes[i] = { id: i.toString(), weight: pathWeight };
         }
+    }
 
-        // The rest of the nodes will have 0 weight.
-        nodes[i] = { id: i.toString(), weight: pathWeight };
+    for (let i = 0; i < GRID_SIZE; i++) {
+        const currentWeight = nodes[i].weight;
 
         // Direct neighbors
         const up = i - COLS;
@@ -292,21 +324,38 @@ export const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
         const left = i % COLS !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
         const right = (i + 1) % COLS !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
-        if (up >= 0 && !walls.has(up)) {
-            graph[i].push({ id: up.toString(), weight: pathWeight });
-        }
+        if (up >= 0 && (isWeighted || (!isWeighted && !walls.has(up))))
+            addAdjacentNode(graph, i, up, currentWeight, nodes[up.toString()].weight, isWeighted);
 
-        if (down < GRID_SIZE && !walls.has(down)) {
-            graph[i].push({ id: down.toString(), weight: pathWeight });
-        }
+        if (down < GRID_SIZE && (isWeighted || (!isWeighted && !walls.has(down))))
+            addAdjacentNode(
+                graph,
+                i,
+                down,
+                currentWeight,
+                nodes[down.toString()].weight,
+                isWeighted,
+            );
 
-        if (left !== -1 && !walls.has(left)) {
-            graph[i].push({ id: left.toString(), weight: pathWeight });
-        }
+        if (left !== -1 && (isWeighted || (!isWeighted && !walls.has(left))))
+            addAdjacentNode(
+                graph,
+                i,
+                left,
+                currentWeight,
+                nodes[left.toString()].weight,
+                isWeighted,
+            );
 
-        if (right !== -1 && !walls.has(right)) {
-            graph[i].push({ id: right.toString(), weight: pathWeight });
-        }
+        if (right !== -1 && (isWeighted || (!isWeighted && !walls.has(right))))
+            addAdjacentNode(
+                graph,
+                i,
+                right,
+                currentWeight,
+                nodes[right.toString()].weight,
+                isWeighted,
+            );
     }
 
     let { startNode, endNode } = generateStartAndEndNode();
@@ -390,7 +439,9 @@ const recrusiveDivide = (
  * @param neighborId The ID of the neighboring node.
  * @param currentWeight The weight of the current node.
  * @param neighborWeight The weight of the neighboring node.
- * @param graphType The type of graph (e.g., unweighted, weighted, directed).
+ * @param graphType The type of graph.
+ * @param isWeighted Whether the graph is weighted.
+ *
  */
 const addAdjacentNode = (
     graph: Graph,
@@ -398,48 +449,31 @@ const addAdjacentNode = (
     neighborId: number,
     currentWeight: number,
     neighborWeight: number,
-    graphType: GraphType,
+    isWeighted: boolean,
 ): void => {
-    let weight;
-    switch (graphType) {
-        case GraphType.Unweighted:
-            weight = 1;
-            break;
-        case GraphType.Weighted:
-            weight = Math.max(neighborWeight - currentWeight, 0);
-            break;
-        case GraphType.NegativeWeight:
-            weight = neighborWeight - currentWeight;
-            break;
-        case GraphType.Directed:
-            weight = neighborWeight - currentWeight <= 0 ? neighborWeight - currentWeight : null;
-            break;
-    }
-
-    if (weight !== null && weight !== undefined) {
-        graph[currentId].push({ id: neighborId.toString(), weight: weight });
-    }
+    const weight = isWeighted ? Math.max(neighborWeight - currentWeight, 0) : 1;
+    graph[currentId].push({ id: neighborId.toString(), weight: weight });
 };
 
 export const getExampleGraph = (graphType: GraphType) => {
     switch (graphType) {
-        case GraphType.AStarExample:
+        case GraphType.IdealAStar:
             return aStarExampleGraphs[
                 Math.floor(Math.random() * aStarExampleGraphs.length)
             ] as GraphStorage;
-        case GraphType.DjikstraExample:
+        case GraphType.IdealDjikstra:
             return djikstraExampleGraphs[
                 Math.floor(Math.random() * djikstraExampleGraphs.length)
             ] as GraphStorage;
             break;
-        case GraphType.BellmanFordExample:
+        case GraphType.IdealBellmanFord:
             return bellmanFordExampleGraphs[
                 Math.floor(Math.random() * bellmanFordExampleGraphs.length)
             ] as GraphStorage;
             break;
-        case GraphType.BfsExample:
+        case GraphType.IdealBfs:
             return bfsExampleGraphs[
-                Math.floor(Math.random() * bellmanFordExampleGraphs.length)
+                Math.floor(Math.random() * bfsExampleGraphs.length)
             ] as GraphStorage;
             break;
     }
@@ -500,4 +534,23 @@ export const generateStartAndEndNode = (): StartEndNodes => {
         newEndNode = Math.floor(Math.random() * GRID_SIZE);
     } while (newStartNode === newEndNode);
     return { startNode: newStartNode, endNode: newEndNode };
+};
+
+const generateStartAndEndNodeForMazeGraph = (): { startNode: number; endNode: number } => {
+    // The maze graph's start and end nodes can be on one of each corner of the grid.
+    const possibleMazeGraphStartEndIndices = [
+        0, // Top left
+        COLS - 1, // Top right
+        (ROWS - 1) * COLS, // Bottom left
+        GRID_SIZE - 1, // Bottom right
+    ];
+
+    const startNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
+    let endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
+    // Ensure startNode and endNode are different.
+    while (startNode === endNode) {
+        endNode = possibleMazeGraphStartEndIndices[Math.floor(Math.random() * 4)];
+    }
+
+    return { startNode, endNode };
 };

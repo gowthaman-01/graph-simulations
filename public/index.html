@@ -33,11 +33,6 @@
                             <option value="manhattan">Manhattan distance</option>
                             <option value="euclidean">Eucledian distance</option>
                         </select>
-                        <!-- <select id="aStarHeuristicInfluenceDropdown" class="dropdown" style="margin-top: 6px;">
-                            <option value="balanced">Balanced influence</option>
-                            <option value="strong">Strong influence</option>
-                            <option value="mild">Mild influence</option>
-                        </select> -->
                     </div>
                     <div class="grid" id="aStar"></div>
                 </div>
@@ -86,26 +81,31 @@
                         <th>Algorithm</th>
                         <th>Steps</th>
                         <th>Weight</th>
+                        <th>Nodes</th>
                     </tr>
                     <tr id="bfs-statistic">
                         <td>BFS</td>
                         <td id="bfs-steps"></td>
                         <td id="bfs-weight"></td>
+                        <td id="bfs-nodes"></td>
                     </tr>
                     <tr id="bellmanFord-statistic">
-                        <td>Bellman-Ford</td>
+                        <td>Bellman</td>
                         <td id="bellmanFord-steps"></td>
                         <td id="bellmanFord-weight"></td>
+                        <td id="bellmanFord-nodes"></td>
                     </tr>
                     <tr id="djikstra-statistic">
                         <td>Djikstra</td>
                         <td id="djikstra-steps"></td>
                         <td id="djikstra-weight"></td>
+                        <td id="djikstra-nodes"></td>
                     </tr>
                     <tr id="aStar-statistic">
                         <td>A* Search</td>
                         <td id="aStar-steps"></td>
                         <td id="aStar-weight"></td>
+                        <td id="aStar-nodes"></td>
                     </tr>
                 </table>
 
@@ -116,22 +116,26 @@
                  <div class="graph-controls-container">
                     <div class="graph-control-container"> 
                         <p id="graphTypeText">Graph type</p>
-                        <select id="graphDropdown" class="dropdown">
-                            <option value="unweighted">Unweighted</option>
-                            <option value="weighted">Weighted</option>
-                            <option value="random-walls">Random walls</option>
-                            <option value="maze-dfs">Maze &#40;DFS&#41;</option>
-                            <option value="maze-recursive-division">Maze &#40;Recursive Division&#41;</option>
-                            <option value="djikstra-example">Ideal for Djikstra</option>
-                            <option value="aStar-example">Ideal for A*</option>
-                            <option value="bellman-example">Ideal for Bellman-Ford</option>
-                            <option value="bfs-example">Ideal for BFS</option>
-                            <!-- <option value="negative-weighted">Weighted with negative weights</option> -->
+                        <select id="primaryGraphTypeDropdown" class="dropdown">
+                            <option value="standard">Standard</option>
+                            <option value="maze">Maze</option>
+                            <option value="ideal">Ideal</option>
+                        </select>
+                        <select id="secondaryGraphTypeDropdown" class="dropdown">
                         </select>
                     </div>
-                    <div class="weight-slider-container">
-                        <p style="text-align: start;">Weight distribution</p>
-                        <input type="range" id="weightSlider" min="1" max="200" step="1">
+                    <div id="weightControls">
+                        <p style="text-align: start;">Weight</p>
+                        <div class="weight-container">
+                            <div class="weight-control">
+                                <input type="checkbox" id="weightCheckbox" class="checkbox">
+                                <label for="weightCheckbox" id="weightSwitch" class="switch"></label>
+                            </div>
+                            <div class="weight-slider-container">
+                                <input type="range" id="weightSlider" min="10" max="200" step="1" value="84">
+                            </div> 
+                        </div>
+                        
                     </div>
                     <div class="speed-slider-container">
                         <p style="text-align: start;">Speed</p>

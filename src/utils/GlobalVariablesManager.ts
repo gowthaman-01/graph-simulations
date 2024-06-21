@@ -15,6 +15,7 @@ class GlobalVariablesManager {
     private startNode: number;
     private endNode: number;
     private graphType: GraphType;
+    private isWeighted: boolean;
     private maxWeight: number;
     private stepIncrement: number;
     private firstRender: boolean;
@@ -28,12 +29,13 @@ class GlobalVariablesManager {
         const { startNode, endNode } = generateStartAndEndNode();
         this.startNode = startNode;
         this.endNode = endNode;
-        this.graphType = GraphType.Unweighted;
+        this.graphType = GraphType.Standard;
+        this.isWeighted = false;
         this.maxWeight = 0;
         this.stepIncrement = DEFAULT_STEP_INCREMENT;
         this.firstRender = true;
         this.endNodeReachable = false;
-        this.graph = createGridGraph(0, GraphType.Unweighted); // The default graph is unweighted, with 0 max weight.
+        this.graph = createGridGraph(0, this.isWeighted); // The default graph is unweighted, with 0 max weight.
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -83,8 +85,16 @@ class GlobalVariablesManager {
         return this.graphType;
     }
 
+    public setIsWeighted(isWeighted: boolean) {
+        this.isWeighted = isWeighted;
+    }
+
+    public getIsWeighted(): boolean {
+        return this.isWeighted;
+    }
+
     public setMaxWeight(maxWeight: number): void {
-        this.maxWeight = maxWeight;
+        this.maxWeight = Math.floor(maxWeight);
     }
 
     public getMaxWeight(): number {
@@ -129,6 +139,23 @@ class GlobalVariablesManager {
 
     public setAStartHeuristicInfluence(newInfluence: AStarHeuristicInfluence) {
         this.aStartHeuristicInfluence = newInfluence;
+    }
+
+    public isExampleGraph() {
+        return (
+            this.graphType === GraphType.IdealAStar ||
+            this.graphType === GraphType.IdealDjikstra ||
+            this.graphType === GraphType.IdealBellmanFord ||
+            this.graphType === GraphType.IdealBfs
+        );
+    }
+
+    public isMazeGraph() {
+        return (
+            this.graphType === GraphType.Dfs ||
+            this.graphType === GraphType.RecursiveDivision ||
+            this.graphType === GraphType.RandomWalls
+        );
     }
 }
 

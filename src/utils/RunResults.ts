@@ -146,24 +146,12 @@ export default class RunResults {
     };
 
     public getTotalWeight = (): number => {
-        const graphType = globalVariablesManager.getGraphType();
-
-        switch (graphType) {
-            case GraphType.Unweighted:
-            case GraphType.RandomWalls:
-            case GraphType.MazeDfs:
-            case GraphType.MazeRecursiveDivision:
-                return this.shortestPath.length;
-            default:
-                return this.shortestPath.reduce((totalWeight, currentNode, i) => {
-                    // The total weight excludes the startNode's weight.
-                    totalWeight +=
-                        i !== 0
-                            ? Math.max(currentNode.weight - this.shortestPath[i - 1].weight, 0)
-                            : 0;
-                    return totalWeight;
-                }, 0);
-        }
+        return this.shortestPath.reduce((totalWeight, currentNode, i) => {
+            // The total weight excludes the startNode's weight.
+            totalWeight +=
+                i !== 0 ? Math.max(currentNode.weight - this.shortestPath[i - 1].weight, 0) : 0;
+            return totalWeight;
+        }, 0);
     };
 
     public isDisplayComplete = () => {

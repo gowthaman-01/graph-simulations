@@ -37,6 +37,9 @@ export const resetGrid = (
         const stepsTableElement = document.getElementById(
             `${algorithmType}-steps`,
         ) as HTMLTableCellElement;
+        const nodesTableElement = document.getElementById(
+            `${algorithmType}-nodes`,
+        ) as HTMLTableCellElement;
         const bestAlgorithmParagraphElement = document.getElementById(
             'best-algorithm',
         ) as HTMLParagraphElement;
@@ -46,6 +49,8 @@ export const resetGrid = (
 
         weightTableElement.innerHTML = runResult.getTotalWeight().toString();
         stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
+        nodesTableElement.innerHTML = runResult.getShortestPath().length.toString();
+
         bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
             getBestAlgorithm(),
         )}`;
