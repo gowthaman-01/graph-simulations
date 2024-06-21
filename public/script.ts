@@ -270,8 +270,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const generateNewGraph = () => {
         if (globalVariablesManager.isExampleGraph()) {
-            // Generating new start and end nodes for example graphs is not allowed.
+            // Weight controls are disabled for example graphs.
             hideWeightControls();
+            // Generating new start and end nodes for example graphs is not allowed.
             disableStartEndNodeButton();
             const exampleGraph = getExampleGraph(globalVariablesManager.getGraphType());
             if (exampleGraph) {
@@ -284,8 +285,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
                 globalVariablesManager.setStartNode(newStartNode);
                 globalVariablesManager.setEndNode(newEndNode);
-                // Weight controls are disabled for example graphs.
-
                 return;
             }
         }
@@ -314,29 +313,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             case PrimaryGraphType.Maze:
                 enableSecondaryGraphTypeDropdown();
                 Object.values(MazeType).forEach((option) => {
-                    secondaryGraphTypeDropdown.appendChild(createOptionElement(option.toString()));
+                    let optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
 
             case PrimaryGraphType.Ideal:
                 enableSecondaryGraphTypeDropdown();
                 Object.values(AlgorithmType).forEach((option) => {
-                    secondaryGraphTypeDropdown.appendChild(
-                        createOptionElement(getAlgorithmDisplayName(option).toString()),
-                    );
+                    let optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = getAlgorithmDisplayName(option);
+                    secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
 
             default:
                 break;
         }
-    };
-
-    const createOptionElement = (option: string): HTMLOptionElement => {
-        let optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.textContent = option;
-        return optionElement;
     };
 
     // Setup of controls and sliders on initial page load.
@@ -465,7 +461,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             default:
                 break;
         }
-
+        console.log(secondaryGraphType, newGraphType);
         globalVariablesManager.setGraphType(newGraphType);
         generateNewGraphWithReachableEndNode();
     });

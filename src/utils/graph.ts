@@ -439,7 +439,6 @@ const recrusiveDivide = (
  * @param neighborId The ID of the neighboring node.
  * @param currentWeight The weight of the current node.
  * @param neighborWeight The weight of the neighboring node.
- * @param graphType The type of graph.
  * @param isWeighted Whether the graph is weighted.
  *
  */
