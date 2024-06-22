@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
     const tutorialContainerDiv = document.getElementById('tutorialContainer') as HTMLDivElement;
     const tutorialContentDiv = document.getElementById('tutorialContent') as HTMLDivElement;
-    const tutorialCloseButton = document.getElementById('tutorialCloseButton') as HTMLButtonElement;
+    const tutorialSkipButton = document.getElementById('tutorialSkipButton') as HTMLButtonElement;
     const tutorialNextButton = document.getElementById('tutorialNextButton') as HTMLButtonElement;
     const tutorialPreviousButton = document.getElementById(
         'tutorialPreviousButton',
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !mainBodyDiv ||
         !tutorialContainerDiv ||
         !tutorialContentDiv ||
-        !tutorialCloseButton ||
+        !tutorialSkipButton ||
         !tutorialNextButton ||
         !tutorialPreviousButton ||
         !tutorialFinishButton ||
@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    tutorialCloseButton.addEventListener('click', handleTutorialClose);
+    tutorialSkipButton.addEventListener('click', handleTutorialClose);
     tutorialFinishButton.addEventListener('click', handleTutorialClose);
 
     tutorialNextButton.addEventListener('click', () => {
