@@ -25,16 +25,15 @@ export class MinHeap<T> {
 
     /**
      * Checks if the heap is empty.
-     * @returns True if the heap is empty, otherwise false.
+     * @returns {boolean} `true` if the heap is empty, otherwise `false`.
      */
-
     public isEmpty(): boolean {
         return this.heap.length == 0;
     }
 
     /**
      * Retrieves the top element of the heap without removing it.
-     * @returns The top element of the heap, or null if the heap is empty.
+     * @returns {T | null} The top element of the heap, or `null` if the heap is empty.
      */
     public peek(): T | null {
         if (this.heap.length === 0) {
@@ -45,7 +44,7 @@ export class MinHeap<T> {
 
     /**
      * Removes and returns the top element of the heap.
-     * @returns An array containing the removed element and the number of steps taken to perform the operation, or null if the heap is empty.
+     * @returns {[T, number] | null} An array containing the removed element and the number of steps taken to perform the operation, or `null` if the heap is empty.
      */
     public pop(): [T, number] | null {
         if (this.heap.length === 0) {
@@ -63,8 +62,8 @@ export class MinHeap<T> {
 
     /**
      * Inserts a new element into the heap.
-     * @param item The element to insert into the heap.
-     * @returns The number of steps taken to perform the operation.
+     * @param {T} item - The element to insert into the heap.
+     * @returns {number} The number of steps taken to perform the operation.
      */
     public push(item: T): number {
         this.heap.push(item);
@@ -75,9 +74,9 @@ export class MinHeap<T> {
 
     /**
      * Returns a list representation of the heap.
-     * @returns An array containing the elements of the heap.
+     * @returns {T[]} An array containing the elements of the heap.
      */
-    public list() {
+    public list(): T[] {
         return this.heap;
     }
 

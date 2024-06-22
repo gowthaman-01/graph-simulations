@@ -22,18 +22,96 @@ img {
 
 button {
     font-size: 16px;
+    color: #666;
+    padding: 10px 30px;
+    border-radius: 5px;
+    border: 0.5px solid #ccc;
+    background-color: #ffffff;
+    box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+
 }
 
-button:disabled {
+button:disabled, .dropdown:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+input:disabled, label:disabled {
+    cursor: not-allowed !important;
 }
 
 select {
     font-size: 16px;
 }
 
-/* Layout and Structure */
+table {
+    font-family: arial, sans-serif;
+    color: #666;
+    font-size: 16px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+  border: 1px solid #d3d3d3;
+  text-align: center;
+  padding: 10px;
+  width: 70px;
+}
+
+.main-body-blur {
+    filter: blur(4px);
+}
+
+.tutorial-container {
+    z-index: 1;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 40%;
+    height: 80%;
+    border-radius: 10px;
+    border: solid 1px #ccc;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    box-shadow: 0 0 10px black;
+    padding: 40px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+}
+
+.tutorial-content {
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: grid;
+    justify-items: center;
+    line-height: 1.5;
+}
+
+.tutorial-title {
+    font-size: 32px;
+    text-align: center;
+    color: #636363;
+    margin-bottom: 20px;
+}
+
+.tutorial-body {
+    font-size: 16px;
+    text-align: justify;
+    color: #636363;
+}
+
+.tutorial-buttons {
+    display: flex;
+    justify-content: space-between;    
+}
+
+.tutorial-container button {
+    min-width: 120px;
+}
+
 .grid-containers { 
     display: flex;
     gap: 50px;
@@ -113,22 +191,12 @@ select {
     gap: 50px;
 }
 
-.right-container button {
-    color: #666;
-    padding: 10px 30px;
-    border-radius: 5px;
-    border: 0.5px solid #ccc;
-    background-color: #ffffff;
-    box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    min-width: 210px;
-}
 
 .graph-controls-container {
     display: flex;
     flex-direction: column;
     margin-top: 7px;
-    gap: 20px;
+    gap: 10px;
 }
 
 .graph-buttons-container {
@@ -138,16 +206,67 @@ select {
     gap: 53px;
 }
 
-
 .graph-control-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     margin-right: 10px;
-    gap: 15px;
+    gap: 13px;
+}
+
+.weight-container {
+    display: flex;
+    gap: 20px;
 }
 
 .weight-slider-container {
-    margin-top: -10px;
+    margin-top: 7px;
+    width: 100%;
+}
+
+#weightSlider:disabled::-webkit-slider-thumb {
+    pointer-events: none; 
+}
+
+.weight-control {
+  position: relative;
+  width: 66px;
+  height: 28px;
+}
+
+.checkbox {
+  display: none;
+}
+
+.switch, .toggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: background-color 0.3s;
+}
+
+.switch:before, .toggle:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.checkbox:checked + .switch {
+  background-color: var(--weight-color);
+}
+
+.checkbox:checked + .switch:before, .checkbox:checked + .toggle:before {
+ transform: translateX(26px);
 }
 
 .speed-slider-container {
@@ -178,8 +297,12 @@ select {
     max-height: 40px;
 }
 
-#graphDropdown {
-    width: 75%;
+#primaryGraphTypeDropdown {
+    width: 28%;
+}
+
+#secondaryGraphTypeDropdown {
+    width: 45%;
 }
 
 /* Background and Borders */
@@ -203,11 +326,13 @@ select {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--slider-thumb-bg);
-    cursor: var(--steps-slider-cursor);
+    background: rgb(36, 73, 89);
 }
 
-/* Content Styling */
+.weight-slider-container input[type="range"]::-webkit-slider-thumb {
+    background: var(--weight-color);
+}
+
 #runAlgorithms {
     color: #666;
     padding: 10px 30px;
@@ -215,7 +340,6 @@ select {
     border: 0.5px solid #ccc;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
 }
 
 .aStar-header {
@@ -227,19 +351,4 @@ select {
 
 .mark-hover:hover {
     opacity: 1;
-}
-
-table {
-    font-family: arial, sans-serif;
-    color: #666;
-    font-size: 16px;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-  border: 1px solid #d3d3d3;
-  text-align: center;
-  padding: 10px;
-  width: 100px;
 }

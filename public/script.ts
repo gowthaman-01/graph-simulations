@@ -1,31 +1,58 @@
 import { GRID_SIZE, MAX_WEIGHT } from '../src/common/constants';
-import { AStarHeuristicType, AlgorithmType, GraphType, NodeState } from '../src/common/types';
+import {
+    AStarHeuristicType,
+    AlgorithmType,
+    GraphType,
+    MazeType,
+    NodeState,
+    PrimaryGraphType,
+    SecondaryGraphType,
+} from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
-    resetGrid,
+    resetGridAndStatisticTable,
     displayAllRunResults,
     displayStep,
     displayShortestPath,
 } from '../src/utils/display';
-import { getMaxWeight, getNodeIdFromCellElementId } from '../src/utils/general';
+import {
+    getAlgorithmDisplayName,
+    getMaxWeight,
+    getNodeIdFromCellElementId,
+} from '../src/utils/general';
 import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
-import { setMarkImage, unmarkCell } from '../src/utils/mark';
+import { createMark, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
+import { renderTutorialContent } from '../src/tutorial/tutorial';
+import { tutorialDataList } from '../src/tutorial/data';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
     // Load HTML elements
+    const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
+    const tutorialContainerDiv = document.getElementById('tutorialContainer') as HTMLDivElement;
+    const tutorialContentDiv = document.getElementById('tutorialContent') as HTMLDivElement;
+    const tutorialCloseButton = document.getElementById('tutorialCloseButton') as HTMLButtonElement;
+    const tutorialNextButton = document.getElementById('tutorialNextButton') as HTMLButtonElement;
+    const tutorialPreviousButton = document.getElementById(
+        'tutorialPreviousButton',
+    ) as HTMLButtonElement;
+    const tutorialFinishButton = document.getElementById(
+        'tutorialFinishButton',
+    ) as HTMLButtonElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
-    // const aStarHeuristicInfluenceDropdown = document.getElementById(
-    //     'aStarHeuristicInfluenceDropdown',
-    // ) as HTMLInputElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
-    const graphTypeDropdown = document.getElementById('graphDropdown') as HTMLInputElement;
+    const primaryGraphTypeDropdown = document.getElementById(
+        'primaryGraphTypeDropdown',
+    ) as HTMLSelectElement;
+    const secondaryGraphTypeDropdown = document.getElementById(
+        'secondaryGraphTypeDropdown',
+    ) as HTMLSelectElement;
     const gridContainers = document.getElementsByClassName(
         'grid',
     ) as HTMLCollectionOf<HTMLDivElement>;
@@ -36,22 +63,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const speedSlider = document.getElementById('speedSlider') as HTMLInputElement;
     const stepsCount = document.getElementById('stepCount') as HTMLParagraphElement;
     const stepsSlider = document.getElementById('stepSlider') as HTMLInputElement;
+    const weightControls = document.getElementById('weightControls') as HTMLDivElement;
+    const weightCheckbox = document.getElementById('weightCheckbox') as HTMLInputElement;
+    const weightSwitch = document.getElementById('weightSwitch') as HTMLLabelElement;
     const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
 
     // Return early if an element is undefined.
     if (
+        !mainBodyDiv ||
+        !tutorialContainerDiv ||
+        !tutorialContentDiv ||
+        !tutorialCloseButton ||
+        !tutorialNextButton ||
+        !tutorialPreviousButton ||
+        !tutorialFinishButton ||
         !aStarHeuristicTypeDropDown ||
-        // !aStarHeuristicInfluenceDropdown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
         !generateNewGraphButton ||
-        !graphTypeDropdown ||
+        !primaryGraphTypeDropdown ||
+        !secondaryGraphTypeDropdown ||
         !gridContainers ||
         !legendCells ||
         !runButton ||
         !speedSlider ||
         !stepsCount ||
         !stepsSlider ||
+        !weightControls ||
+        !weightCheckbox ||
+        !weightSwitch ||
         !weightSlider
     ) {
         return;
@@ -59,24 +99,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const globalVariablesManager = getGlobalVariablesManagerInstance();
 
-    // Helper functions
+    const setWeightColor = () => {
+        const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+        document.documentElement.style.setProperty('--weight-color', weightColor);
+    };
+
     const disableWeightSlider = () => {
         weightSlider.style.cursor = 'not-allowed';
         weightSlider.disabled = true;
-        document.documentElement.style.setProperty('--weight-slider-cursor', 'not-allowed');
     };
 
     const enableWeightSlider = () => {
         weightSlider.style.cursor = 'pointer';
         weightSlider.disabled = false;
-        document.documentElement.style.setProperty('--weight-slider-cursor', 'pointer');
     };
 
-    const setWeightColor = () => {
-        const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+    const hideWeightSlider = () => {
+        weightSlider.style.display = 'none';
+    };
 
-        document.documentElement.style.setProperty('--slider-thumb-bg', weightColor);
-        document.documentElement.style.setProperty('--weight-switch-bg', weightColor);
+    const showWeightSlider = () => {
+        weightSlider.style.display = 'block';
+    };
+
+    const disableWeightControls = () => {
+        weightCheckbox.disabled = true;
+        weightSwitch.style.cursor = 'not-allowed';
+        disableWeightSlider();
+    };
+
+    const enableWeightControls = () => {
+        weightCheckbox.disabled = false;
+        weightSwitch.style.cursor = 'pointer';
+        enableWeightSlider();
+    };
+
+    const hideWeightControls = () => {
+        weightControls.style.display = 'none';
+    };
+
+    const showWeightControls = () => {
+        weightControls.style.display = 'block';
     };
 
     const disableGraphControls = () => {
@@ -84,9 +147,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         generateNewGraphButton.disabled = true;
         changeStartNodeButton.disabled = true;
         changeEndNodeButton.disabled = true;
-        graphTypeDropdown.disabled = true;
+        primaryGraphTypeDropdown.disabled = true;
+        secondaryGraphTypeDropdown.disabled = true;
         aStarHeuristicTypeDropDown.disabled = true;
-        // aStarHeuristicInfluenceDropdown.disabled = true;
     };
 
     const enableGraphControls = () => {
@@ -94,39 +157,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         generateNewGraphButton.disabled = false;
         changeStartNodeButton.disabled = false;
         changeEndNodeButton.disabled = false;
-        graphTypeDropdown.disabled = false;
+        primaryGraphTypeDropdown.disabled = false;
+        secondaryGraphTypeDropdown.disabled = false;
         aStarHeuristicTypeDropDown.disabled = false;
-        // aStarHeuristicInfluenceDropdown.disabled = false;
     };
 
-    const resetStepsSlider = () => {
-        stepsSlider.value = '0';
-        stepsCount.innerHTML = `Steps: 0`;
-        document.documentElement.style.setProperty('--steps-slider-cursor', 'pointer');
+    const disableSecondaryGraphTypeDropdown = () => {
+        secondaryGraphTypeDropdown.style.display = 'none';
+        secondaryGraphTypeDropdown.style.cursor = 'default';
+    };
+
+    const enableSecondaryGraphTypeDropdown = () => {
+        secondaryGraphTypeDropdown.style.display = 'block';
+        secondaryGraphTypeDropdown.style.cursor = 'pointer';
     };
 
     const disableStepsSlider = () => {
         stepsSlider.style.cursor = 'not-allowed';
         stepsSlider.disabled = true;
-        document.documentElement.style.setProperty('--steps-slider-cursor', 'not-allowed');
     };
 
     const enableStepsSlider = () => {
         stepsSlider.style.cursor = 'pointer';
         stepsSlider.disabled = false;
-        document.documentElement.style.setProperty('--steps-slider-cursor', 'pointer');
+    };
+
+    const resetStepsSlider = () => {
+        stepsSlider.value = '0';
+        stepsCount.innerHTML = `Steps: 0`;
+        enableStepsSlider();
     };
 
     const disableSpeedSlider = () => {
         speedSlider.style.cursor = 'not-allowed';
         speedSlider.disabled = true;
-        document.documentElement.style.setProperty('--speed-slider-cursor', 'not-allowed');
     };
 
     const enableSpeedSlider = () => {
         speedSlider.style.cursor = 'pointer';
         speedSlider.disabled = false;
-        document.documentElement.style.setProperty('--speed-slider-cursor', 'pointer');
     };
 
     const disableStartEndNodeButton = () => {
@@ -139,13 +208,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = false;
     };
 
+    const toggleTutorialButton = (buttonType: 'P' | 'N' | 'F', show: boolean) => {
+        let button = tutorialPreviousButton;
+        switch (buttonType) {
+            case 'N':
+                button = tutorialNextButton;
+                break;
+            case 'F':
+                button = tutorialFinishButton;
+            default:
+                break;
+        }
+
+        button.style.display = show ? 'inline' : 'none';
+    };
+
+    const updateTutorialButtons = () => {
+        const currentPageNumber = globalVariablesManager.getTutorialPageNumber();
+        if (currentPageNumber === 1) {
+            toggleTutorialButton('P', false);
+            toggleTutorialButton('N', true);
+            toggleTutorialButton('F', false);
+        } else if (currentPageNumber === tutorialDataList.length) {
+            toggleTutorialButton('P', true);
+            toggleTutorialButton('N', false);
+            toggleTutorialButton('F', true);
+        } else {
+            toggleTutorialButton('P', true);
+            toggleTutorialButton('N', true);
+            toggleTutorialButton('F', false);
+        }
+    };
+
+    const handleTutorialClose = () => {
+        tutorialContainerDiv.style.display = 'none';
+        mainBodyDiv.classList.remove('main-body-blur');
+    };
+
     const getRunResults = () => {
         // Obtain run results for all algorithms.
         const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
             runAlgorithm(algorithmType),
         );
 
-        // Set the slider's max value to be the maximum steps from all algorithms executed.
+        // Set the slider's max value to the maximum steps from all algorithms executed.
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
@@ -155,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const resetGridAndRerun = () => {
         getRunResults();
-        resetGrid(gridContainers, Object.values(AlgorithmType));
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
         resetStepsSlider();
     };
 
@@ -172,13 +278,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
-                const graphType = globalVariablesManager.getGraphType();
                 // If graph is a maze, only path cells will be highlighted.
                 if (
-                    (graphType === GraphType.MazeDfs ||
-                        graphType === GraphType.RandomWalls ||
-                        graphType === GraphType.MazeRecursiveDivision) &&
-                    globalVariablesManager.getGraph().nodes[i].weight === MAX_WEIGHT
+                    globalVariablesManager.isMazeGraph() &&
+                    !(globalVariablesManager.getGraph().nodes[i].weight === 1)
                 ) {
                     continue;
                 }
@@ -189,14 +292,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 unmarkCell(cell);
 
                 // Set mark based on nodeState.
-                const mark = document.createElement('img');
-                mark.id = `${algorithmType}-cell-${i}-${nodeState}`;
-                setMarkImage(mark, nodeState);
+                const mark = createMark(algorithmType, i.toString(), nodeState);
 
                 // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
                 mark.style.opacity = `0.2`;
-
-                mark.classList.add('mark');
                 mark.classList.add('mark-hover');
 
                 cell.appendChild(mark);
@@ -215,20 +314,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const generateNewGraph = () => {
-        const graphType = globalVariablesManager.getGraphType();
-        const isExampleGraph =
-            graphType === GraphType.AStarExample ||
-            graphType === GraphType.DjikstraExample ||
-            graphType === GraphType.BellmanFordExample ||
-            graphType === GraphType.BfsExample;
-
-        if (!isExampleGraph) {
-            enableStartEndNodeButton();
-            const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-            globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
-        } else {
+        if (globalVariablesManager.isExampleGraph()) {
+            // Weight controls are disabled for example graphs.
+            hideWeightControls();
+            // Generating new start and end nodes for example graphs is not allowed.
             disableStartEndNodeButton();
-            const exampleGraph = getExampleGraph(graphType);
+
+            const exampleGraph = getExampleGraph(globalVariablesManager.getGraphType());
             if (exampleGraph) {
                 const {
                     graph: newGraph,
@@ -239,122 +331,227 @@ document.addEventListener('DOMContentLoaded', async () => {
                 globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
                 globalVariablesManager.setStartNode(newStartNode);
                 globalVariablesManager.setEndNode(newEndNode);
+                return;
             }
+        }
+
+        // Other types of graphs.
+        showWeightControls();
+        enableStartEndNodeButton();
+        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
+    };
+
+    const generateNewGraphWithReachableEndNode = () => {
+        // Generates new graphs until one where the end node is reachable from the start node is obtained.
+        do {
+            generateNewGraph();
+            resetGridAndRerun();
+        } while (!globalVariablesManager.isEndNodeReachable());
+    };
+
+    const setSecondaryGraphDropdown = (primaryGraphType: PrimaryGraphType) => {
+        // Reset dropdown.
+        secondaryGraphTypeDropdown.options.length = 0;
+
+        switch (primaryGraphType) {
+            case PrimaryGraphType.Standard:
+                // There is no secondary graph type for standard graphs.
+                disableSecondaryGraphTypeDropdown();
+                break;
+            case PrimaryGraphType.Maze:
+                enableSecondaryGraphTypeDropdown();
+                Object.values(MazeType).forEach((option) => {
+                    let optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    secondaryGraphTypeDropdown.appendChild(optionElement);
+                });
+                break;
+
+            case PrimaryGraphType.Ideal:
+                enableSecondaryGraphTypeDropdown();
+                Object.values(AlgorithmType).forEach((option) => {
+                    let optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = getAlgorithmDisplayName(option);
+                    secondaryGraphTypeDropdown.appendChild(optionElement);
+                });
+                break;
+
+            default:
+                break;
         }
     };
 
-    // Setup of controls and sliders on initial page load.
-    setWeightColor();
+    renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
+
+    // Setup of controls on initial page load.
+    hideWeightSlider();
     resetStepsSlider();
     enableStepsSlider();
     enableSpeedSlider();
     enableGraphControls();
-    disableWeightSlider(); // Weight slider disabled for the default unweighted graph type.
+    disableWeightSlider(); // Weight slider disabled for the default standard unweighted graph type.
+    disableSecondaryGraphTypeDropdown(); // Secondary graph type dropdown disabled for default standard graph type.
+    toggleTutorialButton('P', false); // Since we are on the first page of the tutorial, there is no previous button.
 
-    // Generate graph and results from algorithms and display graph.
+    // Generate graph and run results.
     resetGridAndRerun();
 
-    // Event listeners
+    // Add event listeners
     runButton.addEventListener('click', async () => {
+        // These controls are disabled when the simulations are running.
         disableGraphControls();
-        disableWeightSlider();
+        disableWeightControls();
         disableStepsSlider();
         disableSpeedSlider();
 
         // Reset grid for subsequent renders.
         if (!globalVariablesManager.isFirstRender()) {
-            getRunResults();
-            resetGrid(gridContainers, Object.values(AlgorithmType));
-            resetStepsSlider();
+            resetGridAndRerun();
         }
 
         globalVariablesManager.setFirstRender(false);
 
-        // Displaying simulation.
+        // Display simulation.
         await displayAllRunResults(stepsSlider, stepsCount);
 
+        // Enable controls once simulations are completed.
         enableGraphControls();
-        enableWeightSlider();
+        enableWeightControls();
         enableStepsSlider();
         enableSpeedSlider();
 
-        const graphType = graphTypeDropdown.value as GraphType;
-        const isExampleGraph =
-            graphType === GraphType.AStarExample ||
-            graphType === GraphType.DjikstraExample ||
-            graphType === GraphType.BellmanFordExample ||
-            graphType === GraphType.BfsExample;
-
-        if (isExampleGraph) {
+        // Generating new start and end nodes for example graphs is not allowed.
+        if (globalVariablesManager.isExampleGraph()) {
             disableStartEndNodeButton();
         } else {
             enableStartEndNodeButton();
         }
     });
 
+    tutorialCloseButton.addEventListener('click', handleTutorialClose);
+    tutorialFinishButton.addEventListener('click', handleTutorialClose);
+
+    tutorialNextButton.addEventListener('click', () => {
+        const currentPageNumber = globalVariablesManager.incrementTutorialPageNumber();
+        updateTutorialButtons();
+        renderTutorialContent(currentPageNumber, tutorialContentDiv);
+    });
+
+    tutorialPreviousButton.addEventListener('click', () => {
+        const currentPageNumber = globalVariablesManager.decrementTutorialPageNumber();
+        updateTutorialButtons();
+        renderTutorialContent(currentPageNumber, tutorialContentDiv);
+    });
+
     generateNewGraphButton.addEventListener('click', async () => {
-        do {
-            generateNewGraph();
-            resetGridAndRerun();
-        } while (!globalVariablesManager.getEndNodeReachable());
+        generateNewGraphWithReachableEndNode();
     });
 
     changeStartNodeButton.addEventListener('click', () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
         setNewStartEndNode(NodeState.StartNode);
     });
 
     changeEndNodeButton.addEventListener('click', async () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
         setNewStartEndNode(NodeState.EndNode);
     });
 
-    graphTypeDropdown.addEventListener('change', async () => {
-        const graphType = graphTypeDropdown.value as GraphType;
-        globalVariablesManager.setGraphType(graphType);
+    primaryGraphTypeDropdown.addEventListener('change', async () => {
+        const primaryGraphType = primaryGraphTypeDropdown.value as PrimaryGraphType;
+        const weighted = weightCheckbox.checked;
+        const newMaxWeight = weighted ? getMaxWeight(weightSlider.value) : 0;
+        globalVariablesManager.setMaxWeight(newMaxWeight);
 
-        switch (graphType) {
-            case GraphType.MazeDfs:
-            case GraphType.RandomWalls:
-            case GraphType.MazeRecursiveDivision:
-                globalVariablesManager.setMaxWeight(MAX_WEIGHT);
-                disableWeightSlider();
+        let graphType = GraphType.Standard;
+
+        switch (primaryGraphType) {
+            case PrimaryGraphType.Maze:
+                graphType = GraphType.RecursiveDivision;
                 break;
-            case GraphType.Unweighted:
-                globalVariablesManager.setMaxWeight(0);
-                disableWeightSlider();
+            case PrimaryGraphType.Ideal:
+                graphType = GraphType.IdealBfs;
                 break;
-            case GraphType.AStarExample:
-            case GraphType.DjikstraExample:
+            default:
                 break;
-            case GraphType.Weighted:
-                globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-                enableWeightSlider();
         }
 
+        // We hide the weight slider for Maze graphs.
+        if (globalVariablesManager.isMazeGraph()) {
+            hideWeightSlider();
+        } else {
+            showWeightSlider();
+        }
         setWeightColor();
-        do {
-            generateNewGraph();
-            resetGridAndRerun();
-        } while (!globalVariablesManager.getEndNodeReachable());
+
+        globalVariablesManager.setGraphType(graphType);
+        setSecondaryGraphDropdown(primaryGraphType);
+        generateNewGraphWithReachableEndNode();
+    });
+
+    secondaryGraphTypeDropdown.addEventListener('change', async () => {
+        const secondaryGraphType = secondaryGraphTypeDropdown.value as SecondaryGraphType;
+        let newGraphType: GraphType = GraphType.Standard;
+
+        switch (secondaryGraphType) {
+            case MazeType.Dfs:
+                newGraphType = GraphType.Dfs;
+                break;
+            case MazeType.RandomWalls:
+                newGraphType = GraphType.RandomWalls;
+                break;
+            case MazeType.RecrusiveDivision:
+                newGraphType = GraphType.RecursiveDivision;
+                break;
+            case AlgorithmType.AStar:
+                newGraphType = GraphType.IdealAStar;
+                break;
+            case AlgorithmType.BellmanFord:
+                newGraphType = GraphType.IdealBellmanFord;
+                break;
+            case AlgorithmType.Dijkstra:
+                newGraphType = GraphType.IdealDijkstra;
+                break;
+            case AlgorithmType.Bfs:
+                newGraphType = GraphType.IdealBfs;
+                break;
+            default:
+                break;
+        }
+
+        globalVariablesManager.setGraphType(newGraphType);
+        generateNewGraphWithReachableEndNode();
+    });
+
+    weightCheckbox.addEventListener('change', () => {
+        const isWeighted = weightCheckbox.checked;
+        globalVariablesManager.setIsWeighted(isWeighted);
+        globalVariablesManager.setMaxWeight(isWeighted ? getMaxWeight(weightSlider.value) : 0);
+
+        if (isWeighted) {
+            enableWeightSlider();
+            // We don't show the weight slider for maze graphs.
+            if (!globalVariablesManager.isMazeGraph()) {
+                showWeightSlider();
+            }
+        } else {
+            disableWeightSlider();
+            hideWeightSlider();
+        }
+        setWeightColor();
+
+        generateNewGraphWithReachableEndNode();
     });
 
     weightSlider.addEventListener('input', async () => {
-        globalVariablesManager.setGraphType(GraphType.Weighted);
         globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-
-        setWeightColor();
-
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
-
-        globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
-
-        resetGridAndRerun();
+        generateNewGraphWithReachableEndNode();
     });
 
     stepsSlider.addEventListener('input', async () => {
-        resetGrid(gridContainers, Object.values(AlgorithmType));
-        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+        stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
 
         const runResults = globalVariablesManager.getRunResults();
 
@@ -363,15 +560,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             displayStep(parseInt(stepsSlider.value), runResult);
         });
 
-        // When slider reaches the maximum value (extreme right).
+        // When slider reaches the maximum value.
         if (stepsSlider.value === stepsSlider.max) {
             const maxStepsOfAllAlgorithms = Math.max(
-                ...runResults.map((result) => result.getTotalSteps()),
+                ...runResults.map((result) => result.getLatestTotalSteps()),
             );
             runResults.forEach((runResult) => {
                 // Show the shortest path for the slowest algorithm.
                 // Shortest paths for other algorithms are displayed as part of the run results.
-                if (runResult.getTotalSteps() === maxStepsOfAllAlgorithms) {
+                if (runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
                     displayShortestPath(
                         gridContainers,
                         runResult.getShortestPath(),
@@ -390,15 +587,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     aStarHeuristicTypeDropDown.addEventListener('change', async () => {
         const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
         globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
-
         resetGridAndRerun();
     });
-
-    // aStarHeuristicInfluenceDropdown.addEventListener('change', async () => {
-    //     const aStarHeuristicInfluence =
-    //         aStarHeuristicInfluenceDropdown.value as AStarHeuristicInfluence;
-    //     globalVariablesManager.setAStartHeuristicInfluence(aStarHeuristicInfluence);
-
-    //     resetGridAndRerun();
-    // });
 });

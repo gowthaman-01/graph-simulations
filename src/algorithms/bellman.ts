@@ -42,6 +42,16 @@ export const bellmanFord = (): RunResults => {
                 steps += 2;
                 continue;
             }
+
+            if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+                runResults.addStep(steps, [
+                    {
+                        id: currentNode,
+                        newState: NodeState.Visiting,
+                    },
+                ]);
+            }
+
             for (const neighbor of graph[currentNode]) {
                 const { id: neighborId, weight: neighborWeight } = neighbor;
                 const newWeight = distances[currentNode] + neighborWeight;
@@ -57,12 +67,13 @@ export const bellmanFord = (): RunResults => {
                         runResults.addStep(steps, [
                             {
                                 id: neighborId,
-                                newState: NodeState.Visiting,
+                                newState: NodeState.Exploring,
                             },
                         ]);
                     }
                 }
             }
+
             if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
                 runResults.addStep(steps, [
                     {

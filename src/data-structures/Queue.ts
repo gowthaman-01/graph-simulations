@@ -1,5 +1,6 @@
 /**
  * Represents a node in the queue.
+ * @template T - The type of elements stored in the node.
  */
 class QueueNode<T> {
     data: T;
@@ -13,6 +14,7 @@ class QueueNode<T> {
 
 /**
  * Represents a queue data structure.
+ * @template T - The type of elements stored in the queue.
  */
 export class Queue<T> {
     private head: QueueNode<T> | null;
@@ -85,7 +87,8 @@ export class Queue<T> {
     }
 
     /**
-     * List all elements of the queue.
+     * Lists all elements of the queue.
+     * @returns {T[]} An array containing all elements of the queue.
      */
     list(): T[] {
         const list: T[] = [];

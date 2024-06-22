@@ -1,13 +1,12 @@
 import { DEFAULT_STEP_INCREMENT } from '../common/constants';
-import {
-    AStarHeuristicInfluence,
-    AStarHeuristicType,
-    GraphStructure,
-    GraphType,
-} from '../common/types';
+import { AStarHeuristicType, GraphStructure, GraphType } from '../common/types';
 import RunResults from './RunResults';
 import { createGridGraph, generateStartAndEndNode } from './graph';
 
+/**
+ * Manages global variables for the graph and algorithm settings.
+ * Implements a singleton pattern to ensure a single instance.
+ */
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;
     private graph: GraphStructure;
@@ -15,25 +14,28 @@ class GlobalVariablesManager {
     private startNode: number;
     private endNode: number;
     private graphType: GraphType;
+    private isWeighted: boolean;
     private maxWeight: number;
     private stepIncrement: number;
     private firstRender: boolean;
     private endNodeReachable: boolean;
-    private aStarHeuristicType: AStarHeuristicType = AStarHeuristicType.Manhattan;
-    private aStartHeuristicInfluence: AStarHeuristicInfluence = AStarHeuristicInfluence.Balanced;
+    private aStarHeuristicType: AStarHeuristicType;
+    private tutorialPageNumber: number;
 
     private constructor() {
-        // Initialize default values
+        this.graph = createGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
         this.runResults = [];
         const { startNode, endNode } = generateStartAndEndNode();
         this.startNode = startNode;
         this.endNode = endNode;
-        this.graphType = GraphType.Unweighted;
+        this.graphType = GraphType.Standard;
+        this.isWeighted = false;
         this.maxWeight = 0;
         this.stepIncrement = DEFAULT_STEP_INCREMENT;
         this.firstRender = true;
         this.endNodeReachable = false;
-        this.graph = createGridGraph(0, GraphType.Unweighted); // The default graph is unweighted, with 0 max weight.
+        this.aStarHeuristicType = AStarHeuristicType.Manhattan;
+        this.tutorialPageNumber = 1;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -83,8 +85,16 @@ class GlobalVariablesManager {
         return this.graphType;
     }
 
+    public setIsWeighted(isWeighted: boolean) {
+        this.isWeighted = isWeighted;
+    }
+
+    public getIsWeighted(): boolean {
+        return this.isWeighted;
+    }
+
     public setMaxWeight(maxWeight: number): void {
-        this.maxWeight = maxWeight;
+        this.maxWeight = Math.floor(maxWeight);
     }
 
     public getMaxWeight(): number {
@@ -111,7 +121,7 @@ class GlobalVariablesManager {
         this.endNodeReachable = endNodeReachable;
     }
 
-    public getEndNodeReachable(): boolean {
+    public isEndNodeReachable(): boolean {
         return this.endNodeReachable;
     }
 
@@ -123,15 +133,40 @@ class GlobalVariablesManager {
         this.aStarHeuristicType = newType;
     }
 
-    public getAStartHeuristicInfluence(): AStarHeuristicInfluence {
-        return this.aStartHeuristicInfluence;
+    public getTutorialPageNumber(): number {
+        return this.tutorialPageNumber;
     }
 
-    public setAStartHeuristicInfluence(newInfluence: AStarHeuristicInfluence) {
-        this.aStartHeuristicInfluence = newInfluence;
+    public incrementTutorialPageNumber(): number {
+        return this.tutorialPageNumber < 10 ? ++this.tutorialPageNumber : this.tutorialPageNumber;
+    }
+
+    public decrementTutorialPageNumber(): number {
+        return this.tutorialPageNumber > 0 ? --this.tutorialPageNumber : this.tutorialPageNumber;
+    }
+
+    public isExampleGraph() {
+        return (
+            this.graphType === GraphType.IdealAStar ||
+            this.graphType === GraphType.IdealDijkstra ||
+            this.graphType === GraphType.IdealBellmanFord ||
+            this.graphType === GraphType.IdealBfs
+        );
+    }
+
+    public isMazeGraph() {
+        return (
+            this.graphType === GraphType.Dfs ||
+            this.graphType === GraphType.RecursiveDivision ||
+            this.graphType === GraphType.RandomWalls
+        );
     }
 }
 
+/**
+ * Returns the singleton instance of the GlobalVariablesManager.
+ * @returns {GlobalVariablesManager} The singleton instance.
+ */
 export const getGlobalVariablesManagerInstance = (): GlobalVariablesManager => {
     return GlobalVariablesManager.getInstance();
 };

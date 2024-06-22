@@ -17,7 +17,7 @@ export const dijkstra = (): RunResults => {
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
 
-    const runResults = new RunResults(AlgorithmType.Djikstra);
+    const runResults = new RunResults(AlgorithmType.Dijkstra);
     // This will count the number of operations performed. A single step equates to a O(1) operation.
     let steps = 0;
 
@@ -46,6 +46,14 @@ export const dijkstra = (): RunResults => {
         visited[currentNode] = true; // O(1)
 
         steps += heapPopSteps + 2;
+
+        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
+            const newNodeState: NewNodeState = {
+                id: currentNode,
+                newState: NodeState.Visiting,
+            };
+            runResults.addStep(steps, [newNodeState]);
+        }
 
         // If the end node is reached.
         if (currentNode === endNode.toString()) {
@@ -76,7 +84,7 @@ export const dijkstra = (): RunResults => {
                 if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
                     const newNodeState: NewNodeState = {
                         id: neighbor.id,
-                        newState: NodeState.Visiting,
+                        newState: NodeState.Exploring,
                     };
                     runResults.addStep(steps, [newNodeState]);
                 }
