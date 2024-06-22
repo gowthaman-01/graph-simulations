@@ -335,9 +335,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Other types of graphs.
+        // Other graph types.
         showWeightControls();
         enableStartEndNodeButton();
+
+        // We don't show the weight slider for maze graphs.
+        if (globalVariablesManager.getIsWeighted() && !globalVariablesManager.isMazeGraph()) {
+            enableWeightSlider();
+            showWeightSlider();
+        } else {
+            disableWeightSlider();
+            hideWeightSlider();
+        }
+        setWeightColor();
+
         const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
     };
@@ -477,14 +488,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
         }
 
-        // We hide the weight slider for Maze graphs.
-        if (globalVariablesManager.isMazeGraph()) {
-            hideWeightSlider();
-        } else {
-            showWeightSlider();
-        }
-        setWeightColor();
-
         globalVariablesManager.setGraphType(graphType);
         setSecondaryGraphDropdown(primaryGraphType);
         generateNewGraphWithReachableEndNode();
@@ -528,19 +531,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isWeighted = weightCheckbox.checked;
         globalVariablesManager.setIsWeighted(isWeighted);
         globalVariablesManager.setMaxWeight(isWeighted ? getMaxWeight(weightSlider.value) : 0);
-
-        if (isWeighted) {
-            enableWeightSlider();
-            // We don't show the weight slider for maze graphs.
-            if (!globalVariablesManager.isMazeGraph()) {
-                showWeightSlider();
-            }
-        } else {
-            disableWeightSlider();
-            hideWeightSlider();
-        }
-        setWeightColor();
-
         generateNewGraphWithReachableEndNode();
     });
 
