@@ -20,6 +20,7 @@ class GlobalVariablesManager {
     private firstRender: boolean;
     private endNodeReachable: boolean;
     private aStarHeuristicType: AStarHeuristicType;
+    private tutorialPageNumber: number;
 
     private constructor() {
         this.graph = createGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
@@ -34,6 +35,7 @@ class GlobalVariablesManager {
         this.firstRender = true;
         this.endNodeReachable = false;
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
+        this.tutorialPageNumber = 1;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -129,6 +131,18 @@ class GlobalVariablesManager {
 
     public setAStarHeuristicType(newType: AStarHeuristicType) {
         this.aStarHeuristicType = newType;
+    }
+
+    public getTutorialPageNumber(): number {
+        return this.tutorialPageNumber;
+    }
+
+    public incrementTutorialPageNumber(): number {
+        return this.tutorialPageNumber < 10 ? ++this.tutorialPageNumber : this.tutorialPageNumber;
+    }
+
+    public decrementTutorialPageNumber(): number {
+        return this.tutorialPageNumber > 0 ? --this.tutorialPageNumber : this.tutorialPageNumber;
     }
 
     public isExampleGraph() {

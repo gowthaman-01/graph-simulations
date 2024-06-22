@@ -88,6 +88,19 @@ export interface NewNodeState {
     newState: NodeState;
 }
 
+export interface TutrorialData {
+    pageNumber: number;
+    title: string;
+    body: string;
+    img?: ImageData;
+}
+
+export interface ImageData {
+    src: string;
+    width: number;
+    marginTop: number;
+}
+
 export enum AlgorithmType {
     Bfs = 'bfs',
     Dijkstra = 'dijkstra',

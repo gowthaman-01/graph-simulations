@@ -24,10 +24,23 @@ import {
 import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
 import { createMark, unmarkCell } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
+import { renderTutorialContent } from '../src/tutorial/tutorial';
+import { tutorialDataList } from '../src/tutorial/data';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
     // Load HTML elements
+    const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
+    const tutorialContainerDiv = document.getElementById('tutorialContainer') as HTMLDivElement;
+    const tutorialContentDiv = document.getElementById('tutorialContent') as HTMLDivElement;
+    const tutorialCloseButton = document.getElementById('tutorialCloseButton') as HTMLButtonElement;
+    const tutorialNextButton = document.getElementById('tutorialNextButton') as HTMLButtonElement;
+    const tutorialPreviousButton = document.getElementById(
+        'tutorialPreviousButton',
+    ) as HTMLButtonElement;
+    const tutorialFinishButton = document.getElementById(
+        'tutorialFinishButton',
+    ) as HTMLButtonElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
@@ -57,8 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Return early if an element is undefined.
     if (
+        !mainBodyDiv ||
+        !tutorialContainerDiv ||
+        !tutorialContentDiv ||
+        !tutorialCloseButton ||
+        !tutorialNextButton ||
+        !tutorialPreviousButton ||
+        !tutorialFinishButton ||
         !aStarHeuristicTypeDropDown ||
-        // !aStarHeuristicInfluenceDropdown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
         !generateNewGraphButton ||
@@ -187,6 +206,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     const enableStartEndNodeButton = () => {
         changeStartNodeButton.disabled = false;
         changeEndNodeButton.disabled = false;
+    };
+
+    const toggleTutorialButton = (buttonType: 'P' | 'N' | 'F', show: boolean) => {
+        let button = tutorialPreviousButton;
+        switch (buttonType) {
+            case 'N':
+                button = tutorialNextButton;
+                break;
+            case 'F':
+                button = tutorialFinishButton;
+            default:
+                break;
+        }
+
+        button.style.display = show ? 'inline' : 'none';
+    };
+
+    const updateTutorialButtons = () => {
+        const currentPageNumber = globalVariablesManager.getTutorialPageNumber();
+        if (currentPageNumber === 1) {
+            toggleTutorialButton('P', false);
+            toggleTutorialButton('N', true);
+            toggleTutorialButton('F', false);
+        } else if (currentPageNumber === tutorialDataList.length) {
+            toggleTutorialButton('P', true);
+            toggleTutorialButton('N', false);
+            toggleTutorialButton('F', true);
+        } else {
+            toggleTutorialButton('P', true);
+            toggleTutorialButton('N', true);
+            toggleTutorialButton('F', false);
+        }
+    };
+
+    const handleTutorialClose = () => {
+        tutorialContainerDiv.style.display = 'none';
+        mainBodyDiv.classList.remove('main-body-blur');
     };
 
     const getRunResults = () => {
@@ -328,6 +384,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
+
     // Setup of controls on initial page load.
     hideWeightSlider();
     resetStepsSlider();
@@ -336,6 +394,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     enableGraphControls();
     disableWeightSlider(); // Weight slider disabled for the default standard unweighted graph type.
     disableSecondaryGraphTypeDropdown(); // Secondary graph type dropdown disabled for default standard graph type.
+    toggleTutorialButton('P', false); // Since we are on the first page of the tutorial, there is no previous button.
 
     // Generate graph and run results.
     resetGridAndRerun();
@@ -370,6 +429,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             enableStartEndNodeButton();
         }
+    });
+
+    tutorialCloseButton.addEventListener('click', handleTutorialClose);
+    tutorialFinishButton.addEventListener('click', handleTutorialClose);
+
+    tutorialNextButton.addEventListener('click', () => {
+        const currentPageNumber = globalVariablesManager.incrementTutorialPageNumber();
+        updateTutorialButtons();
+        renderTutorialContent(currentPageNumber, tutorialContentDiv);
+    });
+
+    tutorialPreviousButton.addEventListener('click', () => {
+        const currentPageNumber = globalVariablesManager.decrementTutorialPageNumber();
+        updateTutorialButtons();
+        renderTutorialContent(currentPageNumber, tutorialContentDiv);
     });
 
     generateNewGraphButton.addEventListener('click', async () => {
