@@ -112,6 +112,13 @@ td, th {
     min-width: 120px;
 }
 
+.page-number {
+    position: fixed;
+    top: 10px;
+    right: 40px;
+
+}
+
 .grid-containers { 
     display: flex;
     gap: 50px;
@@ -152,7 +159,6 @@ td, th {
 .left-container {
     margin-left: 4px;
     display: grid;
-    gap: 7px;
 }
 
 .left-container p {
@@ -177,6 +183,10 @@ td, th {
 .middle-container {
     margin-top: 12px;
     margin-right: 30px;
+}
+
+.open-tutorial-button-container {
+    margin-top: 10px;
 }
 
 .steps-slider-container {
@@ -211,6 +221,7 @@ td, th {
     justify-content: left;
     margin-right: 10px;
     gap: 13px;
+    margin-bottom: -4px;
 }
 
 .weight-container {
@@ -270,11 +281,11 @@ td, th {
 }
 
 .speed-slider-container {
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .steps-slider-container {
-    margin-top: 5px;
+    margin-top: 14px;
 }
 
 /* Typography */

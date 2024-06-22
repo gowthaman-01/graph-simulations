@@ -142,7 +142,12 @@ class GlobalVariablesManager {
     }
 
     public decrementTutorialPageNumber(): number {
-        return this.tutorialPageNumber > 0 ? --this.tutorialPageNumber : this.tutorialPageNumber;
+        return this.tutorialPageNumber > 1 ? --this.tutorialPageNumber : this.tutorialPageNumber;
+    }
+
+    public resetTutorialPageNumber(): number {
+        this.tutorialPageNumber = 1;
+        return this.tutorialPageNumber;
     }
 
     public isExampleGraph() {

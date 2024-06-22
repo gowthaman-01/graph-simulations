@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tutorialFinishButton = document.getElementById(
         'tutorialFinishButton',
     ) as HTMLButtonElement;
+    const pageNumber = document.getElementById('pageNumber') as HTMLParagraphElement;
+    const viewTutorialButton = document.getElementById('viewTutorialButton') as HTMLButtonElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
@@ -77,6 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         !tutorialNextButton ||
         !tutorialPreviousButton ||
         !tutorialFinishButton ||
+        !viewTutorialButton ||
+        !pageNumber ||
         !aStarHeuristicTypeDropDown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
@@ -223,8 +227,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.style.display = show ? 'inline' : 'none';
     };
 
-    const updateTutorialButtons = () => {
+    const updateTutorialButtonsAndPageNumber = () => {
         const currentPageNumber = globalVariablesManager.getTutorialPageNumber();
+
+        // Update tutorial buttons visibility.
         if (currentPageNumber === 1) {
             toggleTutorialButton('P', false);
             toggleTutorialButton('N', true);
@@ -238,6 +244,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             toggleTutorialButton('N', true);
             toggleTutorialButton('F', false);
         }
+
+        // Update page number.
+        pageNumber.innerHTML = `${currentPageNumber}/10`;
+    };
+
+    const handleTutorialOpen = () => {
+        // Blur background
+        mainBodyDiv.classList.add('main-body-blur');
+
+        // Reset tutorialPageNumber to 1.
+        const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
+
+        // Show Tutorial
+        tutorialContainerDiv.style.display = 'flex';
+        renderTutorialContent(currentPageNumber, tutorialContentDiv);
+
+        updateTutorialButtonsAndPageNumber();
     };
 
     const handleTutorialClose = () => {
@@ -444,17 +467,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     tutorialSkipButton.addEventListener('click', handleTutorialClose);
     tutorialFinishButton.addEventListener('click', handleTutorialClose);
+    viewTutorialButton.addEventListener('click', handleTutorialOpen);
 
     tutorialNextButton.addEventListener('click', () => {
         const currentPageNumber = globalVariablesManager.incrementTutorialPageNumber();
-        updateTutorialButtons();
         renderTutorialContent(currentPageNumber, tutorialContentDiv);
+        updateTutorialButtonsAndPageNumber();
     });
 
     tutorialPreviousButton.addEventListener('click', () => {
         const currentPageNumber = globalVariablesManager.decrementTutorialPageNumber();
-        updateTutorialButtons();
         renderTutorialContent(currentPageNumber, tutorialContentDiv);
+        updateTutorialButtonsAndPageNumber();
     });
 
     generateNewGraphButton.addEventListener('click', async () => {

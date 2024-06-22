@@ -10,6 +10,9 @@
 </body>
     <div>
         <div class="tutorial-container" id="tutorialContainer">
+            <div class="page-number">
+                <p id="pageNumber">1/10</p>
+            </div>
             <div class="tutorial-content" id="tutorialContent">
             </div>
             <div class="tutorial-buttons">
@@ -59,7 +62,6 @@
             <div class="bottom-container">
                 <!-- Legend -->
                 <div class="left-container">
-                    <p style="text-decoration: underline;">Legend</p>
                     <div class="legend">
                         <div class="legend-image-container-large">
                             <img src="./assets/start.png" alt="Start Node"/>
@@ -89,6 +91,9 @@
                             <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter"/>
                         </div>
                         <p>Shortest path</p>
+                    </div>
+                    <div class="open-tutorial-button-container">
+                        <button id="viewTutorialButton">View Tutorial</button>
                     </div>
                 </div>
                 
@@ -125,7 +130,6 @@
                             <td id="aStar-nodes"></td>
                         </tr>
                     </table>
-
                     <p style="margin-top: 25px;" id="best-algorithm">Best Algorithm: </p>
                 </div>
 
