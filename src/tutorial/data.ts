@@ -136,9 +136,9 @@ export const tutorialDataList: TutrorialData[] = [
         title: 'Statistics table',
         body: ` 
         The statistics table compares the performance of different algorithms (BFS, Bellman-Ford, Dijkstra, and A* Search). 
-        <br><br>Steps: Represents the number of steps taken by each algorithm to find the shortest path.
-        <br>Weight: Indicates the total weight of the shortest path.
-        <br>Nodes: Shows the number of nodes in the shortest path.
+        <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.
+        <br><u>Weight</u>: Indicates the total weight of the shortest path.
+        <br><u>Nodes</u>: Shows the number of nodes in the shortest path.
         <br><br>  The best algorithm is chosen by first comparing path weights; the one with the lowest weight wins. If weights are equal, the algorithm with fewer steps is preferred. Here, A* Search has the same weight as Bellman-Ford and Dijkstra but uses fewer steps, making it the best choice. 
         <br><br>
         <table>
