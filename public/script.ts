@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Update page number.
-        pageNumber.innerHTML = `${currentPageNumber}/10`;
+        pageNumber.innerHTML = `${currentPageNumber}/9`;
     };
 
     const handleTutorialOpen = () => {
