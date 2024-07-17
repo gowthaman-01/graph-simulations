@@ -1,5 +1,11 @@
-import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
-import { AlgorithmType, Nodes, Node, StepMetadata, NodeState } from '../common/types';
+import {
+    COLS,
+    DEFAULT_DELAY,
+    GRID_SIZE,
+    ROWS,
+    SHORTEST_PATH_DELAY_MULTIPLIER,
+} from '../common/constants';
+import { AlgorithmType, Node, StepMetadata, NodeState } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { createMark, markCell } from './mark';
@@ -37,25 +43,29 @@ export const resetGridAndStatisticTable = (
         gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 140fr)`;
         gridContainer.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
 
-        // Create grid cells.
+        // Create grid cells using DocumentFragment for performance.
+        const fragment = document.createDocumentFragment();
+
         for (let i = 0; i < GRID_SIZE; i++) {
             const cell = document.createElement('div');
-            const weight = nodes[i.toString()].weight;
-            const color = getColorByWeight(weight);
+
             cell.id = `${gridContainer.id}-cell-${i}`;
             cell.className = 'grid-cell';
-            cell.style.border = `solid 1px #0C3547`;
-            cell.style.backgroundColor = color;
+            cell.style.border = 'solid 1px #0C3547';
 
-            // Mark the start and end nodes with the appropriate image.
-            if (i == startNode || i == endNode) {
+            const weight = nodes[i.toString()].weight;
+            cell.style.backgroundColor = getColorByWeight(weight);
+
+            if (i === startNode || i === endNode) {
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
                 const mark = createMark(algorithmType, i.toString(), nodeState);
                 cell.appendChild(mark);
             }
 
-            gridContainer.appendChild(cell);
+            fragment.appendChild(cell);
         }
+
+        gridContainer.appendChild(fragment);
 
         // Update statistics table.
         const weightTableElement = document.getElementById(
@@ -74,13 +84,14 @@ export const resetGridAndStatisticTable = (
         const runResult = runResults.find(
             (runResult) => runResult.getAlgorithmType() === algorithmType,
         );
+
         if (!runResult) continue;
 
-        weightTableElement.innerHTML = runResult.getTotalWeight().toString();
-        stepsTableElement.innerHTML = runResult.getAlgorithmSteps().toString();
+        weightTableElement.textContent = runResult.getTotalWeight().toString();
+        stepsTableElement.textContent = runResult.getAlgorithmSteps().toString();
         // Number of nodes in the shortest path is equal to its length.
-        nodesTableElement.innerHTML = runResult.getShortestPath().length.toString();
-        bestAlgorithmParagraphElement.innerHTML = `Best algorithm: ${getAlgorithmDisplayName(
+        nodesTableElement.textContent = runResult.getShortestPath().length.toString();
+        bestAlgorithmParagraphElement.textContent = `Best algorithm: ${getAlgorithmDisplayName(
             getBestAlgorithm(),
         )}`;
     }
@@ -95,30 +106,30 @@ export const displayAllRunResults = async (
     stepsSlider: HTMLInputElement,
     stepsCount: HTMLParagraphElement,
 ): Promise<void> => {
-    const runResultList = globalVariablesManager.getRunResults();
-    const stepIncrement = globalVariablesManager.getStepIncrement();
+    const runResults = globalVariablesManager.getRunResults();
 
+    const maxTotalSteps = Math.max(
+        ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
+    );
     // maxAlgorithmSteps represent the number of steps that the algorithm took to run, excluding the steps that display the shortest path.
-    const maxTotalSteps = Math.max(...runResultList.map((result) => result.getLatestTotalSteps()));
     const maxAlgorithmSteps = Math.max(
-        ...runResultList.map((result) => result.getAlgorithmSteps()),
+        ...runResults.map((runResult) => runResult.getAlgorithmSteps()),
     );
 
-    let step = parseInt(stepsSlider.value);
     stepsSlider.max = maxAlgorithmSteps.toString();
+    let step = parseInt(stepsSlider.value);
 
     // Display each step.
     while (step <= maxTotalSteps) {
-        for (const runResult of runResultList) {
-            if (runResult.isDisplayComplete()) continue;
-            if (step >= runResult.getLatestTotalSteps()) {
+        for (const runResult of runResults) {
+            if (step >= runResult.getLatestTotalSteps() && !runResult.isDisplayComplete()) {
                 runResult.setDisplayComplete();
-                continue;
+            } else {
+                displayStep(step, runResult);
             }
-            displayStep(step, runResult);
         }
 
-        step += stepIncrement;
+        step += globalVariablesManager.getStepIncrement();
         stepsSlider.value = step.toString();
         stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
 
@@ -133,13 +144,13 @@ export const displayAllRunResults = async (
  */
 export const displayStep = (step: number, runResult: RunResults): void => {
     const currentStep = findNearestStep(runResult.getStepMetadataList(), step);
-    Object.values(currentStep.nodeMetaDataMap).forEach((nodeMetaData) => {
-        markCell(nodeMetaData.id, nodeMetaData.state, runResult.getAlgorithmType());
+    Object.values(currentStep.nodeMetadataMap).forEach((nodeMetadata) => {
+        markCell(nodeMetadata.id, nodeMetadata.state, runResult.getAlgorithmType());
     });
 };
 
 /**
- * Finds the nearest step metadata to the provided step number.
+ * Finds the nearest step metadata to the provided step number using binary search.
  * @param {StepMetadata[]} stepMetadataList - The list of step metadata.
  * @param {number} currentStep - The current step number.
  * @returns {StepMetadata} The nearest step metadata to the current step.
@@ -184,7 +195,9 @@ export const displayShortestPath = async (
         // Mark every shortest path node except the start and the end.
         if (i !== 0 && i !== shortestPath.length - 1) {
             markCell(node.id, NodeState.ShortestPath, algorithmType);
-            await delay(DEFAULT_DELAY * 3);
+
+            // We use a longer step increment to slow down the simulation when the shortest path is displayed.
+            await delay(globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER);
         }
     }
 };

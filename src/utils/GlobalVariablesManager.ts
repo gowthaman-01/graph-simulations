@@ -1,11 +1,10 @@
 import { DEFAULT_STEP_INCREMENT } from '../common/constants';
 import { AStarHeuristicType, GraphStructure, GraphType } from '../common/types';
 import RunResults from './RunResults';
-import { createGridGraph, generateStartAndEndNode } from './graph';
+import { createBasicGridGraph, generateStartAndEndNode } from './graph';
 
 /**
- * Manages global variables for the graph and algorithm settings.
- * Implements a singleton pattern to ensure a single instance.
+ * Singleton class to manage global variables used in the application.
  */
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;
@@ -22,8 +21,11 @@ class GlobalVariablesManager {
     private aStarHeuristicType: AStarHeuristicType;
     private tutorialPageNumber: number;
 
+    private readonly TUTORIAL_PAGE_MIN = 1;
+    private readonly TUTORIAL_PAGE_MAX = 9;
+
     private constructor() {
-        this.graph = createGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
+        this.graph = createBasicGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
         this.runResults = [];
         const { startNode, endNode } = generateStartAndEndNode();
         this.startNode = startNode;
@@ -35,7 +37,7 @@ class GlobalVariablesManager {
         this.firstRender = true;
         this.endNodeReachable = false;
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
-        this.tutorialPageNumber = 1;
+        this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -138,15 +140,19 @@ class GlobalVariablesManager {
     }
 
     public incrementTutorialPageNumber(): number {
-        return this.tutorialPageNumber < 10 ? ++this.tutorialPageNumber : this.tutorialPageNumber;
+        return this.tutorialPageNumber < this.TUTORIAL_PAGE_MAX
+            ? ++this.tutorialPageNumber
+            : this.tutorialPageNumber;
     }
 
     public decrementTutorialPageNumber(): number {
-        return this.tutorialPageNumber > 1 ? --this.tutorialPageNumber : this.tutorialPageNumber;
+        return this.tutorialPageNumber > this.TUTORIAL_PAGE_MIN
+            ? --this.tutorialPageNumber
+            : this.tutorialPageNumber;
     }
 
     public resetTutorialPageNumber(): number {
-        this.tutorialPageNumber = 1;
+        this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         return this.tutorialPageNumber;
     }
 

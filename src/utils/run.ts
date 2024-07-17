@@ -12,29 +12,24 @@ import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
  * @returns {RunResults[]} The results of running the algorithm.
  */
 export const runAlgorithm = (algorithmType: AlgorithmType): RunResults => {
-    const algorithm = getAlgorithmFromAlgorithmType(algorithmType);
-    const runResults = algorithm();
-    return runResults;
-};
-
-/**
- * Retrieves the algorithm function based on the specified algorithm type.
- * @param {AlgorithmType} algorithmType - The type of algorithm.
- * @returns The corresponding algorithm function.
- */
-const getAlgorithmFromAlgorithmType = (algorithmType: AlgorithmType): (() => RunResults) => {
+    let algorithm = bfs;
     switch (algorithmType) {
         case AlgorithmType.Bfs:
-            return bfs;
+            algorithm = bfs;
+            break;
         case AlgorithmType.BellmanFord:
-            return bellmanFord;
+            algorithm = bellmanFord;
+            break;
         case AlgorithmType.Dijkstra:
-            return dijkstra;
+            algorithm = dijkstra;
+            break;
         case AlgorithmType.AStar:
-            return aStarSearch;
-        default:
-            return bfs;
+            algorithm = aStarSearch;
+            break;
     }
+
+    const runResults = algorithm();
+    return runResults;
 };
 
 /**
@@ -43,19 +38,24 @@ const getAlgorithmFromAlgorithmType = (algorithmType: AlgorithmType): (() => Run
  */
 export const getBestAlgorithm = (): AlgorithmType => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
-    let runResults = globalVariablesManager.getRunResults();
+    const runResults = globalVariablesManager.getRunResults();
 
-    // Get algorithms that result in a shortest path with the lowest weight.
+    // Get the lowest total weight and filter results with this weight.
     const lowestWeight = Math.min(...runResults.map((runResult) => runResult.getTotalWeight()));
-    runResults = runResults.filter((runResult) => runResult.getTotalWeight() === lowestWeight);
+    const filteredResults = runResults.filter(
+        (runResult) => runResult.getTotalWeight() === lowestWeight,
+    );
 
-    // Get algorithm that executes the fastest.
-    const lowestStep = Math.min(...runResults.map((runResult) => runResult.getAlgorithmSteps()));
+    // Get the lowest number of steps among the filtered results.
+    const lowestStep = Math.min(
+        ...filteredResults.map((runResult) => runResult.getAlgorithmSteps()),
+    );
 
-    const bestAlgorithmRun = runResults.find(
+    // The best algorithm is the algorithm with the lowest weight and lowest step.
+    const bestAlgorithmRun = filteredResults.find(
         (runResult) => runResult.getAlgorithmSteps() === lowestStep,
     );
 
-    // If theres is no best algorithm, we set the default best to BFS. In reality, this should never happen.
+    // If there is no best algorithm, default to BFS. This scenario should never happen.
     return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.Bfs;
 };

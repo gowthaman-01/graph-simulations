@@ -1,12 +1,10 @@
-import { GRID_SIZE } from '../common/constants';
+import { DEFAULT_DELAY, GRID_SIZE, SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
 import {
     AlgorithmType,
     NewNodeState,
     Node,
-    NodeMetadata,
     NodeMetadataMap,
     NodeState,
-    Nodes,
     StepMetadata,
 } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
@@ -17,8 +15,8 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
  * Represents the results of a run of an algorithm on a graph.
  */
 export default class RunResults {
-    private algorithmType: AlgorithmType;
-    private stepMetadataList: StepMetadata[];
+    private readonly algorithmType: AlgorithmType;
+    private readonly stepMetadataList: StepMetadata[];
     private shortestPath: Node[];
     private algorithmSteps: number; // Denotes the steps taken to run the algorithm, excluding the steps taken to display of the shortest path.
     private displayComplete: boolean;
@@ -28,11 +26,7 @@ export default class RunResults {
         this.stepMetadataList = [
             {
                 steps: 0,
-                nodeMetaDataMap: this.createNodeMetadataMap(
-                    globalVariablesManager.getGraph().nodes,
-                    globalVariablesManager.getStartNode(),
-                    globalVariablesManager.getEndNode(),
-                ),
+                nodeMetadataMap: this.createNodeMetadataMap(),
             },
         ];
         this.shortestPath = [];
@@ -41,12 +35,16 @@ export default class RunResults {
     }
 
     /**
-     * Creates a map of node metadata for all nodes in the graph.
+     * Creates a map of node metadata for all nodes in the graph. This is the initial map before the algorithm starts.
      *
-     * @param {Nodes} nodes - The collection of nodes in the graph.
+     * Each node in the map will be assigned a state based on its position relative to the start and end nodes:
+     * - The start node will have the state `StartNode`.
+     * - The end node will have the state `EndNode`.
+     * - All other nodes will have the state `Unvisited`.
+     *
      * @param {number} startNode - The ID of the start node.
      * @param {number} endNode - The ID of the end node.
-     * @returns {NodeMetadataMap} A map where each key is a node ID and the value is the node's metadata.
+     * @returns {nodeMetadataMap} A map where each key is a node ID and the value is the node's metadata.
      *
      * @example
      * {
@@ -54,20 +52,16 @@ export default class RunResults {
      *      '1': { id: '1', state: 'Unvisited', weight: 2 },
      * }
      */
-    private createNodeMetadataMap = (
-        nodes: Nodes,
-        startNode: number,
-        endNode: number,
-    ): NodeMetadataMap => {
+    private createNodeMetadataMap = (): NodeMetadataMap => {
         const nodeMetadataMap: NodeMetadataMap = {};
 
         for (let i = 0; i < GRID_SIZE; i++) {
             let nodeState: NodeState;
             switch (i) {
-                case startNode:
+                case globalVariablesManager.getStartNode():
                     nodeState = NodeState.StartNode;
                     break;
-                case endNode:
+                case globalVariablesManager.getEndNode():
                     nodeState = NodeState.EndNode;
                     break;
                 default:
@@ -75,13 +69,10 @@ export default class RunResults {
                     break;
             }
 
-            const nodeMetaData: NodeMetadata = {
+            nodeMetadataMap[i] = {
                 id: i.toString(),
                 state: nodeState,
-                weight: nodes[i].weight,
             };
-
-            nodeMetadataMap[i] = nodeMetaData;
         }
 
         return nodeMetadataMap;
@@ -89,10 +80,10 @@ export default class RunResults {
 
     /**
      * Gets the latest node metadata map.
-     * @returns {NodeMetadataMap} The latest node metadata map.
+     * @returns {nodeMetadataMap} The latest node metadata map.
      */
     private getLatestNodeMetaMap = (): NodeMetadataMap => {
-        return this.stepMetadataList[this.stepMetadataList.length - 1].nodeMetaDataMap;
+        return this.stepMetadataList[this.stepMetadataList.length - 1].nodeMetadataMap;
     };
 
     /**
@@ -101,10 +92,12 @@ export default class RunResults {
      * @param {NewNodeState[]} newNodeStates - The new states of the nodes.
      */
     public addStep = (steps: number, newNodeStates: NewNodeState[]): void => {
-        // We use JSON.parse() and JSON.stringify() to create a deep copy of the latestNodeMetadataMap.
-        const latestNodeMetaMapCopy = JSON.parse(JSON.stringify(this.getLatestNodeMetaMap()));
-        newNodeStates.forEach(({ id, newState }) => (latestNodeMetaMapCopy[id].state = newState));
-        this.stepMetadataList.push({ steps: steps, nodeMetaDataMap: latestNodeMetaMapCopy });
+        // Use spread operator to create a shallow copy of the latest nodeMetadataMap.
+        const latestNodeMetaMapCopy = { ...this.getLatestNodeMetaMap() };
+        newNodeStates.forEach(({ id, newState }) => {
+            latestNodeMetaMapCopy[id] = { ...latestNodeMetaMapCopy[id], state: newState };
+        });
+        this.stepMetadataList.push({ steps, nodeMetadataMap: latestNodeMetaMapCopy });
     };
 
     /**
@@ -118,34 +111,27 @@ export default class RunResults {
 
         globalVariablesManager.setEndNodeReachable(this.shortestPath.length !== 0);
 
-        const blankNodeMetadataMap = this.createNodeMetadataMap(
-            globalVariablesManager.getGraph().nodes,
-            globalVariablesManager.getStartNode(),
-            globalVariablesManager.getEndNode(),
-        );
-
         // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
         this.stepMetadataList.push({
             steps: this.getLatestTotalSteps() + 10,
-            nodeMetaDataMap: blankNodeMetadataMap,
+            nodeMetadataMap: this.createNodeMetadataMap(),
         });
 
         shortestPath.forEach((node) => {
-            // We use JSON.parse() and JSON.stringify() to create a deep copy of the latestNodeMetadataMap.
-            const newNodeMetadataMap: NodeMetadataMap = JSON.parse(
-                JSON.stringify(this.getLatestNodeMetaMap()),
-            );
+            const latestNodeMetaMapCopy = JSON.parse(JSON.stringify(this.getLatestNodeMetaMap()));
             // We only apply the shortest path marking to nodes that are not the start or the end node.
             if (
-                newNodeMetadataMap[node.id].state !== NodeState.StartNode &&
-                newNodeMetadataMap[node.id].state !== NodeState.EndNode
+                latestNodeMetaMapCopy[node.id].state !== NodeState.StartNode &&
+                latestNodeMetaMapCopy[node.id].state !== NodeState.EndNode
             ) {
-                newNodeMetadataMap[node.id].state = NodeState.ShortestPath;
+                latestNodeMetaMapCopy[node.id].state = NodeState.ShortestPath;
             }
-            // We use a longer step increment to slow down the simulation when the shortest path is displayed..
+            // We use a longer step increment to slow down the simulation when the shortest path is displayed.
             this.stepMetadataList.push({
-                steps: this.getLatestTotalSteps() + globalVariablesManager.getStepIncrement() * 3,
-                nodeMetaDataMap: newNodeMetadataMap,
+                steps:
+                    this.getLatestTotalSteps() +
+                    globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER,
+                nodeMetadataMap: latestNodeMetaMapCopy,
             });
         });
     };
@@ -176,6 +162,7 @@ export default class RunResults {
 
     public getTotalWeight = (): number => {
         return this.shortestPath.reduce((totalWeight, currentNode, i) => {
+            // We don't take the start node (i === 0) into account.
             totalWeight +=
                 i !== 0 ? Math.max(currentNode.weight - this.shortestPath[i - 1].weight, 0) : 0;
             return totalWeight;

@@ -142,12 +142,25 @@ td, th {
     cursor: pointer;
 }
 
+.cell-visiting {
+    background-color: #f8f87c !important;
+}
+
 .mark {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: transform 0.3s ease;
+}
+
+.mark-small {
+    width: 60%;
+    opacity: 0.7;
+}
+
+.mark-large {
+    width: 90%;
 }
 
 .bottom-container {

@@ -1,4 +1,9 @@
-import { GRID_SIZE, MAX_WEIGHT } from '../src/common/constants';
+import {
+    WEIGHT_DEBOUNCE_DELAY,
+    GRID_SIZE,
+    MAX_WEIGHT,
+    SPEED_DEBOUNCE_DELAY,
+} from '../src/common/constants';
 import {
     AStarHeuristicType,
     AlgorithmType,
@@ -17,12 +22,13 @@ import {
     displayShortestPath,
 } from '../src/utils/display';
 import {
+    debounce,
     getAlgorithmDisplayName,
     getMaxWeight,
     getNodeIdFromCellElementId,
 } from '../src/utils/general';
-import { getExampleGraph, recreateGridGraph } from '../src/utils/graph';
-import { createMark, unmarkCell } from '../src/utils/mark';
+import { getExampleGraph, recreateGraph } from '../src/utils/graph';
+import { createMark } from '../src/utils/mark';
 import { runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
 import { tutorialDataList } from '../src/tutorial/data';
@@ -312,7 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const cell = document.getElementById(`${algorithmType}-cell-${i}`);
                 if (!cell) return;
 
-                unmarkCell(cell);
+                cell.innerHTML = '';
 
                 // Set mark based on nodeState.
                 const mark = createMark(algorithmType, i.toString(), nodeState);
@@ -372,7 +378,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         setWeightColor();
 
-        const { graph: newGraph, nodes: newNodes } = recreateGridGraph();
+        const { graph: newGraph, nodes: newNodes } = recreateGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
     };
 
@@ -528,7 +534,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             case MazeType.RandomWalls:
                 newGraphType = GraphType.RandomWalls;
                 break;
-            case MazeType.RecrusiveDivision:
+            case MazeType.RecursiveDivision:
                 newGraphType = GraphType.RecursiveDivision;
                 break;
             case AlgorithmType.AStar:
@@ -558,12 +564,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         generateNewGraphWithReachableEndNode();
     });
 
-    weightSlider.addEventListener('input', async () => {
-        globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
-        generateNewGraphWithReachableEndNode();
-    });
+    weightSlider.addEventListener(
+        'input',
+        debounce(async () => {
+            globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
+            generateNewGraphWithReachableEndNode();
+        }, WEIGHT_DEBOUNCE_DELAY),
+    );
 
-    stepsSlider.addEventListener('input', async () => {
+    stepsSlider.addEventListener('input', () => {
         resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
         stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
 
@@ -593,10 +602,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    speedSlider.addEventListener('input', async () => {
-        globalVariablesManager.setStepIncrement(parseInt(speedSlider.value));
-        resetGridAndRerun();
-    });
+    speedSlider.addEventListener(
+        'input',
+        debounce(async () => {
+            globalVariablesManager.setStepIncrement(parseInt(speedSlider.value));
+            resetGridAndRerun();
+        }, SPEED_DEBOUNCE_DELAY),
+    );
 
     aStarHeuristicTypeDropDown.addEventListener('change', async () => {
         const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;

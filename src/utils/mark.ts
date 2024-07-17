@@ -8,37 +8,35 @@ import { getColorByWeight } from './color';
  * @param {string} nodeName - The name of the node (cell) to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., Visiting, Unvisited).
  * @param {AlgorithmType} algorithmType - The algorithm associated with the grid.
- * @returns {HTMLElement | null} The marked cell element or null if not found.
  */
 export const markCell = (
     nodeName: string,
     nodeState: NodeState,
     algorithmType: AlgorithmType,
-): HTMLElement | null => {
+): void => {
     // Get cell HTML element.
     const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
 
-    if (!cell) return null;
+    if (!cell) return;
 
-    unmarkCell(cell);
-
-    // Retrieve weight of cell.
-    const nodes = getGlobalVariablesManagerInstance().getGraph().nodes;
-    const weight = nodes[nodeName].weight;
+    // Unmark the cell.
+    cell.innerHTML = '';
 
     if (nodeState === NodeState.Visiting) {
-        // Cells currently being visited will be highlighted yellow during the simulation.
-        cell.style.background = '#f8f87c';
+        // Highlight the cell in yellow to indicate it is currently being visited by the algorithm.
+        // This visual cue helps the user understand the algorithm's progress and current position.
+        cell.classList.add('cell-visiting');
     } else {
         // Set cell background back to original color.
+        cell.classList.remove('cell-visiting');
+        const nodes = getGlobalVariablesManagerInstance().getGraph().nodes;
+        const weight = nodes[nodeName].weight;
         cell.style.backgroundColor = getColorByWeight(weight);
     }
 
     const mark = createMark(algorithmType, nodeName, nodeState);
 
     cell.appendChild(mark);
-
-    return cell;
 };
 
 /**
@@ -62,26 +60,18 @@ export const createMark = (
         case NodeState.StartNode:
         case NodeState.EndNode:
             mark.src = `./assets/${nodeState}.png`;
-            mark.style.width = '90%';
+            mark.classList.add('mark-large');
             break;
-        case NodeState.Unvisited:
+        case NodeState.Exploring:
+        case NodeState.ShortestPath:
+        case NodeState.Visited:
+        case NodeState.Visiting:
+            mark.src = `./assets/${nodeState}.svg`;
+            mark.classList.add('mark-small');
             break;
         default:
-            mark.src = `./assets/${nodeState}.svg`;
-            mark.style.width = '60%';
-            mark.style.opacity = '0.7';
             break;
     }
 
     return mark;
-};
-
-/**
- * Clears the mark image from the cell.
- *
- * @param {HTMLElement} cell - The cell <img> element to mark.
- */
-export const unmarkCell = (cell: HTMLElement) => {
-    const childNodes = cell.childNodes;
-    childNodes.forEach((childNode) => cell.removeChild(childNode));
 };
