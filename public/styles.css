@@ -23,21 +23,22 @@ img {
 button {
     font-size: 16px;
     color: #666;
-    padding: 10px 30px;
+    padding: 10px 20px;
     border-radius: 5px;
     border: 0.5px solid #ccc;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-
 }
 
-button:disabled, .dropdown:disabled {
+button:disabled,
+.dropdown:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-input:disabled, label:disabled {
+input:disabled,
+label:disabled {
     cursor: not-allowed !important;
 }
 
@@ -53,18 +54,69 @@ table {
     width: 100%;
 }
 
-td, th {
-  border: 1px solid #d3d3d3;
-  text-align: center;
-  padding: 10px;
-  width: 70px;
+td,
+th {
+    border: 1px solid #d3d3d3;
+    text-align: center;
+    padding: 10px;
+    width: 70px;
+}
+
+.dropdown {
+    color: #666;
+    padding: 0px 10px 0px 10px;
+    border-radius: 5px;
+    border: 0.5px solid #ccc;
+    background-color: #ffffff;
+    box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    height: 40px;
+}
+
+.checkbox {
+    display: none;
+}
+
+.switch,
+.toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.3s;
+}
+
+.switch:before,
+.toggle:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.checkbox:checked+.switch {
+    background-color: var(--weight-color);
+}
+
+.checkbox:checked+.switch:before,
+.checkbox:checked+.toggle:before {
+    transform: translateX(26px);
 }
 
 .main-body-blur {
     filter: blur(4px);
 }
 
-.tutorial-container {
+.modal-container {
     z-index: 1;
     position: fixed;
     top: 50%;
@@ -77,58 +129,98 @@ td, th {
     background-color: white;
     box-shadow: 0 0 10px black;
     padding: 40px;
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: scroll;
 }
 
-.tutorial-content {
-    overflow-y: auto;
+.modal-container button {
+    height: auto;
+}
+
+.modal-content {
+    overflow: scroll;
     margin-bottom: 20px;
     display: grid;
     justify-items: center;
     line-height: 1.5;
 }
 
-.tutorial-title {
+.modal-title {
     font-size: 32px;
     text-align: center;
     color: #636363;
     margin-bottom: 20px;
 }
 
-.tutorial-body {
+.modal-body {
     font-size: 16px;
     text-align: justify;
     color: #636363;
 }
 
-.tutorial-buttons {
+.modal-buttons {
     display: flex;
-    justify-content: space-between;    
+    justify-content: space-between;
 }
 
-.tutorial-container button {
+.modal-container button {
     min-width: 120px;
+}
+
+.info-container {
+    justify-content: space-evenly;
+}
+
+.info-buttons {
+    margin-top: 85px;
+}
+
+.legend-container {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.legend {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.legend p {
+    text-align: left;
+}
+
+.legend-image-container-small {
+    max-width: 30px;
+    margin-right: 5px;
+}
+
+.legend-image-container-large {
+    max-width: 35px;
+}
+
+.heuristic-dropdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 
 .page-number {
     position: fixed;
     top: 10px;
     right: 40px;
-
-}
-
-.grid-containers { 
-    display: flex;
-    gap: 50px;
-    width: 100%;
-    justify-content: space-evenly;
-
 }
 
 .grid {
     margin-bottom: 20px;
+}
+
+.sub-grid-container {
+    display: flex;
+    gap: 50px;
 }
 
 .grid-cell {
@@ -163,57 +255,21 @@ td, th {
     width: 90%;
 }
 
+.mark-hover:hover {
+    opacity: 1;
+}
+
 .bottom-container {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    margin-top: 5px;
 }
 
-.left-container {
-    margin-left: 4px;
-    display: grid;
+.bottom-left-container {
+    width: 33%;
+    margin-top: -7px;
 }
-
-.left-container p {
-    text-align: left;
-}
-
-.legend-image-container-small {
-    max-width: 30px;
-    margin-right: 5px;
-}
-
-.legend-image-container-large {
-    max-width: 35px;
-}
-
-.legend {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.middle-container {
-    margin-top: 12px;
-    margin-right: 30px;
-}
-
-.open-tutorial-button-container {
-    margin-top: 10px;
-}
-
-.steps-slider-container {
-    width: 400px;
-}
-
-.right-container {
-    margin-top: 3px;
-    margin-left: 4px;
-    display: flex;
-    justify-content: right;
-    gap: 50px;
-}
-
 
 .graph-controls-container {
     display: flex;
@@ -222,114 +278,80 @@ td, th {
     gap: 10px;
 }
 
-.graph-buttons-container {
-    display: flex;
-    flex-direction: column;
-    margin-top: 7px;
-    gap: 53px;
-}
-
-.graph-control-container {
+.graph-dropdown-container {
     display: flex;
     justify-content: left;
+    align-items: center;
     margin-right: 10px;
-    gap: 13px;
-    margin-bottom: -4px;
+    gap: 11px;
+    margin-bottom: -10px;
 }
 
-.weight-container {
-    display: flex;
-    gap: 20px;
-}
-
-.weight-slider-container {
-    margin-top: 7px;
-    width: 100%;
-}
-
-#weightSlider:disabled::-webkit-slider-thumb {
-    pointer-events: none; 
-}
-
-.weight-control {
-  position: relative;
-  width: 66px;
-  height: 28px;
-}
-
-.checkbox {
-  display: none;
-}
-
-.switch, .toggle {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  border-radius: 34px;
-  transition: background-color 0.3s;
-}
-
-.switch:before, .toggle:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  border-radius: 50%;
-  transition: transform 0.3s;
-}
-
-.checkbox:checked + .switch {
-  background-color: var(--weight-color);
-}
-
-.checkbox:checked + .switch:before, .checkbox:checked + .toggle:before {
- transform: translateX(26px);
-}
-
-.speed-slider-container {
-    margin-top: 6px;
-}
-
-.steps-slider-container {
-    margin-top: 14px;
-}
-
-/* Typography */
-.left-container p {
-    text-align: left;
-}
-
-#graphTypeText {
+.weight-controls {
     margin-top: 10px;
 }
 
-.dropdown {
-    color: #666;
-    padding: 0px 10px 0px 10px;
-    border-radius: 5px;
-    border: 0.5px solid #ccc;
-    background-color: #ffffff;
-    box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    max-height: 40px;
+.weight-control-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
-#primaryGraphTypeDropdown {
-    width: 28%;
+.weight-checkbox {
+    position: relative;
+    width: 54px;
+    height: 28px;
 }
 
-#secondaryGraphTypeDropdown {
-    width: 45%;
+.weight-slider-container {
+    width: 60%;
 }
 
-/* Background and Borders */
+.bottom-middle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    align-items: center;
+    width: 34%;
+    margin-top: 9px;
+}
+
+.steps-slider-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.graph-buttons-container {
+    display: flex;
+    gap: 15px;
+}
+
+.arrow-image {
+    width: 12px;
+    opacity: 70%;
+}
+
+.bottom-right-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: end;
+    width: 33%;
+}
+
+.bottom-right-container button {
+    min-width: 140px;
+}
+
+.speed-control-container {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 13px;
+}
+
 .steps-slider-container input[type="range"],
 .weight-slider-container input[type="range"],
 .speed-slider-container input[type="range"] {
@@ -366,13 +388,267 @@ td, th {
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
 }
 
-.aStar-header {
-    display: flex;
-    gap: 25px;
-    justify-content: center;
-    margin-bottom: 16px;
+#primaryGraphTypeDropdown {
+    width: 28%;
 }
 
-.mark-hover:hover {
-    opacity: 1;
+#secondaryGraphTypeDropdown {
+    width: 40%;
+}
+
+#weightSlider:disabled::-webkit-slider-thumb {
+    pointer-events: none;
+}
+
+#changeStart {
+    width: 160px;
+}
+
+@media screen and (max-width: 1280px) {
+
+    p,
+    button,
+    .dropdown,
+    .dropdown,
+    .modal-body,
+    .legend p {
+        font-size: 14px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .grid-cell {
+        width: 28px;
+        height: 28px;
+    }
+
+    .bottom-middle-container {
+        gap: 29px;
+        margin-top: 5px;
+    }
+
+    .bottom-right-container {
+        gap: 14px;
+    }
+
+    #secondaryGraphTypeDropdown {
+        width: 41%;
+    }
+
+    #changeStart {
+        width: 152px;
+    }
+}
+
+@media screen and (max-width: 1152px) {
+
+    p,
+    button,
+    .dropdown {
+        font-size: 13px;
+    }
+
+    .modal-container button,
+    table,
+    .legend p {
+        font-size: 14px;
+    }
+
+    .grid-cell {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bottom-left-container {
+        width: 37%;
+    }
+
+    .bottom-middle-container {
+        width: 30%;
+        gap: 27px;
+    }
+
+    #primaryGraphTypeDropdown {
+        width: 30%;
+    }
+
+    #secondaryGraphTypeDropdown {
+        width: 40%;
+    }
+
+    #changeStart {
+        width: 144px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+
+    p,
+    button {
+        font-size: 16px;
+    }
+
+    button {
+        width: fit-content;
+        height: 40px;
+    }
+
+    .modal-container button,
+    table,
+    .legend p {
+        font-size: 14px;
+    }
+
+    .left-tutorial-buttons {
+        display: flex;
+        align-items: end;
+    }
+
+    .right-tutorial-buttons {
+        display: grid;
+        gap: 7px;
+    }
+
+    .dropdown {
+        font-size: 16px;
+    }
+
+    .sub-grid-container {
+        display: grid;
+        justify-content: center;
+        gap: 0px;
+    }
+
+    .grid-cell {
+        width: 32px;
+        height: 32px;
+    }
+
+    .bottom {
+        display: flex;
+        justify-content: center;
+    }
+
+    .bottom-container {
+        flex-direction: column;
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .bottom-left-container {
+        width: 100%;
+        order: 2;
+    }
+
+    .weight-slider-container {
+        width: 77%;
+    }
+
+    .bottom-middle-container {
+        order: 1;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .bottom-right-container {
+        width: 100%;
+        order: 3;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .graph-buttons-container {
+        gap: 13px;
+    }
+
+    .bottom-right-container button {
+        min-width: auto;
+    }
+
+    .speed-control-container {
+        align-items: center;
+    }
+
+    #primaryGraphTypeDropdown {
+        width: fit-content
+    }
+
+    #secondaryGraphTypeDropdown {
+        width: fit-content
+    }
+
+    #changeStart {
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 640px) {
+
+    table,
+    p,
+    button,
+    .dropdown,
+    .legend p {
+        font-size: 14px;
+    }
+
+    .grid-cell {
+        width: 28px;
+        height: 28px;
+    }
+
+    .left-tutorial-buttons {
+        display: grid;
+    }
+
+    .right-tutorial-buttons {
+        display: grid;
+    }
+}
+
+@media screen and (max-width: 540px) {
+
+    table,
+    p,
+    button,
+    .dropdown,
+    .legend p {
+        font-size: 12px;
+    }
+
+    .modal-container button {
+        font-size: 14px;
+    }
+
+    .grid-cell {
+        width: 24px;
+        height: 24px;
+    }
+
+    .weight-slider-container {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .bottom-container {
+        width: 100%;
+    }
+
+    .grid-cell {
+        width: 18px;
+        height: 18px;
+    }
+
+    .bottom-right-container {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .weight-slider-container {
+        width: 65%;
+    }
 }

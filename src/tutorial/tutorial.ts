@@ -12,11 +12,11 @@ export const renderTutorialContent = (pageNumber: number, tutorialContentDiv: HT
 
     const tutorialTitleDiv = document.createElement('div');
     tutorialTitleDiv.innerHTML = tutorialData.title;
-    tutorialTitleDiv.classList.add('tutorial-title');
+    tutorialTitleDiv.classList.add('modal-title');
 
     const tutorialBodyDiv = document.createElement('div');
     tutorialBodyDiv.innerHTML = tutorialData.body;
-    tutorialBodyDiv.classList.add('tutorial-body');
+    tutorialBodyDiv.classList.add('modal-body');
 
     fragment.append(tutorialTitleDiv, tutorialBodyDiv);
 

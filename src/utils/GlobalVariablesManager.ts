@@ -1,5 +1,11 @@
-import { DEFAULT_STEP_INCREMENT } from '../common/constants';
-import { AStarHeuristicType, GraphStructure, GraphType } from '../common/types';
+import { DEFAULT_STEP_INCREMENT, DEFAULT_WEIGHT } from '../common/constants';
+import {
+    AStarHeuristicType,
+    GraphGroup,
+    GraphStructure,
+    GraphType,
+    SimulationSpeed,
+} from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNode } from './graph';
 
@@ -19,25 +25,29 @@ class GlobalVariablesManager {
     private firstRender: boolean;
     private endNodeReachable: boolean;
     private aStarHeuristicType: AStarHeuristicType;
+    private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
+    private graphGroup: GraphGroup;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 9;
 
     private constructor() {
-        this.graph = createBasicGridGraph(0, false); // The default graph is unweighted, with 0 max weight.
+        this.graph = createBasicGridGraph(DEFAULT_WEIGHT, true); // The default graph is unweighted, with 0 max weight.
         this.runResults = [];
         const { startNode, endNode } = generateStartAndEndNode();
         this.startNode = startNode;
         this.endNode = endNode;
         this.graphType = GraphType.Standard;
-        this.isWeighted = false;
-        this.maxWeight = 0;
+        this.isWeighted = true;
+        this.maxWeight = DEFAULT_WEIGHT;
         this.stepIncrement = DEFAULT_STEP_INCREMENT;
         this.firstRender = true;
         this.endNodeReachable = false;
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
+        this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
+        this.graphGroup = GraphGroup.BfsAndBellman;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -135,6 +145,14 @@ class GlobalVariablesManager {
         this.aStarHeuristicType = newType;
     }
 
+    public getSimulationSpeed(): SimulationSpeed {
+        return this.simulationSpeed;
+    }
+
+    public setSimulationSpeed(simulationSpeed: SimulationSpeed) {
+        this.simulationSpeed = simulationSpeed;
+    }
+
     public getTutorialPageNumber(): number {
         return this.tutorialPageNumber;
     }
@@ -154,6 +172,18 @@ class GlobalVariablesManager {
     public resetTutorialPageNumber(): number {
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         return this.tutorialPageNumber;
+    }
+
+    public getGraphGroup(): GraphGroup {
+        return this.graphGroup;
+    }
+
+    public toggleGraphGroup(): GraphGroup {
+        this.graphGroup =
+            this.graphGroup === GraphGroup.BfsAndBellman
+                ? GraphGroup.DijkstraAndAStar
+                : GraphGroup.BfsAndBellman;
+        return this.graphGroup;
     }
 
     public isExampleGraph() {

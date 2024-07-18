@@ -14,8 +14,8 @@ export const tutorialDataList: TutorialData[] = [
     },
     {
         pageNumber: 2,
-        title: 'What is a Shortest Path Algorithm?',
-        body: `A shortest path algorithm finds the most efficient route between two points (nodes) in a graph, minimizing the sum of the weights of the edges it traverses. These algorithms are crucial in many real-world applications such as GPS navigation, network routing, and robotics.
+        title: 'What is a SSP Algorithm?',
+        body: `A shortest path (SSP) algorithm finds the most efficient route between two points (nodes) in a graph, minimizing the sum of the weights of the edges it traverses. These algorithms are crucial in many real-world applications such as GPS navigation, network routing, and robotics.
         <br><br> This simulation contains 4 of the more popular algorithms:
         <br>
         <ul>
@@ -97,8 +97,8 @@ export const tutorialDataList: TutorialData[] = [
             <p>Exploring: Nodes that the algorithm will process next.</p>
         </div>
         <div class="legend">
-            <div style="margin-left: -3px; margin-right: 5px;">
-                <div class="grid-cell" style="background-color: #f8f87c; border: solid 1px #0C3547;"></div>
+            <div class="legend-image-container-small" style="opacity: 0.8;">
+                <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter"/>
             </div>
             <p>Visiting: The node is currently being processed to update its neighbors.</p>
         </div>
