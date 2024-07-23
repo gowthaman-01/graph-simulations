@@ -4,7 +4,7 @@ export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 1,
         title: 'Welcome to Graph Simulations!',
-        body: `This tutorial will walk you through every single feature and element of the application, ensuring you understand how to effectively use the tool to visualize various shortest path algorithms. 
+        body: `This tutorial will walk you through every single feature of the application, ensuring you understand how to effectively use the tool to visualize various shortest path algorithms. 
         <br><br> If you want to dive right in, feel free to press the "Skip" button below. Otherwise, press "Next"!`,
         img: {
             src: 'logo',
@@ -15,8 +15,8 @@ export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 2,
         title: 'What is a SSP Algorithm?',
-        body: `A shortest path (SSP) algorithm finds the most efficient route between two points (nodes) in a graph, minimizing the sum of the weights of the edges it traverses. These algorithms are crucial in many real-world applications such as GPS navigation, network routing, and robotics.
-        <br><br> This simulation contains 4 of the more popular algorithms:
+        body: `A shortest path (SSP) algorithm finds the most efficient route between two points (or nodes) in a graph, minimizing the sum of the weights of the edges it traverses. These algorithms are crucial in many real-world applications such as GPS navigation, network routing, and robotics.
+        <br><br> This simulation contains 4 of the most popular SSP algorithms:
         <br>
         <ul>
             <li><b>BFS (Breadth-First Search):</b> Ideal for unweighted graphs</li>
@@ -24,13 +24,13 @@ export const tutorialDataList: TutorialData[] = [
             <li><b>Bellman-Ford:</b> Capable of handling negative weights.</li>
             <li><b>A* Search:</b> Enhances Dijkstra's algorithm with heuristics to guide the search more efficiently towards the target.</li>
         </ul>
-        Note: The A* Star search heuristics available in this simulation are the Manhattan distance and the Euclidean distance.`,
+        Note: The A* Star search heuristics available in this simulation are the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">manhattan distance</a> and the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">euclidean distance</a>.`,
     },
     {
         pageNumber: 3,
         title: 'Grid Graphs',
-        body: `A grid graph consists of cells, or nodes, connected to their adjacent nodes (up, down, left, right). Each node has a weight representing the cost to move to that node. For example, moving from node A (weight 10) to node B (weight 20) costs 10. Moving from node B to node A costs 0, as moving to a lower-weight node is free.
-        <br><br> Nodes with higher weights are indicated by darker backgrounds.`,
+        body: `A grid graph consists of nodes connected to adjacent nodes in the up, down, left, right directions. Each node has a weight representing the cost to move to that node. For example, moving from node A (weight 10) to node B (weight 20) costs 10 while moving from node B to node A costs 0, as moving to a lower-weight node is cost free.
+        <br><br> Nodes with higher weights are indicated by darker backgrounds:`,
         img: {
             src: 'weighted',
             width: 60,
@@ -42,7 +42,7 @@ export const tutorialDataList: TutorialData[] = [
         title: 'Graph Types',
         body: `<b>1. Standard Graph</b>
         <br><br>A basic grid graph where each cell represents a node and edges between nodes have varying weights, depending on whether it is weighted or non-weighted.
-        <br><br>The graph below is a weighted standard graph.`,
+        <br><br>The graph below is a weighted standard graph:`,
         img: {
             src: 'weighted',
             width: 60,
@@ -53,8 +53,8 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 5,
         title: 'Graph Types',
         body: `<b>2. Maze Graph</b>
-        <br><br>A graph generated using maze algorithms. In non-weighted maze graphs, paths and walls are not connected by edges, whereas in weighted maze graphs, they are.
-        <br><br> The graph below illustrates a maze generated using Recursive Division.`,
+        <br><br>A graph generated using maze algorithms. In non-weighted maze graphs, paths and walls are not connected by edges, while they are in weighted maze graphs.
+        <br><br> The graph below is a maze graph generated using recursive division:`,
         img: {
             src: 'recursive-division',
             width: 60,
@@ -65,13 +65,12 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 6,
         title: 'Graph Types',
         body: `<b>3. Ideal Graph</b>
-        <br><br>Pre-configured graphs showcasing ideal conditions for demonstrating algorithm performance. These graphs are useful for comparing how different algorithms handle similar starting conditions.`,
+        <br><br>Ideal graphs are pre-configured graphs showcasing ideal conditions for demonstrating algorithm performance. These graphs are useful for comparing how different algorithms handle similar starting conditions.`,
     },
     {
         pageNumber: 7,
         title: 'Legend',
-        body: `The legend explains the color-coding and symbols used in the visualization.
-        <br><br>
+        body: `
         <div class="legend">
             <div class="legend-image-container-large">
                 <img src="./assets/start.png" alt="Start Node"/>
@@ -113,22 +112,41 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 8,
         title: 'Control Elements',
         body: `<u><b>Generate New Graph</b></u>
-        <br>Creates a new graph based on the selected type and weight settings.<br><br>
+        <br>Generates a new graph based on the selected type and weight settings.<br><br>
+        <u><b>Graph Type Selector</b></u>
+        <br>Allows the user to chose between different graph types - Standard, Maze and Ideal.<br><br>
         <u><b>Change Start Node / End Node</b></u>
-        <br>Allows you to select a new starting or ending node for the algorithm.<br><br>
-        <u><b>Run</b></u>
-        <br>Runs the algorithm.<br><br>
+        <br>Allows you to select a new starting or ending node on the graph.<br><br>
         <u><b>Weight Toggle</b></u>
-        <br>Toggles between weighted and unweighted edges in the graph. The weight toggle is not available for ideal graphs.<br><br>
+        <br>Toggles between weighted and unweighted edges in the graph. This functionality is not available for ideal graphs.<br><br>
         <u><b>Weight Slider</b></u>
         <br>Adjusts the weight distribution of edges in the graph. A higher value increases the proportion of cells with higher weights (darker colors). This functionality is only available for standard graphs.<br><br>
-        <u><b>Speed Slider</b></u>
+        <u><b>Speed Selector</b></u>
         <br>Controls the speed of the algorithm's visualization.<br><br>
         <u><b>Step Slider</b></u>
         <br>Allows manual control of the progression through each stage of the algorithm.`,
     },
     {
-        pageNumber: 9,
+        pageNumber: 10,
+        title: 'Control Elements',
+        body: `<div class="graph-buttons-container" style="justify-content: center;">
+        <button>Info</button>
+        <button>Run</button>
+        <button class="arrow-button">
+            <img src="./assets/right-arrow.png" class="arrow-image" />
+        </button>
+        </div><br>
+        <u><b>Info Button</b></u>
+        <br>Opens the Info modal, which contains the algorithm run statistics table and the A* Search heuristics selector.<br><br>
+        <u><b>Run Button</b></u>
+        <br>Runs the simulation based on the current settings.<br><br>
+        <u><b>Right Arrow Button</b></u>
+        <br>Allows you to switch between two different graph views:
+        <br>- Group 1: BFS and Bellman-Ford
+        <br>- Group 2: Dijkstra and A* Search<br><br>`,
+    },
+    {
+        pageNumber: 10,
         title: 'Statistics Table',
         body: `The statistics table compares the performance of different algorithms (BFS, Bellman-Ford, Dijkstra, and A* Search). 
         <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.

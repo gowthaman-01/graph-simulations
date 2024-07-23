@@ -132,7 +132,8 @@ th {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 .modal-container button {
@@ -140,7 +141,8 @@ th {
 }
 
 .modal-content {
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: auto;
     margin-bottom: 20px;
     display: grid;
     justify-items: center;
@@ -174,7 +176,7 @@ th {
 }
 
 .info-buttons {
-    margin-top: 85px;
+    margin-top: 45px;
 }
 
 .legend-container {
@@ -202,6 +204,8 @@ th {
 }
 
 .heuristic-dropdown-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -312,7 +316,7 @@ th {
     flex-direction: column;
     gap: 34px;
     align-items: center;
-    width: 34%;
+    width: 37%;
     margin-top: 9px;
 }
 
@@ -338,7 +342,7 @@ th {
     flex-direction: column;
     gap: 16px;
     align-items: end;
-    width: 33%;
+    width: 30%;
 }
 
 .bottom-right-container button {
@@ -600,12 +604,10 @@ th {
         height: 28px;
     }
 
-    .left-tutorial-buttons {
+    .modal-buttons {
         display: grid;
-    }
-
-    .right-tutorial-buttons {
-        display: grid;
+        justify-content: center;
+        gap: 5px;
     }
 }
 

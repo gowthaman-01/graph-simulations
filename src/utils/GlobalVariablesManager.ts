@@ -30,7 +30,7 @@ class GlobalVariablesManager {
     private graphGroup: GraphGroup;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
-    private readonly TUTORIAL_PAGE_MAX = 9;
+    private readonly TUTORIAL_PAGE_MAX = 10;
 
     private constructor() {
         this.graph = createBasicGridGraph(DEFAULT_WEIGHT, true); // The default graph is unweighted, with 0 max weight.
