@@ -658,20 +658,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     rightArrow.addEventListener('click', () => {
         const graphGroup = globalVariablesManager.toggleGraphGroup();
+        // if (graphGroup === GraphGroup.BfsAndBellman) {
+        //     if (window.innerWidth > 1024) {
+        //         graphGroupOne.style.display = 'flex';
+        //     } else {
+        //         graphGroupOne.style.display = 'grid';
+        //     }
+        //     graphGroupTwo.style.display = 'none';
+        // } else {
+        //     graphGroupOne.style.display = 'none';
+        //     if (window.innerWidth > 1024) {
+        //         graphGroupTwo.style.display = 'flex';
+        //     } else {
+        //         graphGroupTwo.style.display = 'grid';
+        //     }
+        // }
+
         if (graphGroup === GraphGroup.BfsAndBellman) {
-            if (window.innerWidth > 1024) {
-                graphGroupOne.style.display = 'flex';
-            } else {
-                graphGroupOne.style.display = 'grid';
-            }
+            graphGroupOne.style.display = 'block';
             graphGroupTwo.style.display = 'none';
         } else {
+            graphGroupTwo.style.display = 'block';
             graphGroupOne.style.display = 'none';
-            if (window.innerWidth > 1024) {
-                graphGroupTwo.style.display = 'flex';
-            } else {
-                graphGroupTwo.style.display = 'grid';
-            }
         }
     });
 });
