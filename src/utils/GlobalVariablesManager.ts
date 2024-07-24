@@ -1,4 +1,4 @@
-import { DEFAULT_STEP_INCREMENT, DEFAULT_WEIGHT } from '../common/constants';
+import { AVERAGE_SPEED, DEFAULT_WEIGHT } from '../common/constants';
 import {
     AStarHeuristicType,
     GraphGroup,
@@ -41,7 +41,7 @@ class GlobalVariablesManager {
         this.graphType = GraphType.Standard;
         this.isWeighted = true;
         this.maxWeight = DEFAULT_WEIGHT;
-        this.stepIncrement = DEFAULT_STEP_INCREMENT;
+        this.stepIncrement = AVERAGE_SPEED;
         this.firstRender = true;
         this.endNodeReachable = false;
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;

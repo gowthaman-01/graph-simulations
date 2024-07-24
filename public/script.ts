@@ -2,9 +2,9 @@ import {
     WEIGHT_DEBOUNCE_DELAY,
     GRID_SIZE,
     MAX_WEIGHT,
-    SPEED_DEBOUNCE_DELAY,
-    DEFAULT_STEP_INCREMENT,
-    DESKTOP_WIDTH,
+    AVERAGE_SPEED,
+    SLOW_SPEED,
+    FAST_SPEED,
 } from '../src/common/constants';
 import {
     AStarHeuristicType,
@@ -632,17 +632,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     speedDropdown.addEventListener('change', async () => {
         const simulationSpeed = speedDropdown.value as SimulationSpeed;
         globalVariablesManager.setSimulationSpeed(simulationSpeed);
-        let speed = DEFAULT_STEP_INCREMENT;
+        let speed = AVERAGE_SPEED;
 
         switch (simulationSpeed) {
             case SimulationSpeed.Fast:
-                speed = 50;
+                speed = FAST_SPEED;
                 break;
             case SimulationSpeed.Slow:
-                speed = 10;
+                speed = SLOW_SPEED;
                 break;
             default:
-                speed = DEFAULT_STEP_INCREMENT;
+                speed = AVERAGE_SPEED;
                 break;
         }
 
@@ -658,22 +658,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     rightArrow.addEventListener('click', () => {
         const graphGroup = globalVariablesManager.toggleGraphGroup();
-        // if (graphGroup === GraphGroup.BfsAndBellman) {
-        //     if (window.innerWidth > 1024) {
-        //         graphGroupOne.style.display = 'flex';
-        //     } else {
-        //         graphGroupOne.style.display = 'grid';
-        //     }
-        //     graphGroupTwo.style.display = 'none';
-        // } else {
-        //     graphGroupOne.style.display = 'none';
-        //     if (window.innerWidth > 1024) {
-        //         graphGroupTwo.style.display = 'flex';
-        //     } else {
-        //         graphGroupTwo.style.display = 'grid';
-        //     }
-        // }
-
         if (graphGroup === GraphGroup.BfsAndBellman) {
             graphGroupOne.style.display = 'block';
             graphGroupTwo.style.display = 'none';
