@@ -419,6 +419,10 @@ th {
         font-size: 14px;
     }
 
+    .modal-container {
+        width: 45%;
+    }
+
     .modal-title {
         font-size: 24px;
     }
@@ -458,6 +462,10 @@ th {
     table,
     .legend p {
         font-size: 14px;
+    }
+
+    .modal-container {
+        width: 50%;
     }
 
     .grid-cell {
@@ -503,6 +511,10 @@ th {
     table,
     .legend p {
         font-size: 14px;
+    }
+
+    .modal-container {
+        width: 55%;
     }
 
     .left-tutorial-buttons {
@@ -589,6 +601,18 @@ th {
     }
 }
 
+@media screen and (max-width: 900px) {
+    .modal-container {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .modal-container {
+        width: 70%;
+    }
+}
+
 @media screen and (max-width: 640px) {
 
     table,
@@ -604,10 +628,8 @@ th {
         height: 28px;
     }
 
-    .modal-buttons {
-        display: grid;
-        justify-content: center;
-        gap: 5px;
+    .modal-container {
+        width: 75%;
     }
 }
 
