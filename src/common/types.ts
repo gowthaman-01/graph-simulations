@@ -64,7 +64,7 @@ export interface GraphStorage extends GraphStructure {
 }
 
 export enum MazeType {
-    RecursiveDivision = 'Recursive Division',
+    RecursiveDivision = 'Recursive Divide',
     Dfs = 'DFS',
     RandomWalls = 'Random walls',
 }
@@ -79,6 +79,12 @@ export enum AlgorithmType {
     Dijkstra = 'dijkstra',
     AStar = 'aStar',
     BellmanFord = 'bellmanFord',
+}
+
+export enum SimulationSpeed {
+    Average = 'average',
+    Fast = 'fast',
+    Slow = 'slow',
 }
 
 export interface StepMetadata {
@@ -111,3 +117,8 @@ export interface Color {
 }
 
 export type VisitedSet = Record<string, boolean>;
+
+export enum GraphGroup {
+    BfsAndBellman,
+    DijkstraAndAStar,
+}

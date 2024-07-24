@@ -2,16 +2,20 @@ import {
     WEIGHT_DEBOUNCE_DELAY,
     GRID_SIZE,
     MAX_WEIGHT,
-    SPEED_DEBOUNCE_DELAY,
+    AVERAGE_SPEED,
+    SLOW_SPEED,
+    FAST_SPEED,
 } from '../src/common/constants';
 import {
     AStarHeuristicType,
     AlgorithmType,
+    GraphGroup,
     GraphType,
     MazeType,
     NodeState,
     PrimaryGraphType,
     SecondaryGraphType,
+    SimulationSpeed,
 } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
@@ -49,6 +53,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLButtonElement;
     const pageNumber = document.getElementById('pageNumber') as HTMLParagraphElement;
     const viewTutorialButton = document.getElementById('viewTutorialButton') as HTMLButtonElement;
+    const infoContainerDiv = document.getElementById('infoContainer') as HTMLDivElement;
+    const viewInfoButton = document.getElementById('viewInfoButton') as HTMLButtonElement;
+    const closeInfoButton = document.getElementById('closeInfoButton') as HTMLDivElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
@@ -64,17 +71,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const gridContainers = document.getElementsByClassName(
         'grid',
     ) as HTMLCollectionOf<HTMLDivElement>;
-    const legendCells = document.getElementsByClassName(
-        'legend-cell',
-    ) as HTMLCollectionOf<HTMLDivElement>;
     const runButton = document.getElementById('runAlgorithms') as HTMLButtonElement;
-    const speedSlider = document.getElementById('speedSlider') as HTMLInputElement;
     const stepsCount = document.getElementById('stepCount') as HTMLParagraphElement;
     const stepsSlider = document.getElementById('stepSlider') as HTMLInputElement;
     const weightControls = document.getElementById('weightControls') as HTMLDivElement;
     const weightCheckbox = document.getElementById('weightCheckbox') as HTMLInputElement;
     const weightSwitch = document.getElementById('weightSwitch') as HTMLLabelElement;
     const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
+    const speedDropdown = document.getElementById('speedDropdown') as HTMLSelectElement;
+    const graphGroupOne = document.getElementById('graphGroupOne') as HTMLDivElement;
+    const graphGroupTwo = document.getElementById('graphGroupTwo') as HTMLDivElement;
+    const rightArrow = document.getElementById('rightArrow') as HTMLDivElement;
 
     // Return early if an element is undefined.
     if (
@@ -87,6 +94,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         !tutorialFinishButton ||
         !viewTutorialButton ||
         !pageNumber ||
+        !infoContainerDiv ||
+        !viewInfoButton ||
+        !closeInfoButton ||
         !aStarHeuristicTypeDropDown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
@@ -94,15 +104,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         !primaryGraphTypeDropdown ||
         !secondaryGraphTypeDropdown ||
         !gridContainers ||
-        !legendCells ||
         !runButton ||
-        !speedSlider ||
         !stepsCount ||
         !stepsSlider ||
         !weightControls ||
         !weightCheckbox ||
         !weightSwitch ||
-        !weightSlider
+        !weightSlider ||
+        !speedDropdown ||
+        !graphGroupOne ||
+        !graphGroupTwo ||
+        !rightArrow
     ) {
         return;
     }
@@ -198,14 +210,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         enableStepsSlider();
     };
 
-    const disableSpeedSlider = () => {
-        speedSlider.style.cursor = 'not-allowed';
-        speedSlider.disabled = true;
+    const disableSpeedControls = () => {
+        speedDropdown.disabled = true;
     };
 
-    const enableSpeedSlider = () => {
-        speedSlider.style.cursor = 'pointer';
-        speedSlider.disabled = false;
+    const enableSpeedControls = () => {
+        speedDropdown.disabled = false;
     };
 
     const disableStartEndNodeButton = () => {
@@ -252,7 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Update page number.
-        pageNumber.innerHTML = `${currentPageNumber}/9`;
+        pageNumber.innerHTML = `${currentPageNumber}/10`;
     };
 
     const handleTutorialOpen = () => {
@@ -261,6 +271,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Reset tutorialPageNumber to 1.
         const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
+
+        // Hide Info
+        infoContainerDiv.style.display = 'none';
 
         // Show Tutorial
         tutorialContainerDiv.style.display = 'flex';
@@ -271,6 +284,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const handleTutorialClose = () => {
         tutorialContainerDiv.style.display = 'none';
+        mainBodyDiv.classList.remove('main-body-blur');
+    };
+
+    const handleInfoOpen = () => {
+        // Blur background
+        mainBodyDiv.classList.add('main-body-blur');
+
+        // Show Info
+        infoContainerDiv.style.display = 'flex';
+    };
+
+    const handleInfoClose = () => {
+        infoContainerDiv.style.display = 'none';
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
@@ -376,7 +402,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             disableWeightSlider();
             hideWeightSlider();
         }
-        setWeightColor();
 
         const { graph: newGraph, nodes: newNodes } = recreateGraph();
         globalVariablesManager.setGraph({ nodes: newNodes, graph: newGraph });
@@ -427,12 +452,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
 
     // Setup of controls on initial page load.
-    hideWeightSlider();
+    setWeightColor();
     resetStepsSlider();
     enableStepsSlider();
-    enableSpeedSlider();
+    enableSpeedControls();
     enableGraphControls();
-    disableWeightSlider(); // Weight slider disabled for the default standard unweighted graph type.
     disableSecondaryGraphTypeDropdown(); // Secondary graph type dropdown disabled for default standard graph type.
     toggleTutorialButton('P', false); // Since we are on the first page of the tutorial, there is no previous button.
 
@@ -445,7 +469,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         disableGraphControls();
         disableWeightControls();
         disableStepsSlider();
-        disableSpeedSlider();
+        disableSpeedControls();
 
         // Reset grid for subsequent renders.
         if (!globalVariablesManager.isFirstRender()) {
@@ -461,7 +485,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         enableGraphControls();
         enableWeightControls();
         enableStepsSlider();
-        enableSpeedSlider();
+        enableSpeedControls();
 
         // Generating new start and end nodes for example graphs is not allowed.
         if (globalVariablesManager.isExampleGraph()) {
@@ -486,6 +510,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderTutorialContent(currentPageNumber, tutorialContentDiv);
         updateTutorialButtonsAndPageNumber();
     });
+
+    viewInfoButton.addEventListener('click', handleInfoOpen);
+    closeInfoButton.addEventListener('click', handleInfoClose);
 
     generateNewGraphButton.addEventListener('click', async () => {
         generateNewGraphWithReachableEndNode();
@@ -602,17 +629,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    speedSlider.addEventListener(
-        'input',
-        debounce(async () => {
-            globalVariablesManager.setStepIncrement(parseInt(speedSlider.value));
-            resetGridAndRerun();
-        }, SPEED_DEBOUNCE_DELAY),
-    );
+    speedDropdown.addEventListener('change', async () => {
+        const simulationSpeed = speedDropdown.value as SimulationSpeed;
+        globalVariablesManager.setSimulationSpeed(simulationSpeed);
+        let speed = AVERAGE_SPEED;
+
+        switch (simulationSpeed) {
+            case SimulationSpeed.Fast:
+                speed = FAST_SPEED;
+                break;
+            case SimulationSpeed.Slow:
+                speed = SLOW_SPEED;
+                break;
+            default:
+                speed = AVERAGE_SPEED;
+                break;
+        }
+
+        globalVariablesManager.setStepIncrement(speed);
+        resetGridAndRerun();
+    });
 
     aStarHeuristicTypeDropDown.addEventListener('change', async () => {
         const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
         globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
         resetGridAndRerun();
+    });
+
+    rightArrow.addEventListener('click', () => {
+        const graphGroup = globalVariablesManager.toggleGraphGroup();
+        if (graphGroup === GraphGroup.BfsAndBellman) {
+            graphGroupOne.style.display = 'block';
+            graphGroupTwo.style.display = 'none';
+        } else {
+            graphGroupTwo.style.display = 'block';
+            graphGroupOne.style.display = 'none';
+        }
     });
 });

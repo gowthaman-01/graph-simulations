@@ -16,9 +16,10 @@ export const GRID_SIZE: number = ROWS * COLS;
 export const MAX_WEIGHT: number = 100;
 export const MAX_SLIDER: number = 200;
 export const DEFAULT_DELAY: number = 1;
-export const DEFAULT_STEP_INCREMENT: number = 30;
+export const DEFAULT_WEIGHT: number = 105;
+export const AVERAGE_SPEED: number = 30;
+export const FAST_SPEED: number = 50;
+export const SLOW_SPEED: number = 10;
 export const SHORTEST_PATH_DELAY_MULTIPLIER = DEFAULT_DELAY * 2;
 
-export const SPEED_DEBOUNCE_DELAY = 400;
-
-export const WEIGHT_DEBOUNCE_DELAY = 200;
+export const WEIGHT_DEBOUNCE_DELAY = 100;

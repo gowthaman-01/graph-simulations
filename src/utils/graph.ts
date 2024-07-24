@@ -192,7 +192,7 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
     for (let i = 0; i < GRID_SIZE; i++) {
         if (i === startNode || i === endNode) continue;
         // We want to generate less walls than paths.
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.4) {
             walls.add(i);
         }
     }

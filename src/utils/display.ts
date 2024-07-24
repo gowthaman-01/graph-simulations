@@ -87,13 +87,21 @@ export const resetGridAndStatisticTable = (
 
         if (!runResult) continue;
 
-        weightTableElement.textContent = runResult.getTotalWeight().toString();
-        stepsTableElement.textContent = runResult.getAlgorithmSteps().toString();
+        const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
+
+        weightTableElement.textContent = isEndNodeReachable
+            ? runResult.getTotalWeight().toString()
+            : '-';
+        stepsTableElement.textContent = isEndNodeReachable
+            ? runResult.getAlgorithmSteps().toString()
+            : '-';
         // Number of nodes in the shortest path is equal to its length.
-        nodesTableElement.textContent = runResult.getShortestPath().length.toString();
-        bestAlgorithmParagraphElement.textContent = `Best algorithm: ${getAlgorithmDisplayName(
-            getBestAlgorithm(),
-        )}`;
+        nodesTableElement.textContent = isEndNodeReachable
+            ? runResult.getShortestPath().length.toString()
+            : '-';
+        bestAlgorithmParagraphElement.textContent = isEndNodeReachable
+            ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
+            : 'End node not reachable from start node! Please regenerate the graph.';
     }
 };
 
