@@ -27,7 +27,7 @@ class GlobalVariablesManager {
     private aStarHeuristicType: AStarHeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
-    private graphGroup: GraphGroup;
+    private graphGroup: number;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
@@ -47,7 +47,7 @@ class GlobalVariablesManager {
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
         this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
-        this.graphGroup = GraphGroup.BfsAndBellman;
+        this.graphGroup = 1;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -174,15 +174,12 @@ class GlobalVariablesManager {
         return this.tutorialPageNumber;
     }
 
-    public getGraphGroup(): GraphGroup {
+    public getGraphGroup(): number {
         return this.graphGroup;
     }
 
-    public toggleGraphGroup(): GraphGroup {
-        this.graphGroup =
-            this.graphGroup === GraphGroup.BfsAndBellman
-                ? GraphGroup.DijkstraAndAStar
-                : GraphGroup.BfsAndBellman;
+    public toggleGraphGroup(): number {
+        this.graphGroup = this.graphGroup === 1 ? 2 : 1;
         return this.graphGroup;
     }
 

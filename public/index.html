@@ -32,46 +32,20 @@
 
         <!--Info Modal-->
         <div class="modal-container info-container" id="infoContainer" style="display: none;">
-            <p><u>Legend</u></p>
-            <div class="legend-container">
-                <div>
-                    <div class="legend">
-                        <div class="legend-image-container-large">
-                            <img src="./assets/start.png" alt="Start Node" />
-                        </div>
-                        <p>Start node</p>
+            <div class="graph-group-container">
+                <p><u>Set Graph Groups</u></p>
+                <div class="graph-group-dropdown-container">
+                    <div class="graph-group-dropdown">
+                        <p>Group 1:</p>
+                        <select id="graphGroupDropdown" class="dropdown">
+                            <option value="bfsBellman">BFS & Bellman-Ford</option>
+                            <option value="bfsDijkstra">BFS & Dijkstra</option>
+                            <option value="bfsAStar">BFS & A* Search</option>
+                        </select>
                     </div>
-                    <div class="legend">
-                        <div class="legend-image-container-large">
-                            <img src="./assets/end.png" alt="End Node" />
-                        </div>
-                        <p>End node</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
-                        </div>
-                        <p>Visited</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter" />
-                        </div>
-                        <p>Exploring</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter" />
-                        </div>
-                        <p>Shortest path</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter" />
-                        </div>
-                        <p>Visiting</p>
+                    <div class="graph-group-two-details">
+                        <p>Group 2:</p>
+                        <p id="graphGroupTwoGraphs">Dijkstra & A* Search</p>
                     </div>
                 </div>
             </div>
@@ -135,24 +109,23 @@
             <div class="grid-container">
                 <div id="graphGroupOne">
                     <div class="sub-grid-container">
-                        <div>
+                        <div id="groupOneGraphOne">
                             <p><b>Breadth First Search</b></p>
                             <div class="grid" id="bfs"></div>
                         </div>
-                        <div>
+                        <div id="groupOneGraphTwo">
                             <p><b>Bellman-Ford</b></p>
                             <div class="grid" id="bellmanFord"></div>
                         </div>
                     </div>
                 </div>
-
                 <div id="graphGroupTwo" style="display: none;">
                     <div class="sub-grid-container">
-                        <div>
+                        <div id="groupTwoGraphOne">
                             <p><b>Dijkstra</b></p>
                             <div class="grid" id="dijkstra"></div>
                         </div>
-                        <div>
+                        <div id="groupTwoGraphTwo">
                             <p><b>A* Search</b></p>
                             <div class="grid" id="aStar"></div>
                         </div>

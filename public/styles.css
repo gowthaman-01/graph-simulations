@@ -71,6 +71,7 @@ th {
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     height: 40px;
+    text-align: center;
 }
 
 .checkbox {
@@ -203,9 +204,24 @@ th {
     max-width: 35px;
 }
 
+
+.graph-group-dropdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.graph-group-two-details {
+    min-width: 180px;
+}
+
+#graphGroupTwoGraphs {
+    margin-top: 28px;
+}
+
 .heuristic-dropdown-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 58px;
+    margin-bottom: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -394,10 +410,12 @@ th {
 
 #primaryGraphTypeDropdown {
     width: 28%;
+    text-align: left;
 }
 
 #secondaryGraphTypeDropdown {
     width: 40%;
+    text-align: left;
 }
 
 #weightSlider:disabled::-webkit-slider-thumb {
