@@ -8,221 +8,222 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-</body>
-<div>
-    <!--Tutorial Modal-->
-    <div class="modal-container" id="tutorialContainer">
-        <div class="page-number">
-            <p id="pageNumber">1/10</p>
-        </div>
-        <div class="modal-content" id="tutorialContent">
-        </div>
-        <div class="modal-buttons">
-            <div class="left-tutorial-buttons">
-                <button id="tutorialSkipButton">Skip</button>
-            </div>
-            <div class="right-tutorial-buttons">
-                <button id="tutorialPreviousButton">Previous</button>
-                <button id="tutorialNextButton">Next</button>
-                <button id="tutorialFinishButton" style="display: none;">Finish</button>
-            </div>
-        </div>
-    </div>
 
-    <!--Info Modal-->
-    <div class="modal-container info-container" id="infoContainer" style="display: none;">
-        <p><u>Legend</u></p>
-        <div class="legend-container">
-            <div>
-                <div class="legend">
-                    <div class="legend-image-container-large">
-                        <img src="./assets/start.png" alt="Start Node" />
-                    </div>
-                    <p>Start node</p>
-                </div>
-                <div class="legend">
-                    <div class="legend-image-container-large">
-                        <img src="./assets/end.png" alt="End Node" />
-                    </div>
-                    <p>End node</p>
-                </div>
-                <div class="legend">
-                    <div class="legend-image-container-small" style="opacity: 0.8;">
-                        <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
-                    </div>
-                    <p>Visited</p>
-                </div>
+<body>
+    <div>
+        <!--Tutorial Modal-->
+        <div class="modal-container" id="tutorialContainer">
+            <div class="page-number">
+                <p id="pageNumber">1/10</p>
             </div>
-            <div>
-                <div class="legend">
-                    <div class="legend-image-container-small" style="opacity: 0.8;">
-                        <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter" />
-                    </div>
-                    <p>Exploring</p>
+            <div class="modal-content" id="tutorialContent">
+            </div>
+            <div class="modal-buttons">
+                <div class="left-tutorial-buttons">
+                    <button id="tutorialSkipButton">Skip</button>
                 </div>
-                <div class="legend">
-                    <div class="legend-image-container-small" style="opacity: 0.8;">
-                        <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter" />
-                    </div>
-                    <p>Shortest path</p>
-                </div>
-                <div class="legend">
-                    <div class="legend-image-container-small" style="opacity: 0.8;">
-                        <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter" />
-                    </div>
-                    <p>Visiting</p>
+                <div class="right-tutorial-buttons">
+                    <button id="tutorialPreviousButton">Previous</button>
+                    <button id="tutorialNextButton">Next</button>
+                    <button id="tutorialFinishButton" style="display: none;">Finish</button>
                 </div>
             </div>
         </div>
 
-        <div class="heuristic-dropdown-container">
-            <p>A* Search Heuristic: </p>
-            <select id="aStarHeuristicTypeDropdown" class="dropdown">
-                <option value="manhattan">Manhattan distance</option>
-                <option value="euclidean">Eucledian distance</option>
-            </select>
-        </div>
-
-        <div class="run-statistics-container">
-            <p><u>Run Statistics</u></p>
-            <table>
-                <tr>
-                    <th>Algorithm</th>
-                    <th>Steps</th>
-                    <th>Weight</th>
-                    <th>Nodes</th>
-                </tr>
-                <tr id="bfs-statistic">
-                    <td>BFS</td>
-                    <td id="bfs-steps"></td>
-                    <td id="bfs-weight"></td>
-                    <td id="bfs-nodes"></td>
-                </tr>
-                <tr id="bellmanFord-statistic">
-                    <td>Bellman</td>
-                    <td id="bellmanFord-steps"></td>
-                    <td id="bellmanFord-weight"></td>
-                    <td id="bellmanFord-nodes"></td>
-                </tr>
-                <tr id="dijkstra-statistic">
-                    <td>Dijkstra</td>
-                    <td id="dijkstra-steps"></td>
-                    <td id="dijkstra-weight"></td>
-                    <td id="dijkstra-nodes"></td>
-                </tr>
-                <tr id="aStar-statistic">
-                    <td>A* Search</td>
-                    <td id="aStar-steps"></td>
-                    <td id="aStar-weight"></td>
-                    <td id="aStar-nodes"></td>
-                </tr>
-            </table>
-            <p style="margin-top: 25px;" id="best-algorithm">Best Algorithm: </p>
-        </div>
-        <div class="modal-buttons info-buttons">
-            <div>
-                <button id="viewTutorialButton">View Tutorial</button>
-            </div>
-            <div class="close-info-button-container">
-                <button id="closeInfoButton">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="mainBody" class="main-body-blur">
-        <!--Graphs-->
-        <div class="grid-container">
-            <div id="graphGroupOne">
-                <div class="sub-grid-container">
-                    <div>
-                        <p><b>Breadth First Search</b></p>
-                        <div class="grid" id="bfs"></div>
-                    </div>
-                    <div>
-                        <p><b>Bellman-Ford</b></p>
-                        <div class="grid" id="bellmanFord"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="graphGroupTwo" style="display: none;">
-                <div class="sub-grid-container">
-                    <div>
-                        <p><b>Dijkstra</b></p>
-                        <div class="grid" id="dijkstra"></div>
-                    </div>
-                    <div>
-                        <p><b>A* Search</b></p>
-                        <div class="grid" id="aStar"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <div class="bottom">
-            <div class="bottom-container">
-                <div class="bottom-left-container">
-                    <div class="graph-controls-container">
-                        <div class="graph-dropdown-container">
-                            <p id="dropdownText">Graph type</p>
-                            <select id="primaryGraphTypeDropdown" class="dropdown">
-                                <option value="standard">Standard</option>
-                                <option value="maze">Maze</option>
-                                <option value="ideal">Ideal</option>
-                            </select>
-                            <select id="secondaryGraphTypeDropdown" class="dropdown">
-                            </select>
+        <!--Info Modal-->
+        <div class="modal-container info-container" id="infoContainer" style="display: none;">
+            <p><u>Legend</u></p>
+            <div class="legend-container">
+                <div>
+                    <div class="legend">
+                        <div class="legend-image-container-large">
+                            <img src="./assets/start.png" alt="Start Node" />
                         </div>
-                        <div class="weight-controls" id="weightControls">
-                            <div class="weight-control-container">
-                                <p style="text-align: start;">Weight</p>
-                                <div class="weight-checkbox">
-                                    <input type="checkbox" id="weightCheckbox" class="checkbox" checked>
-                                    <label for="weightCheckbox" id="weightSwitch" class="switch"></label>
-                                </div>
-                                <div class="weight-slider-container">
-                                    <input type="range" id="weightSlider" min="10" max="200" step="0.1">
+                        <p>Start node</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-large">
+                            <img src="./assets/end.png" alt="End Node" />
+                        </div>
+                        <p>End node</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
+                        </div>
+                        <p>Visited</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter" />
+                        </div>
+                        <p>Exploring</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter" />
+                        </div>
+                        <p>Shortest path</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter" />
+                        </div>
+                        <p>Visiting</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="heuristic-dropdown-container">
+                <p>A* Search Heuristic: </p>
+                <select id="aStarHeuristicTypeDropdown" class="dropdown">
+                    <option value="manhattan">Manhattan distance</option>
+                    <option value="euclidean">Eucledian distance</option>
+                </select>
+            </div>
+
+            <div class="run-statistics-container">
+                <p><u>Run Statistics</u></p>
+                <table>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Steps</th>
+                        <th>Weight</th>
+                        <th>Nodes</th>
+                    </tr>
+                    <tr id="bfs-statistic">
+                        <td>BFS</td>
+                        <td id="bfs-steps"></td>
+                        <td id="bfs-weight"></td>
+                        <td id="bfs-nodes"></td>
+                    </tr>
+                    <tr id="bellmanFord-statistic">
+                        <td>Bellman</td>
+                        <td id="bellmanFord-steps"></td>
+                        <td id="bellmanFord-weight"></td>
+                        <td id="bellmanFord-nodes"></td>
+                    </tr>
+                    <tr id="dijkstra-statistic">
+                        <td>Dijkstra</td>
+                        <td id="dijkstra-steps"></td>
+                        <td id="dijkstra-weight"></td>
+                        <td id="dijkstra-nodes"></td>
+                    </tr>
+                    <tr id="aStar-statistic">
+                        <td>A* Search</td>
+                        <td id="aStar-steps"></td>
+                        <td id="aStar-weight"></td>
+                        <td id="aStar-nodes"></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 25px;" id="best-algorithm">Best Algorithm: </p>
+            </div>
+            <div class="modal-buttons info-buttons">
+                <div>
+                    <button id="viewTutorialButton">View Tutorial</button>
+                </div>
+                <div class="close-info-button-container">
+                    <button id="closeInfoButton">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainBody" class="main-body-blur">
+            <!--Graphs-->
+            <div class="grid-container">
+                <div id="graphGroupOne">
+                    <div class="sub-grid-container">
+                        <div>
+                            <p><b>Breadth First Search</b></p>
+                            <div class="grid" id="bfs"></div>
+                        </div>
+                        <div>
+                            <p><b>Bellman-Ford</b></p>
+                            <div class="grid" id="bellmanFord"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="graphGroupTwo" style="display: none;">
+                    <div class="sub-grid-container">
+                        <div>
+                            <p><b>Dijkstra</b></p>
+                            <div class="grid" id="dijkstra"></div>
+                        </div>
+                        <div>
+                            <p><b>A* Search</b></p>
+                            <div class="grid" id="aStar"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="bottom">
+                <div class="bottom-container">
+                    <div class="bottom-left-container">
+                        <div class="graph-controls-container">
+                            <div class="graph-dropdown-container">
+                                <p id="dropdownText">Graph type</p>
+                                <select id="primaryGraphTypeDropdown" class="dropdown">
+                                    <option value="standard">Standard</option>
+                                    <option value="maze">Maze</option>
+                                    <option value="ideal">Ideal</option>
+                                </select>
+                                <select id="secondaryGraphTypeDropdown" class="dropdown">
+                                </select>
+                            </div>
+                            <div class="weight-controls" id="weightControls">
+                                <div class="weight-control-container">
+                                    <p style="text-align: start;">Weight</p>
+                                    <div class="weight-checkbox">
+                                        <input type="checkbox" id="weightCheckbox" class="checkbox" checked>
+                                        <label for="weightCheckbox" id="weightSwitch" class="switch"></label>
+                                    </div>
+                                    <div class="weight-slider-container">
+                                        <input type="range" id="weightSlider" min="10" max="200" step="0.1">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="bottom-middle-container">
-                    <div class="steps-slider-container">
-                        <input type="range" id="stepSlider" min="0" max="1000" step="1">
-                        <p style="text-align: center; display: none;" id="stepCount">Steps: 0</p>
+                    <div class="bottom-middle-container">
+                        <div class="steps-slider-container">
+                            <input type="range" id="stepSlider" min="0" max="1000" step="1">
+                            <p style="text-align: center; display: none;" id="stepCount">Steps: 0</p>
+                        </div>
+                        <div class="graph-buttons-container">
+                            <button id="viewInfoButton" style="min-width: 90px;">Info</button>
+                            <button id="runAlgorithms" style="min-width: 90px;">Run</button>
+                            <button id="rightArrow" class="arrow-button">
+                                <img src="./assets/right-arrow.png" class="arrow-image" />
+                            </button>
+                        </div>
                     </div>
-                    <div class="graph-buttons-container">
-                        <button id="viewInfoButton" style="min-width: 90px;">Info</button>
-                        <button id="runAlgorithms" style="min-width: 90px;">Run</button>
-                        <button id="rightArrow" class="arrow-button">
-                            <img src="./assets/right-arrow.png" class="arrow-image" />
-                        </button>
-                    </div>
-                </div>
 
-                <div class="bottom-right-container">
-                    <div class="speed-control-container">
-                        <p id="dropdownText" style="text-align: start;">Speed: </p>
-                        <select id="speedDropdown" class="dropdown speed-dropdown">
-                            <option value="average">Average</option>
-                            <option value="fast">Fast</option>
-                            <option value="slow">Slow</option>
-                        </select>
-                        <button id="newGraph">New Graph</button>
-                    </div>
-                    <div class="graph-buttons-container">
-                        <button id="changeStart">Set Start</button>
-                        <button id="changeEnd">Set End</button>
+                    <div class="bottom-right-container">
+                        <div class="speed-control-container">
+                            <p id="dropdownText" style="text-align: start;">Speed: </p>
+                            <select id="speedDropdown" class="dropdown speed-dropdown">
+                                <option value="average">Average</option>
+                                <option value="fast">Fast</option>
+                                <option value="slow">Slow</option>
+                            </select>
+                            <button id="newGraph">New Graph</button>
+                        </div>
+                        <div class="graph-buttons-container">
+                            <button id="changeStart">Set Start</button>
+                            <button id="changeEnd">Set End</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
-</div>
-<script src="./bundle.js" defer></script>
+    <script src="./bundle.js" defer></script>
 </body>
 
 </html>
