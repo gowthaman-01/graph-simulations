@@ -69,16 +69,16 @@ export const resetGridAndStatisticTable = (
 
         // Update statistics table.
         const weightTableElement = document.getElementById(
-            `${algorithmType}-weight`,
+            `${algorithmType}Weight`,
         ) as HTMLTableCellElement;
         const stepsTableElement = document.getElementById(
-            `${algorithmType}-steps`,
+            `${algorithmType}Steps`,
         ) as HTMLTableCellElement;
         const nodesTableElement = document.getElementById(
-            `${algorithmType}-nodes`,
+            `${algorithmType}Nodes`,
         ) as HTMLTableCellElement;
         const bestAlgorithmParagraphElement = document.getElementById(
-            'best-algorithm',
+            'bestAlgorithm',
         ) as HTMLParagraphElement;
 
         const runResult = runResults.find(

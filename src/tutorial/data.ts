@@ -161,25 +161,25 @@ export const tutorialDataList: TutorialData[] = [
                 <th>Weight</th>
                 <th>Nodes</th>
             </tr>
-            <tr id="bfs-statistic">
+            <tr id="bfsStatistic">
                 <td>BFS</td>
                 <td id="bfs-steps">1462</td>
                 <td id="bfs-weight">164</td>
                 <td id="bfs-nodes">16</td>
             </tr>
-            <tr id="bellmanFord-statistic">
+            <tr id="bellmanFordStatistic">
                 <td>Bellman-Ford</td>
                 <td id="bellmanFord-steps">45481</td>
                 <td id="bellmanFord-weight">52</td>
                 <td id="bellmanFord-nodes">22</td>
             </tr>
-            <tr id="dijkstra-statistic">
+            <tr id="dijkstraStatistic">
                 <td>Dijkstra</td>
                 <td id="dijkstra-steps">17168</td>
                 <td id="dijkstra-weight">52</td>
                 <td id="dijkstra-nodes">22</td>
             </tr>
-            <tr id="aStar-statistic">
+            <tr id="aStarStatistic">
                 <td>A* Search</td>
                 <td id="aStar-steps">14366</td>
                 <td id="aStar-weight">52</td>
