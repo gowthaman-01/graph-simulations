@@ -50,6 +50,14 @@
                 </div>
             </div>
 
+            <div class="show-weight-switch-container">
+                <p>Weight Visibility</p>
+                <div class="show-weight-checkbox">
+                    <input type="checkbox" id="showWeightCheckbox" class="checkbox">
+                    <label for="showWeightCheckbox" id="showWeightSwitch" class="switch"></label>
+                </div>
+            </div>
+
             <div class="heuristic-dropdown-container">
                 <p>A* Search Heuristic: </p>
                 <select id="aStarHeuristicTypeDropdown" class="dropdown">
@@ -168,7 +176,7 @@
                             <p style="text-align: center; display: none;" id="stepCount">Steps: 0</p>
                         </div>
                         <div class="graph-buttons-container">
-                            <button id="viewInfoButton" style="min-width: 90px;">Info</button>
+                            <button id="viewInfoButton" style="min-width: 90px;">Settings</button>
                             <button id="runAlgorithms" style="min-width: 90px;">Run</button>
                             <button id="rightArrow" class="arrow-button">
                                 <img src="./assets/right-arrow.png" class="arrow-image" />

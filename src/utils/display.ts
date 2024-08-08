@@ -57,9 +57,14 @@ export const resetGridAndStatisticTable = (
             cell.style.backgroundColor = getColorByWeight(weight);
 
             if (i === startNode || i === endNode) {
+                // Mark
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
                 const mark = createMark(algorithmType, i.toString(), nodeState);
                 cell.appendChild(mark);
+            } else {
+                // Weight
+                const weight = createMark(algorithmType, i.toString(), NodeState.Unvisited);
+                cell.appendChild(weight);
             }
 
             fragment.appendChild(cell);

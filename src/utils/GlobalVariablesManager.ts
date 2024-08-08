@@ -28,6 +28,7 @@ class GlobalVariablesManager {
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
     private graphGroup: number;
+    private showWeights: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
@@ -48,6 +49,7 @@ class GlobalVariablesManager {
         this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.graphGroup = 1;
+        this.showWeights = false;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -198,6 +200,14 @@ class GlobalVariablesManager {
             this.graphType === GraphType.RecursiveDivision ||
             this.graphType === GraphType.RandomWalls
         );
+    }
+
+    public isShowWeights() {
+        return this.showWeights;
+    }
+
+    public setShowWeights(showWeights: boolean) {
+        this.showWeights = showWeights;
     }
 }
 

@@ -45,13 +45,25 @@ export const markCell = (
  * @param {AlgorithmType} algorithmType - The type of algorithm associated with the node.
  * @param {string} nodeName - The name of the node to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., StartNode, EndNode, Visiting).
- * @returns {HTMLImageElement} The created image element to be used as a mark.
+ * @returns {HTMLImageElement | HTMLParagraphElement} The created image element to be used as a mark.
  */
 export const createMark = (
     algorithmType: AlgorithmType,
     nodeName: string,
     nodeState: NodeState,
-): HTMLImageElement => {
+): HTMLImageElement | HTMLParagraphElement => {
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
+    if (nodeState === NodeState.Unvisited && globalVariablesManager.isShowWeights()) {
+        const nodes = globalVariablesManager.getGraph().nodes;
+        const weight = nodes[nodeName].weight;
+
+        const weightDisplay = document.createElement('p');
+        weightDisplay.innerHTML = weight.toString();
+        weightDisplay.style.color = getColorByWeight(weight, true);
+
+        return weightDisplay;
+    }
+
     const mark = document.createElement('img');
     mark.id = `${algorithmType}-cell-${nodeName}-${nodeState}`;
     mark.classList.add('mark');

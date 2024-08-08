@@ -177,7 +177,7 @@ th {
 }
 
 .info-buttons {
-    margin-top: 45px;
+    margin-top: 13px;
 }
 
 .legend-container {
@@ -204,11 +204,11 @@ th {
     max-width: 35px;
 }
 
-
 .graph-group-dropdown-container {
     display: flex;
     justify-content: center;
     gap: 30px;
+    margin-bottom: 20px;
 }
 
 .graph-group-two-details {
@@ -219,9 +219,22 @@ th {
     margin-top: 28px;
 }
 
+.show-weight-switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.show-weight-checkbox {
+    position: relative;
+    width: 54px;
+    height: 28px;
+}
+
 .heuristic-dropdown-container {
-    margin-top: 58px;
-    margin-bottom: 40px;
+    margin-top: 30px;
+    margin-bottom: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -247,6 +260,9 @@ th {
     width: 32px;
     height: 32px;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .grid-cell:hover .mark-hover {

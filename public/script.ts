@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const graphGroupTwoDiv = document.getElementById('graphGroupTwo') as HTMLDivElement;
     const groupTwoGraphOneDiv = document.getElementById('groupTwoGraphOne') as HTMLDivElement;
     const groupTwoGraphTwoDiv = document.getElementById('groupTwoGraphTwo') as HTMLDivElement;
+    const showWeightCheckbox = document.getElementById('showWeightCheckbox') as HTMLInputElement;
     const rightArrow = document.getElementById('rightArrow') as HTMLDivElement;
 
     // Return early if an element is undefined.
@@ -128,6 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !graphGroupTwoDiv ||
         !groupTwoGraphOneDiv ||
         !groupTwoGraphTwoDiv ||
+        !showWeightCheckbox ||
         !rightArrow
     ) {
         return;
@@ -480,7 +482,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         graphGroupDiv.innerHTML = `
         <p><b>${getAlgorithmDisplayName(graphType)}</b></p>
         <div class="grid" id="${graphType}"></div>`;
-        console.log(graphGroupDiv.innerHTML);
     };
 
     renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
@@ -725,6 +726,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
         }
         graphGroupTwoGraphs.innerHTML = graphGroupTwoText;
+    });
+
+    showWeightCheckbox.addEventListener('change', () => {
+        globalVariablesManager.setShowWeights(showWeightCheckbox.checked);
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
     });
 
     rightArrow.addEventListener('click', () => {
