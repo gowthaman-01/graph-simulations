@@ -131,18 +131,7 @@ export const debounce = <T extends (...args: any[]) => void>(
     func: T,
     wait: number,
 ): ((...args: Parameters<T>) => void) => {
-    let timeout: NodeJS.Timeout | undefined; // This will keep track of the timeout ID
-
-    // This is the debounced function that will be returned
     return (...args: Parameters<T>) => {
-        // Clear any existing timeout to reset the wait period
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-
-        // Set a new timeout
-        timeout = setTimeout(() => {
-            func.apply(undefined, args); // Call the original function with the correct context and arguments
-        }, wait);
+        func.apply(undefined, args); // Call the original function with the correct context and arguments
     };
 };
