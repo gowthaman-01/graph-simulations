@@ -57,9 +57,14 @@ export const resetGridAndStatisticTable = (
             cell.style.backgroundColor = getColorByWeight(weight);
 
             if (i === startNode || i === endNode) {
+                // Mark
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
                 const mark = createMark(algorithmType, i.toString(), nodeState);
                 cell.appendChild(mark);
+            } else {
+                // Weight
+                const weight = createMark(algorithmType, i.toString(), NodeState.Unvisited);
+                cell.appendChild(weight);
             }
 
             fragment.appendChild(cell);
@@ -69,16 +74,16 @@ export const resetGridAndStatisticTable = (
 
         // Update statistics table.
         const weightTableElement = document.getElementById(
-            `${algorithmType}-weight`,
+            `${algorithmType}Weight`,
         ) as HTMLTableCellElement;
         const stepsTableElement = document.getElementById(
-            `${algorithmType}-steps`,
+            `${algorithmType}Steps`,
         ) as HTMLTableCellElement;
         const nodesTableElement = document.getElementById(
-            `${algorithmType}-nodes`,
+            `${algorithmType}Nodes`,
         ) as HTMLTableCellElement;
         const bestAlgorithmParagraphElement = document.getElementById(
-            'best-algorithm',
+            'bestAlgorithm',
         ) as HTMLParagraphElement;
 
         const runResult = runResults.find(

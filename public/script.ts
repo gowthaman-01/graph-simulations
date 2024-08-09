@@ -53,9 +53,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLButtonElement;
     const pageNumber = document.getElementById('pageNumber') as HTMLParagraphElement;
     const viewTutorialButton = document.getElementById('viewTutorialButton') as HTMLButtonElement;
-    const infoContainerDiv = document.getElementById('infoContainer') as HTMLDivElement;
-    const viewInfoButton = document.getElementById('viewInfoButton') as HTMLButtonElement;
-    const closeInfoButton = document.getElementById('closeInfoButton') as HTMLDivElement;
+    const settingsContainerDiv = document.getElementById('settingsContainer') as HTMLDivElement;
+    const viewSettingsButton = document.getElementById('viewSettingsButton') as HTMLButtonElement;
+    const closeSettingsButton = document.getElementById('closeSettingsButton') as HTMLDivElement;
+    const graphGroupDropdown = document.getElementById('graphGroupDropdown') as HTMLSelectElement;
+    const graphGroupTwoGraphs = document.getElementById(
+        'graphGroupTwoGraphs',
+    ) as HTMLParagraphElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
@@ -79,8 +83,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const weightSwitch = document.getElementById('weightSwitch') as HTMLLabelElement;
     const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
     const speedDropdown = document.getElementById('speedDropdown') as HTMLSelectElement;
-    const graphGroupOne = document.getElementById('graphGroupOne') as HTMLDivElement;
-    const graphGroupTwo = document.getElementById('graphGroupTwo') as HTMLDivElement;
+    const graphGroupOneDiv = document.getElementById('graphGroupOne') as HTMLDivElement;
+    const groupOneGraphOneDiv = document.getElementById('groupOneGraphOne') as HTMLDivElement;
+    const groupOneGraphTwoDiv = document.getElementById('groupOneGraphTwo') as HTMLDivElement;
+    const graphGroupTwoDiv = document.getElementById('graphGroupTwo') as HTMLDivElement;
+    const groupTwoGraphOneDiv = document.getElementById('groupTwoGraphOne') as HTMLDivElement;
+    const groupTwoGraphTwoDiv = document.getElementById('groupTwoGraphTwo') as HTMLDivElement;
+    const showWeightCheckbox = document.getElementById('showWeightCheckbox') as HTMLInputElement;
     const rightArrow = document.getElementById('rightArrow') as HTMLDivElement;
 
     // Return early if an element is undefined.
@@ -94,9 +103,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         !tutorialFinishButton ||
         !viewTutorialButton ||
         !pageNumber ||
-        !infoContainerDiv ||
-        !viewInfoButton ||
-        !closeInfoButton ||
+        !settingsContainerDiv ||
+        !viewSettingsButton ||
+        !closeSettingsButton ||
+        !graphGroupDropdown ||
+        !graphGroupTwoGraphs ||
         !aStarHeuristicTypeDropDown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
@@ -112,8 +123,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         !weightSwitch ||
         !weightSlider ||
         !speedDropdown ||
-        !graphGroupOne ||
-        !graphGroupTwo ||
+        !graphGroupOneDiv ||
+        !groupOneGraphOneDiv ||
+        !groupOneGraphTwoDiv ||
+        !graphGroupTwoDiv ||
+        !groupTwoGraphOneDiv ||
+        !groupTwoGraphTwoDiv ||
+        !showWeightCheckbox ||
         !rightArrow
     ) {
         return;
@@ -272,8 +288,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Reset tutorialPageNumber to 1.
         const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
 
-        // Hide Info
-        infoContainerDiv.style.display = 'none';
+        // Hide Settings
+        settingsContainerDiv.style.display = 'none';
 
         // Show Tutorial
         tutorialContainerDiv.style.display = 'flex';
@@ -287,16 +303,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
-    const handleInfoOpen = () => {
+    const handleSettingsOpen = () => {
         // Blur background
         mainBodyDiv.classList.add('main-body-blur');
 
-        // Show Info
-        infoContainerDiv.style.display = 'flex';
+        // Show Settings
+        settingsContainerDiv.style.display = 'flex';
     };
 
-    const handleInfoClose = () => {
-        infoContainerDiv.style.display = 'none';
+    const handleSettingsClose = () => {
+        settingsContainerDiv.style.display = 'none';
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
@@ -449,6 +465,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const setGraphGroups = (
+        graphGroupOneGraphOne: AlgorithmType,
+        graphGroupOneGraphTwo: AlgorithmType,
+        graphGroupTwoGraphOne: AlgorithmType,
+        graphGroupTwoGraphTwo: AlgorithmType,
+    ) => {
+        setGraphGroup(groupOneGraphOneDiv, graphGroupOneGraphOne);
+        setGraphGroup(groupOneGraphTwoDiv, graphGroupOneGraphTwo);
+        setGraphGroup(groupTwoGraphOneDiv, graphGroupTwoGraphOne);
+        setGraphGroup(groupTwoGraphTwoDiv, graphGroupTwoGraphTwo);
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+    };
+
+    const setGraphGroup = (graphGroupDiv: HTMLDivElement, graphType: AlgorithmType) => {
+        graphGroupDiv.innerHTML = `
+        <p><b>${getAlgorithmDisplayName(graphType)}</b></p>
+        <div class="grid" id="${graphType}"></div>`;
+    };
+
     renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
 
     // Setup of controls on initial page load.
@@ -511,8 +546,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateTutorialButtonsAndPageNumber();
     });
 
-    viewInfoButton.addEventListener('click', handleInfoOpen);
-    closeInfoButton.addEventListener('click', handleInfoClose);
+    viewSettingsButton.addEventListener('click', handleSettingsOpen);
+    closeSettingsButton.addEventListener('click', handleSettingsClose);
 
     generateNewGraphButton.addEventListener('click', async () => {
         generateNewGraphWithReachableEndNode();
@@ -656,14 +691,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetGridAndRerun();
     });
 
+    graphGroupDropdown.addEventListener('change', async () => {
+        const graphGroup = graphGroupDropdown.value as GraphGroup;
+        let graphGroupTwoText = 'Dijkstra & A* Search';
+        switch (graphGroup) {
+            case GraphGroup.BfsAStar:
+                graphGroupTwoText = 'Dijkstra & Bellman-Ford';
+                setGraphGroups(
+                    AlgorithmType.Bfs,
+                    AlgorithmType.AStar,
+                    AlgorithmType.Dijkstra,
+                    AlgorithmType.BellmanFord,
+                );
+                break;
+            case GraphGroup.BfsDijkstra:
+                graphGroupTwoText = 'Bellman & A* Search';
+                setGraphGroups(
+                    AlgorithmType.Bfs,
+                    AlgorithmType.Dijkstra,
+                    AlgorithmType.BellmanFord,
+                    AlgorithmType.AStar,
+                );
+                break;
+            case GraphGroup.BfsBellman:
+                graphGroupTwoText = 'Dijkstra & A* Search';
+                setGraphGroups(
+                    AlgorithmType.Bfs,
+                    AlgorithmType.BellmanFord,
+                    AlgorithmType.Dijkstra,
+                    AlgorithmType.AStar,
+                );
+                break;
+            default:
+                break;
+        }
+        graphGroupTwoGraphs.innerHTML = graphGroupTwoText;
+    });
+
+    showWeightCheckbox.addEventListener('change', () => {
+        globalVariablesManager.setShowWeights(showWeightCheckbox.checked);
+        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+    });
+
     rightArrow.addEventListener('click', () => {
         const graphGroup = globalVariablesManager.toggleGraphGroup();
-        if (graphGroup === GraphGroup.BfsAndBellman) {
-            graphGroupOne.style.display = 'block';
-            graphGroupTwo.style.display = 'none';
+        if (graphGroup === 1) {
+            graphGroupOneDiv.style.display = 'block';
+            graphGroupTwoDiv.style.display = 'none';
         } else {
-            graphGroupTwo.style.display = 'block';
-            graphGroupOne.style.display = 'none';
+            graphGroupTwoDiv.style.display = 'block';
+            graphGroupOneDiv.style.display = 'none';
         }
     });
 });

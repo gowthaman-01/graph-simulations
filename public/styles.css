@@ -71,6 +71,7 @@ th {
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     height: 40px;
+    text-align: center;
 }
 
 .checkbox {
@@ -171,12 +172,12 @@ th {
     min-width: 120px;
 }
 
-.info-container {
+.settings-container {
     justify-content: space-evenly;
 }
 
-.info-buttons {
-    margin-top: 45px;
+.settings-buttons {
+    margin-top: 13px;
 }
 
 .legend-container {
@@ -203,9 +204,37 @@ th {
     max-width: 35px;
 }
 
-.heuristic-dropdown-container {
-    margin-top: 20px;
+.graph-group-dropdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
     margin-bottom: 20px;
+}
+
+.graph-group-two-details {
+    min-width: 180px;
+}
+
+#graphGroupTwoGraphs {
+    margin-top: 28px;
+}
+
+.show-weight-switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.show-weight-checkbox {
+    position: relative;
+    width: 54px;
+    height: 28px;
+}
+
+.heuristic-dropdown-container {
+    margin-top: 30px;
+    margin-bottom: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -231,6 +260,9 @@ th {
     width: 32px;
     height: 32px;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .grid-cell:hover .mark-hover {
@@ -394,10 +426,12 @@ th {
 
 #primaryGraphTypeDropdown {
     width: 28%;
+    text-align: left;
 }
 
 #secondaryGraphTypeDropdown {
     width: 40%;
+    text-align: left;
 }
 
 #weightSlider:disabled::-webkit-slider-thumb {
@@ -415,8 +449,9 @@ th {
     .dropdown,
     .dropdown,
     .modal-body,
+    .settings-container,
     .legend p {
-        font-size: 14px;
+        font-size: 14px !important;
     }
 
     .modal-container {
@@ -505,12 +540,6 @@ th {
     button {
         width: fit-content;
         height: 40px;
-    }
-
-    .modal-container button,
-    table,
-    .legend p {
-        font-size: 14px;
     }
 
     .modal-container {

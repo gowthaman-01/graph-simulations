@@ -81,6 +81,12 @@ export enum AlgorithmType {
     BellmanFord = 'bellmanFord',
 }
 
+export enum GraphGroup {
+    BfsBellman = 'bfsBellman',
+    BfsDijkstra = 'bfsDijkstra',
+    BfsAStar = 'bfsAStar',
+}
+
 export enum SimulationSpeed {
     Average = 'average',
     Fast = 'fast',
@@ -117,8 +123,3 @@ export interface Color {
 }
 
 export type VisitedSet = Record<string, boolean>;
-
-export enum GraphGroup {
-    BfsAndBellman,
-    DijkstraAndAStar,
-}
