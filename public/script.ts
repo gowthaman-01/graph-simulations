@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLButtonElement;
     const pageNumber = document.getElementById('pageNumber') as HTMLParagraphElement;
     const viewTutorialButton = document.getElementById('viewTutorialButton') as HTMLButtonElement;
-    const infoContainerDiv = document.getElementById('infoContainer') as HTMLDivElement;
-    const viewInfoButton = document.getElementById('viewInfoButton') as HTMLButtonElement;
-    const closeInfoButton = document.getElementById('closeInfoButton') as HTMLDivElement;
+    const settingsContainerDiv = document.getElementById('settingsContainer') as HTMLDivElement;
+    const viewSettingsButton = document.getElementById('viewSettingsButton') as HTMLButtonElement;
+    const closeSettingsButton = document.getElementById('closeSettingsButton') as HTMLDivElement;
     const graphGroupDropdown = document.getElementById('graphGroupDropdown') as HTMLSelectElement;
     const graphGroupTwoGraphs = document.getElementById(
         'graphGroupTwoGraphs',
@@ -103,9 +103,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         !tutorialFinishButton ||
         !viewTutorialButton ||
         !pageNumber ||
-        !infoContainerDiv ||
-        !viewInfoButton ||
-        !closeInfoButton ||
+        !settingsContainerDiv ||
+        !viewSettingsButton ||
+        !closeSettingsButton ||
         !graphGroupDropdown ||
         !graphGroupTwoGraphs ||
         !aStarHeuristicTypeDropDown ||
@@ -288,8 +288,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Reset tutorialPageNumber to 1.
         const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
 
-        // Hide Info
-        infoContainerDiv.style.display = 'none';
+        // Hide Settings
+        settingsContainerDiv.style.display = 'none';
 
         // Show Tutorial
         tutorialContainerDiv.style.display = 'flex';
@@ -303,16 +303,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
-    const handleInfoOpen = () => {
+    const handleSettingsOpen = () => {
         // Blur background
         mainBodyDiv.classList.add('main-body-blur');
 
-        // Show Info
-        infoContainerDiv.style.display = 'flex';
+        // Show Settings
+        settingsContainerDiv.style.display = 'flex';
     };
 
-    const handleInfoClose = () => {
-        infoContainerDiv.style.display = 'none';
+    const handleSettingsClose = () => {
+        settingsContainerDiv.style.display = 'none';
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
@@ -546,8 +546,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateTutorialButtonsAndPageNumber();
     });
 
-    viewInfoButton.addEventListener('click', handleInfoOpen);
-    closeInfoButton.addEventListener('click', handleInfoClose);
+    viewSettingsButton.addEventListener('click', handleSettingsOpen);
+    closeSettingsButton.addEventListener('click', handleSettingsClose);
 
     generateNewGraphButton.addEventListener('click', async () => {
         generateNewGraphWithReachableEndNode();

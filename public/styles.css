@@ -172,11 +172,11 @@ th {
     min-width: 120px;
 }
 
-.info-container {
+.settings-container {
     justify-content: space-evenly;
 }
 
-.info-buttons {
+.settings-buttons {
     margin-top: 13px;
 }
 
@@ -449,8 +449,9 @@ th {
     .dropdown,
     .dropdown,
     .modal-body,
+    .settings-container,
     .legend p {
-        font-size: 14px;
+        font-size: 14px !important;
     }
 
     .modal-container {
@@ -539,12 +540,6 @@ th {
     button {
         width: fit-content;
         height: 40px;
-    }
-
-    .modal-container button,
-    table,
-    .legend p {
-        font-size: 14px;
     }
 
     .modal-container {
