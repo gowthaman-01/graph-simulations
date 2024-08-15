@@ -451,13 +451,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
-
             case PrimaryGraphType.Ideal:
                 enableSecondaryGraphTypeDropdown();
-                globalVariablesManager.getGraphDivs().forEach((graphDiv) => {
+                Object.values(AlgorithmType).forEach((algorithmType) => {
                     let optionElement = document.createElement('option');
-                    optionElement.value = graphDiv.algorithmType;
-                    optionElement.textContent = getAlgorithmDisplayName(graphDiv.algorithmType);
+                    optionElement.value = algorithmType;
+                    optionElement.textContent = getAlgorithmDisplayName(algorithmType);
                     secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
