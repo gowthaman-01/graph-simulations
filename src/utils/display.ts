@@ -5,7 +5,7 @@ import {
     ROWS,
     SHORTEST_PATH_DELAY_MULTIPLIER,
 } from '../common/constants';
-import { AlgorithmType, Node, StepMetadata, NodeState } from '../common/types';
+import { AlgorithmType, Node, StepMetadata, NodeState, GraphDiv } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { createMark, markCell } from './mark';
@@ -16,32 +16,43 @@ import { getBestAlgorithm } from './run';
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Displays an empty grid graph for the given algorithms, and updates the statistics table.
- * @param {HTMLCollectionOf<HTMLDivElement>} gridContainers - The collection of grid containers to display the graphs in.
- * @param {AlgorithmType[]} algorithms - The list of algorithms whose grid graphs need to be cleared.
+ * Resets the grid graph display and updates the statistics table. If an algorithm is specified, only that algorithm's statistics will be reset.
+ *
+ * @param {AlgorithmType} [algorithmToClear] - Optional. The specific algorithm whose statistics should be reset. If not provided, all visible algorithms will be reset.
  */
-export const resetGridAndStatisticTable = (
-    gridContainers: HTMLCollectionOf<HTMLDivElement>,
-    algorithms: AlgorithmType[],
-): void => {
+export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): void => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
     const runResults = globalVariablesManager.getRunResults();
+    const runStatisticTable = document.getElementById('runStatistics') as HTMLTableElement;
+    const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
+    const graphDivs = globalVariablesManager.getGraphDivs();
 
-    for (const gridContainer of Array.from(gridContainers)) {
-        const algorithmType: AlgorithmType = gridContainer.id as AlgorithmType;
+    // Initializes the HTML structure for the statistics table
+    let tableHtml = ` 
+    <tr>
+        <th>Algorithm</th>
+        <th>Steps</th>
+        <th>Weight</th>
+        <th>Nodes</th>
+    </tr>`;
 
-        // If algorithmType not the list of algorithms to be cleared, we skip it.
-        if (!algorithms.includes(algorithmType)) {
+    for (const graphDiv of graphDivs) {
+        const algorithmType = graphDiv.algorithmType;
+        const graphDivElement = graphDiv.graphDivElement;
+        const graphPosition = graphDiv.position;
+
+        // If a specific algorithm is provided, skip clearing statistics for other algorithms.
+        if (algorithmToClear && algorithmToClear !== algorithmType) {
             continue;
         }
 
         // Create grid container.
-        gridContainer.innerHTML = '';
-        gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 140fr)`;
-        gridContainer.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+        graphDivElement.innerHTML = '';
+        graphDivElement.style.display = 'grid';
+        graphDivElement.style.gridTemplateColumns = `repeat(${COLS}, 140fr)`;
+        graphDivElement.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
 
         // Create grid cells using DocumentFragment for performance.
         const fragment = document.createDocumentFragment();
@@ -49,7 +60,7 @@ export const resetGridAndStatisticTable = (
         for (let i = 0; i < GRID_SIZE; i++) {
             const cell = document.createElement('div');
 
-            cell.id = `${gridContainer.id}-cell-${i}`;
+            cell.id = `${graphDiv.position}-cell-${i}`;
             cell.className = 'grid-cell';
             cell.style.border = 'solid 1px #0C3547';
 
@@ -59,55 +70,43 @@ export const resetGridAndStatisticTable = (
             if (i === startNode || i === endNode) {
                 // Mark
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
-                const mark = createMark(algorithmType, i.toString(), nodeState);
+                const mark = createMark(graphPosition, i.toString(), nodeState);
                 cell.appendChild(mark);
             } else {
                 // Weight
-                const weight = createMark(algorithmType, i.toString(), NodeState.Unvisited);
+                const weight = createMark(graphPosition, i.toString(), NodeState.Unvisited);
                 cell.appendChild(weight);
             }
 
             fragment.appendChild(cell);
         }
 
-        gridContainer.appendChild(fragment);
+        graphDivElement.appendChild(fragment);
 
         // Update statistics table.
-        const weightTableElement = document.getElementById(
-            `${algorithmType}Weight`,
-        ) as HTMLTableCellElement;
-        const stepsTableElement = document.getElementById(
-            `${algorithmType}Steps`,
-        ) as HTMLTableCellElement;
-        const nodesTableElement = document.getElementById(
-            `${algorithmType}Nodes`,
-        ) as HTMLTableCellElement;
+        const runResult = runResults.find(
+            (runResult) => runResult.getAlgorithmType() === algorithmType,
+        );
+        if (!runResult) continue;
+
+        tableHtml += `
+        <tr>
+            <td>${getAlgorithmDisplayName(algorithmType)}</td>
+            <td>${isEndNodeReachable ? runResult.getAlgorithmSteps().toString() : '-'}</td>
+            <td>${isEndNodeReachable ? runResult.getTotalWeight().toString() : '-'}</td>
+            <td>${isEndNodeReachable ? runResult.getShortestPath().length.toString() : '-'}</td>
+        </tr>`;
+
         const bestAlgorithmParagraphElement = document.getElementById(
             'bestAlgorithm',
         ) as HTMLParagraphElement;
 
-        const runResult = runResults.find(
-            (runResult) => runResult.getAlgorithmType() === algorithmType,
-        );
-
-        if (!runResult) continue;
-
-        const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
-
-        weightTableElement.textContent = isEndNodeReachable
-            ? runResult.getTotalWeight().toString()
-            : '-';
-        stepsTableElement.textContent = isEndNodeReachable
-            ? runResult.getAlgorithmSteps().toString()
-            : '-';
-        // Number of nodes in the shortest path is equal to its length.
-        nodesTableElement.textContent = isEndNodeReachable
-            ? runResult.getShortestPath().length.toString()
-            : '-';
         bestAlgorithmParagraphElement.textContent = isEndNodeReachable
             ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
             : 'End node not reachable from start node! Please regenerate the graph.';
     }
+
+    runStatisticTable.innerHTML = tableHtml;
 };
 
 /**
@@ -124,6 +123,7 @@ export const displayAllRunResults = async (
     const maxTotalSteps = Math.max(
         ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
     );
+
     // maxAlgorithmSteps represent the number of steps that the algorithm took to run, excluding the steps that display the shortest path.
     const maxAlgorithmSteps = Math.max(
         ...runResults.map((runResult) => runResult.getAlgorithmSteps()),
@@ -156,9 +156,13 @@ export const displayAllRunResults = async (
  * @param {RunResults} runResult - The run result object.
  */
 export const displayStep = (step: number, runResult: RunResults): void => {
+    const graphDiv = runResult.getGraphDiv();
+    if (!graphDiv) {
+        return;
+    }
     const currentStep = findNearestStep(runResult.getStepMetadataList(), step);
     Object.values(currentStep.nodeMetadataMap).forEach((nodeMetadata) => {
-        markCell(nodeMetadata.id, nodeMetadata.state, runResult.getAlgorithmType());
+        markCell(nodeMetadata.id, nodeMetadata.state, graphDiv.position);
     });
 };
 
@@ -191,23 +195,21 @@ const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number):
 
 /**
  * Displays the shortest path of the algorithm.
- * @param {HTMLCollectionOf<HTMLDivElement>} gridContainers - The collection of grid containers to display the grid in.
  * @param {Node[]} shortestPath - The nodes in the shortest path.
- * @param {AlgorithmType} algorithmType - The algorithm type to display the shortest path.
+ * @param {GraphDiv} GraphDiv - The Graph div metadata of the graph in which the shortest path has to be shown.
  */
 export const displayShortestPath = async (
-    gridContainers: HTMLCollectionOf<HTMLDivElement>,
     shortestPath: Node[],
-    algorithmType: AlgorithmType,
+    graphDiv: GraphDiv,
 ): Promise<void> => {
     // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
-    resetGridAndStatisticTable(gridContainers, [algorithmType]);
+    resetGridAndStatisticTable(graphDiv.algorithmType);
 
     for (let i = 0; i < shortestPath.length; i++) {
         const node = shortestPath[i];
         // Mark every shortest path node except the start and the end.
         if (i !== 0 && i !== shortestPath.length - 1) {
-            markCell(node.id, NodeState.ShortestPath, algorithmType);
+            markCell(node.id, NodeState.ShortestPath, graphDiv.position);
 
             // We use a longer step increment to slow down the simulation when the shortest path is displayed.
             await delay(globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER);

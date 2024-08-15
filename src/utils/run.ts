@@ -2,18 +2,18 @@ import { bfs } from '../algorithms/bfs';
 import { dijkstra } from '../algorithms/dijkstra';
 import { aStarSearch } from '../algorithms/aStarSearch';
 import { bellmanFord } from '../algorithms/bellman';
-import { AlgorithmType } from '../common/types';
+import { AlgorithmType, GraphDiv } from '../common/types';
 import RunResults from './RunResults';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 /**
  * Runs the specified graph traversal algorithm on the given graph.
- * @param {AlgorithmType} algorithmType - The type of algorithm to run (e.g., BFS, Dijkstra).
+ * @param {GraphDiv} graphDiv - The metadata of the Div element in which the graph is displayed.
  * @returns {RunResults[]} The results of running the algorithm.
  */
-export const runAlgorithm = (algorithmType: AlgorithmType): RunResults => {
+export const runAlgorithm = (graphDiv: GraphDiv): RunResults => {
     let algorithm = bfs;
-    switch (algorithmType) {
+    switch (graphDiv.algorithmType) {
         case AlgorithmType.Bfs:
             algorithm = bfs;
             break;
@@ -29,6 +29,8 @@ export const runAlgorithm = (algorithmType: AlgorithmType): RunResults => {
     }
 
     const runResults = algorithm();
+    runResults.setGraphDiv(graphDiv);
+
     return runResults;
 };
 

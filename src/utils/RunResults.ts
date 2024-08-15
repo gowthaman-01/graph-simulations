@@ -1,6 +1,7 @@
-import { DEFAULT_DELAY, GRID_SIZE, SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
+import { GRID_SIZE, SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
 import {
     AlgorithmType,
+    GraphDiv,
     NewNodeState,
     Node,
     NodeMetadataMap,
@@ -20,6 +21,7 @@ export default class RunResults {
     private shortestPath: Node[];
     private algorithmSteps: number; // Denotes the steps taken to run the algorithm, excluding the steps taken to display of the shortest path.
     private displayComplete: boolean;
+    private graphDiv: GraphDiv | null;
 
     public constructor(algorithmType: AlgorithmType) {
         this.algorithmType = algorithmType;
@@ -32,6 +34,7 @@ export default class RunResults {
         this.shortestPath = [];
         this.algorithmSteps = 0;
         this.displayComplete = false;
+        this.graphDiv = null;
     }
 
     /**
@@ -42,8 +45,6 @@ export default class RunResults {
      * - The end node will have the state `EndNode`.
      * - All other nodes will have the state `Unvisited`.
      *
-     * @param {number} startNode - The ID of the start node.
-     * @param {number} endNode - The ID of the end node.
      * @returns {nodeMetadataMap} A map where each key is a node ID and the value is the node's metadata.
      *
      * @example
@@ -171,5 +172,13 @@ export default class RunResults {
 
     public getAlgorithmSteps = (): number => {
         return this.algorithmSteps;
+    };
+
+    public setGraphDiv = (graphDiv: GraphDiv): void => {
+        this.graphDiv = graphDiv;
+    };
+
+    public getGraphDiv = (): GraphDiv | null => {
+        return this.graphDiv;
     };
 }

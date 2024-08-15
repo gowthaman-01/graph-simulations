@@ -9,7 +9,6 @@ import {
 import {
     AStarHeuristicType,
     AlgorithmType,
-    GraphGroup,
     GraphType,
     MazeType,
     NodeState,
@@ -53,16 +52,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLButtonElement;
     const pageNumber = document.getElementById('pageNumber') as HTMLParagraphElement;
     const viewTutorialButton = document.getElementById('viewTutorialButton') as HTMLButtonElement;
-    const settingsContainerDiv = document.getElementById('settingsContainer') as HTMLDivElement;
+    const settingsModalDiv = document.getElementById('settingsModal') as HTMLDivElement;
     const viewSettingsButton = document.getElementById('viewSettingsButton') as HTMLButtonElement;
     const closeSettingsButton = document.getElementById('closeSettingsButton') as HTMLDivElement;
-    const graphGroupDropdown = document.getElementById('graphGroupDropdown') as HTMLSelectElement;
-    const graphGroupTwoGraphs = document.getElementById(
-        'graphGroupTwoGraphs',
-    ) as HTMLParagraphElement;
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
+    const leftGraphDropdown = document.getElementById('leftGraphDropdown') as HTMLSelectElement;
+    const rightGraphDropdown = document.getElementById('rightGraphDropdown') as HTMLSelectElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
@@ -72,9 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const secondaryGraphTypeDropdown = document.getElementById(
         'secondaryGraphTypeDropdown',
     ) as HTMLSelectElement;
-    const gridContainers = document.getElementsByClassName(
-        'grid',
-    ) as HTMLCollectionOf<HTMLDivElement>;
+    const leftGraphDiv = document.getElementById('leftGraph') as HTMLDivElement;
+    const rightGraphDiv = document.getElementById('rightGraph') as HTMLDivElement;
     const runButton = document.getElementById('runAlgorithms') as HTMLButtonElement;
     const stepsCount = document.getElementById('stepCount') as HTMLParagraphElement;
     const stepsSlider = document.getElementById('stepSlider') as HTMLInputElement;
@@ -83,14 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const weightSwitch = document.getElementById('weightSwitch') as HTMLLabelElement;
     const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
     const speedDropdown = document.getElementById('speedDropdown') as HTMLSelectElement;
-    const graphGroupOneDiv = document.getElementById('graphGroupOne') as HTMLDivElement;
-    const groupOneGraphOneDiv = document.getElementById('groupOneGraphOne') as HTMLDivElement;
-    const groupOneGraphTwoDiv = document.getElementById('groupOneGraphTwo') as HTMLDivElement;
-    const graphGroupTwoDiv = document.getElementById('graphGroupTwo') as HTMLDivElement;
-    const groupTwoGraphOneDiv = document.getElementById('groupTwoGraphOne') as HTMLDivElement;
-    const groupTwoGraphTwoDiv = document.getElementById('groupTwoGraphTwo') as HTMLDivElement;
     const showWeightCheckbox = document.getElementById('showWeightCheckbox') as HTMLInputElement;
-    const rightArrow = document.getElementById('rightArrow') as HTMLDivElement;
 
     // Return early if an element is undefined.
     if (
@@ -103,18 +92,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         !tutorialFinishButton ||
         !viewTutorialButton ||
         !pageNumber ||
-        !settingsContainerDiv ||
+        !settingsModalDiv ||
         !viewSettingsButton ||
         !closeSettingsButton ||
-        !graphGroupDropdown ||
-        !graphGroupTwoGraphs ||
         !aStarHeuristicTypeDropDown ||
+        !leftGraphDropdown ||
+        !rightGraphDropdown ||
         !changeEndNodeButton ||
         !changeStartNodeButton ||
         !generateNewGraphButton ||
         !primaryGraphTypeDropdown ||
         !secondaryGraphTypeDropdown ||
-        !gridContainers ||
+        !leftGraphDiv ||
+        !rightGraphDiv ||
         !runButton ||
         !stepsCount ||
         !stepsSlider ||
@@ -123,20 +113,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         !weightSwitch ||
         !weightSlider ||
         !speedDropdown ||
-        !graphGroupOneDiv ||
-        !groupOneGraphOneDiv ||
-        !groupOneGraphTwoDiv ||
-        !graphGroupTwoDiv ||
-        !groupTwoGraphOneDiv ||
-        !groupTwoGraphTwoDiv ||
-        !showWeightCheckbox ||
-        !rightArrow
+        !showWeightCheckbox
     ) {
         return;
     }
 
+    // Initialising the Global Variables Manager.
     const globalVariablesManager = getGlobalVariablesManagerInstance();
+    globalVariablesManager.setGraphDivs(
+        {
+            algorithmType: AlgorithmType.Bfs,
+            graphDivElement: leftGraphDiv,
+            position: 'left',
+        },
+        {
+            algorithmType: AlgorithmType.BellmanFord,
+            graphDivElement: rightGraphDiv,
+            position: 'right',
+        },
+    );
 
+    // Control elements helper functions.
     const setWeightColor = () => {
         const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
         document.documentElement.style.setProperty('--weight-color', weightColor);
@@ -181,6 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const disableGraphControls = () => {
+        leftGraphDropdown.disabled = true;
+        rightGraphDropdown.disabled = true;
         runButton.disabled = true;
         generateNewGraphButton.disabled = true;
         changeStartNodeButton.disabled = true;
@@ -191,6 +190,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const enableGraphControls = () => {
+        leftGraphDropdown.disabled = false;
+        rightGraphDropdown.disabled = false;
         runButton.disabled = false;
         generateNewGraphButton.disabled = false;
         changeStartNodeButton.disabled = false;
@@ -244,6 +245,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = false;
     };
 
+    // Other helper functions
     const toggleTutorialButton = (buttonType: 'P' | 'N' | 'F', show: boolean) => {
         let button = tutorialPreviousButton;
         switch (buttonType) {
@@ -289,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
 
         // Hide Settings
-        settingsContainerDiv.style.display = 'none';
+        settingsModalDiv.style.display = 'none';
 
         // Show Tutorial
         tutorialContainerDiv.style.display = 'flex';
@@ -308,19 +310,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainBodyDiv.classList.add('main-body-blur');
 
         // Show Settings
-        settingsContainerDiv.style.display = 'flex';
+        settingsModalDiv.style.display = 'flex';
     };
 
     const handleSettingsClose = () => {
-        settingsContainerDiv.style.display = 'none';
+        settingsModalDiv.style.display = 'none';
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
     const getRunResults = () => {
         // Obtain run results for all algorithms.
-        const newRunResults = Object.values(AlgorithmType).map((algorithmType) =>
-            runAlgorithm(algorithmType),
-        );
+        const newRunResults = globalVariablesManager
+            .getGraphDivs()
+            .map((graphDiv) => runAlgorithm(graphDiv));
 
         // Set the slider's max value to the maximum steps from all algorithms executed.
         stepsSlider.max = Math.max(
@@ -332,12 +334,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const resetGridAndRerun = () => {
         getRunResults();
-        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+        resetGridAndStatisticTable();
         resetStepsSlider();
     };
 
     const setNewStartEndNode = (nodeState: NodeState) => {
-        for (const algorithmType of Object.values(AlgorithmType)) {
+        for (const graphDiv of globalVariablesManager.getGraphDivs()) {
             for (let i = 0; i < GRID_SIZE; i++) {
                 // When the user clicks the 'Change Start Node' button, all cells will
                 // temporarily show the startNode image except the endNode and vice versa.
@@ -357,13 +359,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     continue;
                 }
 
-                const cell = document.getElementById(`${algorithmType}-cell-${i}`);
+                const cell = document.getElementById(`${graphDiv.position}-cell-${i}`);
                 if (!cell) return;
 
                 cell.innerHTML = '';
 
                 // Set mark based on nodeState.
-                const mark = createMark(algorithmType, i.toString(), nodeState);
+                const mark = createMark(graphDiv.position, i.toString(), nodeState);
 
                 // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
                 mark.style.opacity = `0.2`;
@@ -452,10 +454,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             case PrimaryGraphType.Ideal:
                 enableSecondaryGraphTypeDropdown();
-                Object.values(AlgorithmType).forEach((option) => {
+                globalVariablesManager.getGraphDivs().forEach((graphDiv) => {
                     let optionElement = document.createElement('option');
-                    optionElement.value = option;
-                    optionElement.textContent = getAlgorithmDisplayName(option);
+                    optionElement.value = graphDiv.algorithmType;
+                    optionElement.textContent = getAlgorithmDisplayName(graphDiv.algorithmType);
                     secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
@@ -465,25 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const setGraphGroups = (
-        graphGroupOneGraphOne: AlgorithmType,
-        graphGroupOneGraphTwo: AlgorithmType,
-        graphGroupTwoGraphOne: AlgorithmType,
-        graphGroupTwoGraphTwo: AlgorithmType,
-    ) => {
-        setGraphGroup(groupOneGraphOneDiv, graphGroupOneGraphOne);
-        setGraphGroup(groupOneGraphTwoDiv, graphGroupOneGraphTwo);
-        setGraphGroup(groupTwoGraphOneDiv, graphGroupTwoGraphOne);
-        setGraphGroup(groupTwoGraphTwoDiv, graphGroupTwoGraphTwo);
-        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
-    };
-
-    const setGraphGroup = (graphGroupDiv: HTMLDivElement, graphType: AlgorithmType) => {
-        graphGroupDiv.innerHTML = `
-        <p><b>${getAlgorithmDisplayName(graphType)}</b></p>
-        <div class="grid" id="${graphType}"></div>`;
-    };
-
+    // Render tutorial upon page load.
     renderTutorialContent(globalVariablesManager.getTutorialPageNumber(), tutorialContentDiv);
 
     // Setup of controls on initial page load.
@@ -498,7 +482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Generate graph and run results.
     resetGridAndRerun();
 
-    // Add event listeners
+    // Event listeners
     runButton.addEventListener('click', async () => {
         // These controls are disabled when the simulations are running.
         disableGraphControls();
@@ -549,19 +533,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     viewSettingsButton.addEventListener('click', handleSettingsOpen);
     closeSettingsButton.addEventListener('click', handleSettingsClose);
 
-    generateNewGraphButton.addEventListener('click', async () => {
+    leftGraphDropdown.addEventListener('change', () => {
+        globalVariablesManager.setGraphDiv('left', leftGraphDropdown.value as AlgorithmType);
+        resetGridAndRerun();
+    });
+
+    rightGraphDropdown.addEventListener('change', () => {
+        globalVariablesManager.setGraphDiv('right', rightGraphDropdown.value as AlgorithmType);
+        resetGridAndRerun();
+    });
+
+    generateNewGraphButton.addEventListener('click', () => {
         generateNewGraphWithReachableEndNode();
+        resetGridAndRerun();
     });
 
     changeStartNodeButton.addEventListener('click', () => {
         setNewStartEndNode(NodeState.StartNode);
     });
 
-    changeEndNodeButton.addEventListener('click', async () => {
+    changeEndNodeButton.addEventListener('click', () => {
         setNewStartEndNode(NodeState.EndNode);
     });
 
-    primaryGraphTypeDropdown.addEventListener('change', async () => {
+    primaryGraphTypeDropdown.addEventListener('change', () => {
         const primaryGraphType = primaryGraphTypeDropdown.value as PrimaryGraphType;
         const weighted = weightCheckbox.checked;
         const newMaxWeight = weighted ? getMaxWeight(weightSlider.value) : 0;
@@ -585,7 +580,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         generateNewGraphWithReachableEndNode();
     });
 
-    secondaryGraphTypeDropdown.addEventListener('change', async () => {
+    secondaryGraphTypeDropdown.addEventListener('change', () => {
         const secondaryGraphType = secondaryGraphTypeDropdown.value as SecondaryGraphType;
         let newGraphType: GraphType = GraphType.Standard;
 
@@ -635,7 +630,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     stepsSlider.addEventListener('input', () => {
-        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
+        resetGridAndStatisticTable();
         stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
 
         const runResults = globalVariablesManager.getRunResults();
@@ -651,20 +646,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ...runResults.map((result) => result.getLatestTotalSteps()),
             );
             runResults.forEach((runResult) => {
+                const graphDiv = runResult.getGraphDiv();
                 // Show the shortest path for the slowest algorithm.
                 // Shortest paths for other algorithms are displayed as part of the run results.
-                if (runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
-                    displayShortestPath(
-                        gridContainers,
-                        runResult.getShortestPath(),
-                        runResult.getAlgorithmType(),
-                    );
+                if (graphDiv && runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
+                    displayShortestPath(runResult.getShortestPath(), graphDiv);
                 }
             });
         }
     });
 
-    speedDropdown.addEventListener('change', async () => {
+    speedDropdown.addEventListener('change', () => {
         const simulationSpeed = speedDropdown.value as SimulationSpeed;
         globalVariablesManager.setSimulationSpeed(simulationSpeed);
         let speed = AVERAGE_SPEED;
@@ -685,62 +677,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetGridAndRerun();
     });
 
-    aStarHeuristicTypeDropDown.addEventListener('change', async () => {
+    aStarHeuristicTypeDropDown.addEventListener('change', () => {
         const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
         globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
         resetGridAndRerun();
     });
 
-    graphGroupDropdown.addEventListener('change', async () => {
-        const graphGroup = graphGroupDropdown.value as GraphGroup;
-        let graphGroupTwoText = 'Dijkstra & A* Search';
-        switch (graphGroup) {
-            case GraphGroup.BfsAStar:
-                graphGroupTwoText = 'Dijkstra & Bellman-Ford';
-                setGraphGroups(
-                    AlgorithmType.Bfs,
-                    AlgorithmType.AStar,
-                    AlgorithmType.Dijkstra,
-                    AlgorithmType.BellmanFord,
-                );
-                break;
-            case GraphGroup.BfsDijkstra:
-                graphGroupTwoText = 'Bellman & A* Search';
-                setGraphGroups(
-                    AlgorithmType.Bfs,
-                    AlgorithmType.Dijkstra,
-                    AlgorithmType.BellmanFord,
-                    AlgorithmType.AStar,
-                );
-                break;
-            case GraphGroup.BfsBellman:
-                graphGroupTwoText = 'Dijkstra & A* Search';
-                setGraphGroups(
-                    AlgorithmType.Bfs,
-                    AlgorithmType.BellmanFord,
-                    AlgorithmType.Dijkstra,
-                    AlgorithmType.AStar,
-                );
-                break;
-            default:
-                break;
-        }
-        graphGroupTwoGraphs.innerHTML = graphGroupTwoText;
-    });
-
     showWeightCheckbox.addEventListener('change', () => {
         globalVariablesManager.setShowWeights(showWeightCheckbox.checked);
-        resetGridAndStatisticTable(gridContainers, Object.values(AlgorithmType));
-    });
-
-    rightArrow.addEventListener('click', () => {
-        const graphGroup = globalVariablesManager.toggleGraphGroup();
-        if (graphGroup === 1) {
-            graphGroupOneDiv.style.display = 'block';
-            graphGroupTwoDiv.style.display = 'none';
-        } else {
-            graphGroupTwoDiv.style.display = 'block';
-            graphGroupOneDiv.style.display = 'none';
-        }
+        resetGridAndStatisticTable();
     });
 });

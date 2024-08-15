@@ -31,74 +31,72 @@
         </div>
 
         <!--Settings Modal-->
-        <div class="modal-container settings-container" id="settingsContainer" style="display: none;">
-            <div class="graph-group-container">
-                <p><u>Set Graph Groups</u></p>
-                <div class="graph-group-dropdown-container">
-                    <div class="graph-group-dropdown">
-                        <p>Group 1:</p>
-                        <select id="graphGroupDropdown" class="dropdown">
-                            <option value="bfsBellman">BFS & Bellman-Ford</option>
-                            <option value="bfsDijkstra">BFS & Dijkstra</option>
-                            <option value="bfsAStar">BFS & A* Search</option>
-                        </select>
+        <div class="modal-container settings-modal" id="settingsModal" style="display: none;">
+            <p><u>Legend</u></p>
+            <div class="legend-container">
+                <div>
+                    <div class="legend">
+                        <div class="legend-image-container-large">
+                            <img src="./assets/start.png" alt="Start Node" />
+                        </div>
+                        <p>Start node</p>
                     </div>
-                    <div class="graph-group-two-details">
-                        <p>Group 2:</p>
-                        <p id="graphGroupTwoGraphs">Dijkstra & A* Search</p>
+                    <div class="legend">
+                        <div class="legend-image-container-large">
+                            <img src="./assets/end.png" alt="End Node" />
+                        </div>
+                        <p>End node</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
+                        </div>
+                        <p>Visited</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter" />
+                        </div>
+                        <p>Exploring</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter" />
+                        </div>
+                        <p>Shortest path</p>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-image-container-small" style="opacity: 0.8;">
+                            <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter" />
+                        </div>
+                        <p>Visiting</p>
                     </div>
                 </div>
             </div>
+            <div class="settings-container">
+                <div class="show-weight-switch-container">
+                    <p>Weight Visibility</p>
+                    <div class="show-weight-checkbox">
+                        <input type="checkbox" id="showWeightCheckbox" class="checkbox">
+                        <label for="showWeightCheckbox" id="showWeightSwitch" class="switch"></label>
+                    </div>
+                </div>
 
-            <div class="show-weight-switch-container">
-                <p>Weight Visibility</p>
-                <div class="show-weight-checkbox">
-                    <input type="checkbox" id="showWeightCheckbox" class="checkbox">
-                    <label for="showWeightCheckbox" id="showWeightSwitch" class="switch"></label>
+                <div class="heuristic-dropdown-container">
+                    <p>Heuristic: </p>
+                    <select id="aStarHeuristicTypeDropdown" class="dropdown">
+                        <option value="manhattan">Manhattan distance</option>
+                        <option value="euclidean">Euclidean distance</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="heuristic-dropdown-container">
-                <p>A* Search Heuristic: </p>
-                <select id="aStarHeuristicTypeDropdown" class="dropdown">
-                    <option value="manhattan">Manhattan distance</option>
-                    <option value="euclidean">Euclidean distance</option>
-                </select>
-            </div>
 
             <div class="run-statistics-container">
                 <p><u>Run Statistics</u></p>
-                <table>
-                    <tr>
-                        <th>Algorithm</th>
-                        <th>Steps</th>
-                        <th>Weight</th>
-                        <th>Nodes</th>
-                    </tr>
-                    <tr id="bfsStatistic">
-                        <td>BFS</td>
-                        <td id="bfsSteps"></td>
-                        <td id="bfsWeight"></td>
-                        <td id="bfsNodes"></td>
-                    </tr>
-                    <tr id="bellmanFordStatistic">
-                        <td>Bellman</td>
-                        <td id="bellmanFordSteps"></td>
-                        <td id="bellmanFordWeight"></td>
-                        <td id="bellmanFordNodes"></td>
-                    </tr>
-                    <tr id="dijkstraStatistic">
-                        <td>Dijkstra</td>
-                        <td id="dijkstraSteps"></td>
-                        <td id="dijkstraWeight"></td>
-                        <td id="dijkstraNodes"></td>
-                    </tr>
-                    <tr id="aStarStatistic">
-                        <td>A* Search</td>
-                        <td id="aStarSteps"></td>
-                        <td id="aStarWeight"></td>
-                        <td id="aStarNodes"></td>
-                    </tr>
+                <table id="runStatistics">
                 </table>
                 <p style="margin-top: 25px;" id="bestAlgorithm">Best Algorithm: </p>
             </div>
@@ -114,32 +112,29 @@
 
         <div id="mainBody" class="main-body-blur">
             <!--Graphs-->
-            <div class="grid-container">
+            <div>
                 <div id="graphGroupOne">
-                    <div class="sub-grid-container">
-                        <div id="groupOneGraphOne">
-                            <p><b>Breadth First Search</b></p>
-                            <div class="grid" id="bfs"></div>
+                    <div class="grids-container">
+                        <div class="grid-container">
+                            <select id="leftGraphDropdown" class="dropdown algorithm-dropdown">
+                                <option value="bfs"><b>BFS</b></option>
+                                <option value="dijkstra">Dijkstra</option>
+                                <option value="aStar">A* Search</option>
+                                <option value="bellmanFord">Bellman-Ford</option>
+                            </select>
+                            <div class="grid" id="leftGraph"></div>
                         </div>
-                        <div id="groupOneGraphTwo">
-                            <p><b>Bellman-Ford</b></p>
-                            <div class="grid" id="bellmanFord"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="graphGroupTwo" style="display: none;">
-                    <div class="sub-grid-container">
-                        <div id="groupTwoGraphOne">
-                            <p><b>Dijkstra</b></p>
-                            <div class="grid" id="dijkstra"></div>
-                        </div>
-                        <div id="groupTwoGraphTwo">
-                            <p><b>A* Search</b></p>
-                            <div class="grid" id="aStar"></div>
+                        <div class="grid-container">
+                            <select id="rightGraphDropdown" class="dropdown algorithm-dropdown">
+                                <option value="bellmanFord"><b>Bellman-Ford</b></option>
+                                <option value="bfs">BFS</option>
+                                <option value="dijkstra">Dijkstra</option>
+                                <option value="aStar">A* Search</option>
+                            </select>
+                            <div class="grid" id="rightGraph"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="bottom">
                 <div class="bottom-container">
@@ -178,9 +173,6 @@
                         <div class="graph-buttons-container">
                             <button id="viewSettingsButton" style="min-width: 90px;">Settings</button>
                             <button id="runAlgorithms" style="min-width: 90px;">Run</button>
-                            <button id="rightArrow" class="arrow-button">
-                                <img src="./assets/right-arrow.png" class="arrow-image" />
-                            </button>
                         </div>
                     </div>
 
