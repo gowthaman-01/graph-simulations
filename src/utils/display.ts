@@ -10,14 +10,15 @@ import { getBestAlgorithm } from './run';
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Resets the grid graph display. If an algorithm is specified, only that algorithm's statistics will be reset.
+ * Resets the grid graph display. If an algorithm is specified, only the grid graph that shows that particular algorithm is reset..
  *
- * @param {AlgorithmType} [algorithmToClear] - Optional. The specific algorithm whose statistics should be reset. If not provided, all visible algorithms will be reset.
+ * @param {AlgorithmType} [algorithmToClear] - Optional. The specific algorithm whose graph display should be reset. If not provided, all grid graphs will be reset.
  */
 export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
+    const nodes = globalVariablesManager.getGraph().nodes;
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
-    const nodes = globalVariablesManager.getGraph().nodes;
+
     const gridSize = globalVariablesManager.getGridSize();
     const rows = Math.sqrt(gridSize);
     const cols = Math.sqrt(gridSize);
@@ -40,7 +41,7 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
         graphDivElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         graphDivElement.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-        // Create grid cells using DocumentFragment for performance.
+        // Create grid cells using DocumentFragment to optimise performance.
         const fragment = document.createDocumentFragment();
 
         for (let i = 0; i < gridSize; i++) {
@@ -50,22 +51,27 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
             cell.className = 'grid-cell';
             cell.style.border = 'solid 1px #0C3547';
 
+            // Calculate and set the cell's width and height based on the number of rows.
             const cellWidth = getCellWidth(rows);
-
             cell.style.width = `${cellWidth}px`;
             cell.style.height = `${cellWidth}px`;
 
+            // Set the cell's color based on its weight.
             const weight = nodes[i];
             cell.style.backgroundColor = getColorByWeight(weight);
 
             if (i === startNode || i === endNode) {
-                // Mark
+                // If the cell is the start or end node, create a mark to indicate it.
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
-                const mark = createMark(graphPosition, i, nodeState);
+                const mark = createMark(i, nodeState, graphPosition);
                 cell.appendChild(mark);
-            } else {
-                // Weight
-                const weight = createMark(graphPosition, i, NodeState.Unvisited);
+            } else if (
+                i !== startNode &&
+                i !== endNode &&
+                globalVariablesManager.shouldShowWeights()
+            ) {
+                // If the cell is not a start or end node, display the weight of the node.
+                const weight = createMark(i, NodeState.Unvisited, graphPosition);
                 cell.appendChild(weight);
             }
 
@@ -95,35 +101,32 @@ const getCellWidth = (rows: number): number => {
      * - If the number of rows is below the midpoint, the scale increases as the number of rows decreases.
      * - If the number of rows is above the midpoint, the scale decreases as the number of rows increases.
      *
-     * The specific scaling factors (0.028 for below midpoint, 0.042 for above midpoint) are chosen to create a smooth transition.
+     * The specific scaling factors (0.035 for below midpoint, 0.034 for above midpoint) are chosen to create a smooth transition.
      */
     let scale: number;
     if (rows <= midPoint) {
-        // Increase the scale as the number of rows decreases below the midpoint
         scale = 1 + ((midPoint - rows) / (midPoint - minRows)) * 0.035;
     } else {
-        // Decrease the scale as the number of rows increases above the midpoint
         scale = 1 - ((rows - midPoint) / (maxRows - midPoint)) * 0.034;
     }
 
-    // Ensure scale doesn't go below 0
+    // Ensure scale doesn't go below 0.
     scale = Math.max(scale, 0);
 
-    // Calculate the cell width based on the grid width, scale, and number of rows
     const cellWidth = (GRID_WIDTH * scale) / rows;
 
     return cellWidth;
 };
 
 /**
- * Resets the Run Statistics Table.
+ * Resets and updates the Run Statistics Table based on the current run results.
  */
 export const resetStatisticTable = () => {
     const graphDivs = globalVariablesManager.getGraphDivs();
     const runResults = globalVariablesManager.getRunResults();
     const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
 
-    // Initialize the HTML structure.
+    // Initialize the HTML structure for the statistics table header.
     let tableHtml = ` 
     <tr>
         <th>Algorithm</th>
@@ -132,6 +135,7 @@ export const resetStatisticTable = () => {
         <th>Nodes</th>
     </tr>`;
 
+    // Populate the table rows with data for each algorithm.
     for (const graphDiv of graphDivs) {
         const algorithmType = graphDiv.algorithmType;
 
@@ -140,6 +144,7 @@ export const resetStatisticTable = () => {
         );
         if (!runResult) continue;
 
+        // Add a row to the table with the algorithm's name, steps, total weight, and node count.
         tableHtml += `
         <tr>
             <td>${getAlgorithmDisplayName(algorithmType)}</td>
@@ -147,24 +152,27 @@ export const resetStatisticTable = () => {
             <td>${isEndNodeReachable ? runResult.getTotalWeight().toString() : '-'}</td>
             <td>${isEndNodeReachable ? runResult.getShortestPath().length.toString() : '-'}</td>
         </tr>`;
-
-        const bestAlgorithmParagraphElement = document.getElementById(
-            'bestAlgorithm',
-        ) as HTMLParagraphElement;
-
-        bestAlgorithmParagraphElement.textContent = isEndNodeReachable
-            ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
-            : 'End node not reachable from start node! Please regenerate the graph.';
     }
 
+    // Update the run statistics table in the DOM with the generated HTML.
     const runStatisticTable = document.getElementById('runStatistics') as HTMLTableElement;
     runStatisticTable.innerHTML = tableHtml;
+
+    // Update the best algorithm display paragraph with the name of the best algorithm.
+    const bestAlgorithmParagraphElement = document.getElementById(
+        'bestAlgorithm',
+    ) as HTMLParagraphElement;
+    bestAlgorithmParagraphElement.textContent = isEndNodeReachable
+        ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
+        : 'End node not reachable from start node! Please regenerate the graph.';
 };
 
 /**
- * Displays all run results step by step.
- * @param stepsSlider The steps slider element.
- * @param stepsCount The paragraph element displaying the current steps count.
+ * Displays all run results step by step, updating the UI elements accordingly.
+ *
+ * @param {HTMLInputElement} stepsSlider - The slider element that controls the step progress.
+ * @param {HTMLParagraphElement} stepsCount - The paragraph element displaying the current steps count.
+ * @returns {Promise<void>} A promise that resolves when all steps have been displayed.
  */
 export const displayAllRunResults = async (
     stepsSlider: HTMLInputElement,
@@ -176,15 +184,16 @@ export const displayAllRunResults = async (
         ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
     );
 
-    // maxAlgorithmSteps represent the number of steps that the algorithm took to run, excluding the steps that display the shortest path.
+    // Determine the maximum algorithm steps, excluding those for the shortest path display.
     const maxAlgorithmSteps = Math.max(
         ...runResults.map((runResult) => runResult.getAlgorithmSteps()),
     );
 
+    // Set the maximum value of the steps slider to the maximum algorithm steps.
     stepsSlider.max = maxAlgorithmSteps.toString();
     let step = parseInt(stepsSlider.value);
 
-    // Display each step.
+    // Loop through and display each step until the maximum total steps are reached.
     while (step <= maxTotalSteps) {
         for (const runResult of runResults) {
             if (step >= runResult.getLatestTotalSteps() && !runResult.isDisplayComplete()) {
@@ -194,25 +203,33 @@ export const displayAllRunResults = async (
             }
         }
 
+        // Increment the step counter by the defined step increment.
         step += globalVariablesManager.getStepIncrement();
+
+        // Update the steps count in the UI to reflect the current step.
         stepsSlider.value = step.toString();
         stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
 
+        // Pause for a predefined delay before displaying the next step.
         await delay(DEFAULT_DELAY);
     }
 };
 
 /**
- * Displays a single step of the algorithm visualization.
+ * Displays a single step of the algorithm visualization on the grid.
  * @param {number} step - The step number to display.
- * @param {RunResults} runResult - The run result object.
+ * @param {RunResults} runResult - The run result object containing the algorithm's execution data.
  */
 export const displayStep = (step: number, runResult: RunResults): void => {
     const graphDiv = runResult.getGraphDiv();
     if (!graphDiv) {
         return;
     }
+
+    // Find the nearest step in the step list that matches or is closest to the desired step number.
     const currentStep = findNearestStep(runResult.getStepList(), step);
+
+    // Iterate over the node states at the current step and update the grid cells.
     runResult.getNodeStateList()[currentStep].forEach((nodeState, node) => {
         markCell(node, nodeState, graphDiv.position);
     });
@@ -221,15 +238,15 @@ export const displayStep = (step: number, runResult: RunResults): void => {
 /**
  * Finds the nearest step to the provided step number using binary search.
  * @param {StepMetadata[]} stepList - The list of all the steps taken by the algorithm..
- * @param {number} currentStep - The current step number.
- * @returns {number} The nearest step to the current step.
+ * @param {number} currentStep -  The current step number for which the nearest step is to be found.
+ * @returns {number} The index of the nearest step to the current step in the step list.
  */
 const findNearestStep = (stepList: number[], currentStep: number): number => {
     let start = 0;
     let end = stepList.length - 1;
     let nearestStep = 0;
 
-    // Binary search.
+    // Perform binary search to find the nearest step.
     while (start <= end) {
         let mid = Math.floor((start + end) / 2);
         if (stepList[mid] === currentStep) {
@@ -241,29 +258,29 @@ const findNearestStep = (stepList: number[], currentStep: number): number => {
             end = mid - 1;
         }
     }
-
     return nearestStep;
 };
 
 /**
- * Displays the shortest path of the algorithm.
- * @param {Node[]} shortestPath - The nodes in the shortest path.
- * @param {GraphDiv} graphDiv - The Graph div metadata of the graph in which the shortest path has to be shown.
+ * Displays the shortest path found by the algorithm on the grid.
+ * @param {Node[]} shortestPath - An array of nodes that constitute the shortest path.
+ * @param {GraphDiv} graphDiv - The metadata of the graph div where the shortest path should be displayed.
  */
 export const displayShortestPath = async (
     shortestPath: Node[],
     graphDiv: GraphDiv,
 ): Promise<void> => {
-    // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
+    // Reset the grid to clear previous visualizations before displaying the shortest path.
+    // This shows an empty grid for a split second before the shortest path is rendered.
     resetGrid(graphDiv.algorithmType);
 
     for (let i = 0; i < shortestPath.length; i++) {
         const node = shortestPath[i];
-        // Mark every shortest path node except the start and the end.
+        // Skip marking the start and end nodes; only mark intermediate nodes.
         if (i !== 0 && i !== shortestPath.length - 1) {
             markCell(node, NodeState.ShortestPath, graphDiv.position);
 
-            // We use a longer step increment to slow down the simulation when the shortest path is displayed.
+            // Introduce a delay between marking nodes to slow down the visualization.
             await delay(globalVariablesManager.getStepIncrement());
         }
     }

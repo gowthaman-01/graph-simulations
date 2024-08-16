@@ -59,8 +59,8 @@ export const calculateEuclideanDistance = (startNode: Node, endNode: Node): numb
 
 /**
  * Calculates the Manhattan distance between two nodes in a grid.
- * @param {string} startNode - The ID of the start node.
- * @param {string} endNode - The ID of the end node.
+ * @param {Node} startNode - The ID of the start node.
+ * @param {Node} endNode - The ID of the end node.
  * @returns {number} The Manhattan distance between the two nodes.
  */
 export const calculateManhattanDistance = (startNode: Node, endNode: Node): number => {
@@ -85,7 +85,7 @@ const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } =
  * Finds the cell ID of a cell given its row and column in a grid graph.
  * @param {number} row - The row of the cell.
  * @param {number} col - The column of the cell.
- * @returns {Node} The cell ID as a string.
+ * @returns {Node} The ID of the cell.
  */
 export const getCellIdFromRowAndColumn = (row: number, col: number): Node => {
     const COLS = Math.sqrt(getGlobalVariablesManagerInstance().getGridSize());
@@ -144,7 +144,8 @@ export const debounce = <T extends (...args: any[]) => void>(
 
         // Set a new timeout
         timeout = setTimeout(() => {
-            func.apply(undefined, args); // Call the original function with the correct context and arguments
+            // Call the original function with the correct context and arguments
+            func.apply(undefined, args);
         }, wait);
     };
 };

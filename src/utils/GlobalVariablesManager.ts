@@ -230,7 +230,7 @@ class GlobalVariablesManager {
         );
     }
 
-    public isShowWeights() {
+    public shouldShowWeights() {
         return this.showWeights;
     }
 

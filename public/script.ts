@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
     );
 
-    // Control elements helper functions.
+    // Helper functions for control elements.
     const setWeightColor = () => {
         const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
         document.documentElement.style.setProperty('--weight-color', weightColor);
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const updateTutorialButtonsAndPageNumber = () => {
         const currentPageNumber = globalVariablesManager.getTutorialPageNumber();
 
-        // Update tutorial buttons visibility.
+        // Update visibility of tutorial buttons.
         if (currentPageNumber === 1) {
             toggleTutorialButton('P', false);
             toggleTutorialButton('N', true);
@@ -293,21 +293,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             toggleTutorialButton('F', false);
         }
 
-        // Update page number.
+        // Update the page number.
         pageNumber.innerHTML = `${currentPageNumber}/${TOTAL_TUTORIAL_PAGES}`;
     };
 
     const handleTutorialOpen = () => {
-        // Blur background
+        // Blur background.
         mainBodyDiv.classList.add('main-body-blur');
 
         // Reset tutorialPageNumber to 1.
         const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
 
-        // Hide Settings
+        // Close Settings modal.
         settingsModalDiv.style.display = 'none';
 
-        // Show Tutorial
+        // Show Tutorial modal.
         tutorialContainerDiv.style.display = 'flex';
         renderTutorialContent(currentPageNumber, tutorialContentDiv);
 
@@ -320,10 +320,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handleSettingsOpen = () => {
-        // Blur background
+        // Blur backgroun.d
         mainBodyDiv.classList.add('main-body-blur');
 
-        // Show Settings
+        // Show Settings modal.
         settingsModalDiv.style.display = 'flex';
     };
 
@@ -378,8 +378,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 cell.innerHTML = '';
 
-                // Set mark based on nodeState.
-                const mark = createMark(graphDiv.position, i, nodeState);
+                // Set mark based on state of the node.
+                const mark = createMark(i, nodeState, graphDiv.position);
 
                 // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
                 mark.style.opacity = `0.2`;
@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showWeightControls();
         enableStartEndNodeButton();
 
-        // We don't show the weight slider for maze graphs.
+        // Weight slider is not shown for maze graphs.
         if (globalVariablesManager.getIsWeighted() && !globalVariablesManager.isMazeGraph()) {
             enableWeightSlider();
             showWeightSlider();
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const generateNewGraphWithReachableEndNode = () => {
-        // Generates new graphs until one where the end node is reachable from the start node is obtained.
+        // Continuously generates new graphs until one is found where the end node is reachable from the start node.
         do {
             generateNewGraph();
             resetGridAndRerun();
@@ -448,20 +448,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setSecondaryGraphDropdown = (primaryGraphType: PrimaryGraphType) => {
-        // Reset dropdown.
+        // Reset secondary graph type dropdown.
         secondaryGraphTypeDropdown.options.length = 0;
 
         switch (primaryGraphType) {
             case PrimaryGraphType.Standard:
-                // There is no secondary graph type for standard graphs.
+                // Standard graphs have no secondary graph types.
                 disableSecondaryGraphTypeDropdown();
                 break;
             case PrimaryGraphType.Maze:
                 enableSecondaryGraphTypeDropdown();
-                Object.values(MazeType).forEach((option) => {
+                Object.values(MazeType).forEach((mazeGenerationMethod) => {
                     let optionElement = document.createElement('option');
-                    optionElement.value = option;
-                    optionElement.textContent = option;
+                    optionElement.value = mazeGenerationMethod;
+                    optionElement.textContent = mazeGenerationMethod;
                     secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
@@ -474,7 +474,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     secondaryGraphTypeDropdown.appendChild(optionElement);
                 });
                 break;
-
             default:
                 break;
         }
@@ -489,22 +488,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     enableStepsSlider();
     enableSpeedControls();
     enableGraphControls();
-    disableSecondaryGraphTypeDropdown(); // Secondary graph type dropdown disabled for default standard graph type.
-    toggleTutorialButton('P', false); // Since we are on the first page of the tutorial, there is no previous button.
+    // Secondary graph type dropdown disabled for default standard graph type.
+    disableSecondaryGraphTypeDropdown();
+    //There is no previous button on the first page of the tutorial.
+    toggleTutorialButton('P', false);
 
-    // Generate graph and run results.
+    // Generate the graphs and run results.
     resetGridAndRerun();
 
-    // Event listeners
+    // Event listeners for control elements.
     runButton.addEventListener('click', async () => {
-        // These controls are disabled when the simulations are running.
+        // These control elements are disabled when the simulation is running.
         disableGraphControls();
         disableWeightControls();
         disableStepsSlider();
         disableSpeedControls();
         disableGridSizeSlider();
 
-        // Reset grid for subsequent renders.
+        // Reset grid before running the simulation on subsequent renders.
         if (!globalVariablesManager.isFirstRender()) {
             resetGridAndRerun();
         }
@@ -514,7 +515,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Display simulation.
         await displayAllRunResults(stepsSlider, stepsCount);
 
-        // Enable controls once simulations are completed.
+        // Enable control elements once simulations are completed.
         enableGraphControls();
         enableWeightControls();
         enableStepsSlider();
@@ -530,7 +531,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     tutorialSkipButton.addEventListener('click', handleTutorialClose);
+
     tutorialFinishButton.addEventListener('click', handleTutorialClose);
+
     viewTutorialButton.addEventListener('click', handleTutorialOpen);
 
     tutorialNextButton.addEventListener('click', () => {
@@ -546,6 +549,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     viewSettingsButton.addEventListener('click', handleSettingsOpen);
+
     closeSettingsButton.addEventListener('click', handleSettingsClose);
 
     leftGraphDropdown.addEventListener('change', () => {
@@ -560,7 +564,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     generateNewGraphButton.addEventListener('click', () => {
         generateNewGraphWithReachableEndNode();
-        resetGridAndRerun();
     });
 
     changeStartNodeButton.addEventListener('click', () => {

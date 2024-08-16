@@ -1,6 +1,6 @@
 import { Color } from './types';
 
-// Colors
+// Colors.
 export const WHITE: Color = { r: 255, g: 255, b: 255 };
 export const LIGHT_GRAY: Color = { r: 250, g: 250, b: 250 };
 export const LIGHT_BLUE: Color = { r: 175, g: 216, b: 248 };
@@ -18,7 +18,7 @@ export const SLOW_SPEED: number = 10;
 export const SHORTEST_PATH_DELAY_MULTIPLIER = DEFAULT_DELAY * 2;
 export const DEBOUNCE_DELAY: number = 100;
 
-// Tutorial
+// Tutorial properties.
 export const TOTAL_TUTORIAL_PAGES: number = 9;
 
 // Grid properities

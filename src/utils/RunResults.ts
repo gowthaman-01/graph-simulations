@@ -5,15 +5,18 @@ import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Represents the results of a run of an algorithm on a graph.
+ * Represents the results of an algorithm run on a graph, including the steps taken and the final shortest path.
  */
 export default class RunResults {
     private readonly algorithmType: AlgorithmType;
     private readonly stepList: number[];
     private readonly nodeStateList: NodeState[][];
+
     private shortestPath: Node[];
-    private algorithmSteps: number; // Denotes the steps taken to run the algorithm, excluding the steps taken to display of the shortest path.
+    // Steps taken to run the algorithm, excluding the steps taken to display of the shortest path.
+    private algorithmSteps: number;
     private displayComplete: boolean;
+    // The HTML div element where the run results will be displayed.
     private graphDiv: GraphDiv | null;
 
     public constructor(algorithmType: AlgorithmType) {
@@ -27,7 +30,7 @@ export default class RunResults {
     }
 
     /**
-     * Creates a list of all the initial states of the graph nodes.
+     * Generates an array containing the initial states of all graph nodes.
      *
      * @returns {NodeState[]}
      */
@@ -69,31 +72,37 @@ export default class RunResults {
      * @param {NodeState} nodeState - The new nodeState of the node.
      */
     public addStep = (steps: number, node: Node, nodeState: NodeState): void => {
-        const newNodeStateList = this.getLatestNodeStateList().slice(); // Deep copy
+        // Create a sliced copy of the latest node state list to prevent modifications to the original array.
+        const newNodeStateList = this.getLatestNodeStateList().slice();
+
         newNodeStateList[node] = nodeState;
         this.nodeStateList.push(newNodeStateList);
         this.stepList.push(steps);
     };
 
     /**
-     * Sets the shortest path.
+     * Updates the internal state to reflect the shortest path found by the algorithm.
+     * It also prepares the necessary steps to visually display the path on the grid.
+     *
      * @param {Node[]} shortestPath - The shortest path.
      */
     public setShortestPath = (shortestPath: Node[]): void => {
-        // algorithmSteps represent the number of steps that the algorithm took to run, excluding the steps that display the shortest path.
+        // Store the number of steps the algorithm took, excluding those for displaying the shortest path.
         this.algorithmSteps = this.getLatestTotalSteps();
         this.shortestPath = shortestPath;
 
+        // Set the end node's reachability status based on whether the shortest path exists.
         globalVariablesManager.setEndNodeReachable(this.shortestPath.length !== 0);
 
-        // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
+        // Push an empty state step to briefly clear the grid before displaying the shortest path.
         this.stepList.push(this.getLatestTotalSteps() + 10);
         this.nodeStateList.push(this.createNodeStateList());
 
         shortestPath.forEach((node) => {
-            const newNodeStateList = this.getLatestNodeStateList().slice(); // Deep copy
+            // Create a sliced copy of the latest node state list to prevent modifications to the original array.
+            const newNodeStateList = this.getLatestNodeStateList().slice();
 
-            // We only apply the shortest path marking to nodes that are not the start or the end node.
+            // Apply the shortest path state only to nodes that are neither the start nor the end node.
             if (
                 newNodeStateList[node] !== NodeState.StartNode &&
                 newNodeStateList[node] !== NodeState.EndNode
@@ -101,7 +110,7 @@ export default class RunResults {
                 newNodeStateList[node] = NodeState.ShortestPath;
             }
 
-            // We use a longer step increment to slow down the simulation when the shortest path is displayed.
+            // Push the updated state with a delay to slow down the visualization of the shortest path.
             this.stepList.push(
                 this.getLatestTotalSteps() +
                     globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER,
@@ -141,7 +150,7 @@ export default class RunResults {
     public getTotalWeight = (): number => {
         const nodes = globalVariablesManager.getGraph().nodes;
         return this.shortestPath.reduce((totalWeight, currentNode, i) => {
-            // We don't take the start node (i === 0) into account.
+            // Skip the start node (i === 0).
             totalWeight +=
                 i !== 0 ? Math.max(nodes[currentNode] - nodes[this.shortestPath[i - 1]], 0) : 0;
             return totalWeight;
