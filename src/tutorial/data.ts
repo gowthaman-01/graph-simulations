@@ -134,10 +134,11 @@ export const tutorialDataList: TutorialData[] = [
         <button>Run</button>
         </div><br>
         <u><b>Settings Button</b></u>
-        <br>Access advanced configuration options for enhanced control and customization<br>
+        <br>Access advanced configuration options for enhanced control and customization:<br>
         <ul>
-            <li>Weight Visibility Toggle - Opt to show or hide weight values on each cell.</li>
+            <li>Weight Visibility Toggle - Opt to show or hide weight values on each cell</li>
             <li>A* Heuristic Selector - Switch between Manhattan and Euclidean distances</li>
+            <li>Grid Size Slider - Adjust the size of the grid graph</li>
         </ul>
         The settings modal additionally displays run statistics.<br><br>
         <u><b>Run Button</b></u>
