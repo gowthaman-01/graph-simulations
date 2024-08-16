@@ -21,5 +21,7 @@ export const AVERAGE_SPEED: number = 30;
 export const FAST_SPEED: number = 50;
 export const SLOW_SPEED: number = 10;
 export const SHORTEST_PATH_DELAY_MULTIPLIER = DEFAULT_DELAY * 2;
-
 export const WEIGHT_DEBOUNCE_DELAY = 100;
+
+// Tutorial
+export const TOTAL_TUTORIAL_PAGES = 9;

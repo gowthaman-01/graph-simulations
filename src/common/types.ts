@@ -1,9 +1,6 @@
-export interface Node {
-    id: string;
-    weight: number;
-}
+export type Node = number;
 
-export type Nodes = Record<string, Node>;
+export type Nodes = Node[];
 
 export enum NodeState {
     Unvisited = 'unvisited',
@@ -15,24 +12,30 @@ export enum NodeState {
     EndNode = 'end',
 }
 
-export interface NewNodeState {
-    id: string;
-    newState: NodeState;
-}
-
-export interface NodeMetadata {
-    id: string;
-    state: NodeState;
-}
-
-export type NodeMetadataMap = Record<string, NodeMetadata>;
-
 export interface StartEndNodes {
     startNode: number;
     endNode: number;
 }
 
-export type Graph = Record<string, Node[]>;
+export type Graph = Record<Node, Nodes>;
+
+export interface GraphStructure {
+    graph: Graph;
+    nodes: Nodes;
+}
+
+export interface GraphStorage extends GraphStructure {
+    startNode: number;
+    endNode: number;
+}
+
+export interface GraphDiv {
+    graphDivElement: HTMLDivElement;
+    position: 'left' | 'right';
+    algorithmType: AlgorithmType;
+}
+
+export type VisitedSet = boolean[];
 
 export enum GraphType {
     Standard,
@@ -53,20 +56,11 @@ export enum PrimaryGraphType {
 
 export type SecondaryGraphType = MazeType | AlgorithmType;
 
-export interface GraphStructure {
-    graph: Graph;
-    nodes: Nodes;
-}
-
-export interface GraphStorage extends GraphStructure {
-    startNode: number;
-    endNode: number;
-}
-
-export interface GraphDiv {
-    graphDivElement: HTMLDivElement;
-    position: 'left' | 'right';
-    algorithmType: AlgorithmType;
+export enum AlgorithmType {
+    Bfs = 'bfs',
+    Dijkstra = 'dijkstra',
+    AStar = 'aStar',
+    BellmanFord = 'bellmanFord',
 }
 
 export enum MazeType {
@@ -80,22 +74,10 @@ export enum AStarHeuristicType {
     Euclidean = 'euclidean',
 }
 
-export enum AlgorithmType {
-    Bfs = 'bfs',
-    Dijkstra = 'dijkstra',
-    AStar = 'aStar',
-    BellmanFord = 'bellmanFord',
-}
-
 export enum SimulationSpeed {
     Average = 'average',
     Fast = 'fast',
     Slow = 'slow',
-}
-
-export interface StepMetadata {
-    steps: number;
-    nodeMetadataMap: NodeMetadataMap;
 }
 
 export interface TutorialData {
@@ -112,7 +94,7 @@ export interface ImageData {
 }
 
 export interface HeapNode {
-    id: string;
+    id: Node;
     priority: number;
 }
 
@@ -121,5 +103,3 @@ export interface Color {
     g: number;
     b: number;
 }
-
-export type VisitedSet = Record<string, boolean>;

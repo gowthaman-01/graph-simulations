@@ -1,5 +1,5 @@
 import { GRID_SIZE } from '../common/constants';
-import { AlgorithmType, HeapNode, NewNodeState, Node, NodeState } from '../common/types';
+import { AlgorithmType, HeapNode, Node, NodeState, VisitedSet } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
@@ -22,18 +22,18 @@ export const dijkstra = (): RunResults => {
     let steps = 0;
 
     // Initialize visited set, weight set and predecessors map. Each line takes O(1) time.
-    const visited: { [key: string]: boolean } = {};
-    const weights: { [key: string]: number } = {};
-    const predecessors: { [key: string]: string | null } = { [startNode]: null };
+    const visited: VisitedSet = [];
+    const weights: number[] = [];
+    const predecessors: { [key: Node]: Node | null } = { [startNode]: null };
 
     // Set all weights to infinity except the startNode, which is set to 0. This takes O(GRID_SIZE) time.
-    Object.keys(graph).forEach((node) => {
-        weights[node] = node === startNode.toString() ? 0 : Infinity;
-    });
+    for (let node = 0; node < GRID_SIZE; node++) {
+        weights[node] = node === startNode ? 0 : Infinity;
+    }
 
     // Initialize the min heap with the start node
     const heap = new MinHeap<HeapNode>(heapNodeComparator); // 2 O(1) steps.
-    let heapPushSteps = heap.push({ id: startNode.toString(), priority: 0 });
+    let heapPushSteps = heap.push({ id: startNode, priority: 0 });
 
     steps += heapPushSteps + GRID_SIZE + 5;
 
@@ -47,20 +47,16 @@ export const dijkstra = (): RunResults => {
 
         steps += heapPopSteps + 2;
 
-        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
-            const newNodeState: NewNodeState = {
-                id: currentNode,
-                newState: NodeState.Visiting,
-            };
-            runResults.addStep(steps, [newNodeState]);
+        if (currentNode !== startNode && currentNode !== endNode) {
+            runResults.addStep(steps, currentNode, NodeState.Visiting);
         }
 
         // If the end node is reached.
-        if (currentNode === endNode.toString()) {
+        if (currentNode === endNode) {
             let shortestPath: Node[] = [];
-            let predecessor: string | null = currentNode;
+            let predecessor: Node | null = currentNode;
             while (predecessor !== null) {
-                shortestPath.unshift({ id: predecessor, weight: nodes[predecessor].weight });
+                shortestPath.unshift(predecessor);
                 predecessor = predecessors[predecessor];
             }
             runResults.setShortestPath(shortestPath);
@@ -68,37 +64,27 @@ export const dijkstra = (): RunResults => {
         }
 
         for (const neighbor of graph[currentNode]) {
-            const { id: neighborId, weight: neighborWeight } = neighbor;
-
-            if (visited[neighborId]) continue;
-            const newWeight = weights[currentNode] + neighborWeight;
+            if (visited[neighbor]) continue;
+            const newWeight = weights[currentNode] + nodes[neighbor];
 
             steps += 4;
 
             // If a shorter path is found.
-            if (newWeight < weights[neighborId]) {
-                weights[neighborId] = newWeight;
-                predecessors[neighborId] = currentNode;
-                heapPushSteps = heap.push({ id: neighborId, priority: newWeight });
+            if (newWeight < weights[neighbor]) {
+                weights[neighbor] = newWeight;
+                predecessors[neighbor] = currentNode;
+                heapPushSteps = heap.push({ id: neighbor, priority: newWeight });
                 steps += heapPushSteps + 3;
-                if (neighborId !== startNode.toString() && neighborId !== endNode.toString()) {
-                    const newNodeState: NewNodeState = {
-                        id: neighbor.id,
-                        newState: NodeState.Exploring,
-                    };
-                    runResults.addStep(steps, [newNodeState]);
+                if (neighbor !== startNode && neighbor !== endNode) {
+                    runResults.addStep(steps, neighbor, NodeState.Exploring);
                 }
             } else {
                 steps += 1;
             }
         }
 
-        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
-            const newNodeState: NewNodeState = {
-                id: currentNode,
-                newState: NodeState.Visited,
-            };
-            runResults.addStep(steps, [newNodeState]);
+        if (currentNode !== startNode && currentNode !== endNode) {
+            runResults.addStep(steps, currentNode, NodeState.Visited);
         }
     }
 

@@ -5,6 +5,7 @@ import {
     AVERAGE_SPEED,
     SLOW_SPEED,
     FAST_SPEED,
+    TOTAL_TUTORIAL_PAGES,
 } from '../src/common/constants';
 import {
     AStarHeuristicType,
@@ -19,10 +20,11 @@ import {
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { getColorByWeight } from '../src/utils/color';
 import {
-    resetGridAndStatisticTable,
     displayAllRunResults,
     displayStep,
     displayShortestPath,
+    resetGrid,
+    resetStatisticTable,
 } from '../src/utils/display';
 import {
     debounce,
@@ -280,7 +282,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Update page number.
-        pageNumber.innerHTML = `${currentPageNumber}/10`;
+        pageNumber.innerHTML = `${currentPageNumber}/${TOTAL_TUTORIAL_PAGES}`;
     };
 
     const handleTutorialOpen = () => {
@@ -328,13 +330,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
-
         globalVariablesManager.setRunResults(newRunResults);
     };
 
     const resetGridAndRerun = () => {
         getRunResults();
-        resetGridAndStatisticTable();
+        resetGrid();
+        resetStatisticTable();
         resetStepsSlider();
     };
 
@@ -354,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // If graph is a maze, only path cells will be highlighted.
                 if (
                     globalVariablesManager.isMazeGraph() &&
-                    !(globalVariablesManager.getGraph().nodes[i].weight === 1)
+                    !(globalVariablesManager.getGraph().nodes[i] === 1)
                 ) {
                     continue;
                 }
@@ -365,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 cell.innerHTML = '';
 
                 // Set mark based on nodeState.
-                const mark = createMark(graphDiv.position, i.toString(), nodeState);
+                const mark = createMark(graphDiv.position, i, nodeState);
 
                 // The mark will have lower opacity so that its easier for user to choose their preferred Start / End node.
                 mark.style.opacity = `0.2`;
@@ -629,7 +631,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     stepsSlider.addEventListener('input', () => {
-        resetGridAndStatisticTable();
+        resetGrid();
         stepsCount.innerHTML = `Steps: ${stepsSlider.value}`;
 
         const runResults = globalVariablesManager.getRunResults();
@@ -684,6 +686,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     showWeightCheckbox.addEventListener('change', () => {
         globalVariablesManager.setShowWeights(showWeightCheckbox.checked);
-        resetGridAndStatisticTable();
+        resetGrid();
     });
 });

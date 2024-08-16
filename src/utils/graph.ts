@@ -42,17 +42,17 @@ export const recreateGraph = (): GraphStructure => {
  */
 export const createBasicGridGraph = (maxWeight: number, isWeighted: boolean): GraphStructure => {
     const graph: Graph = {};
-    const nodes: Nodes = {};
+    const nodes: Nodes = [];
 
     // Create nodes with random weights.
     for (let i = 0; i < GRID_SIZE; i++) {
-        nodes[i] = { id: i.toString(), weight: randomWeight(maxWeight) };
+        nodes[i] = randomWeight(maxWeight);
     }
 
     // Create graph.
     for (let i = 0; i < GRID_SIZE; i++) {
         // Initialize each node with an empty array of neighbors
-        graph[i.toString()] = [];
+        graph[i] = [];
 
         const up = i - COLS;
         const down = i + COLS;
@@ -68,15 +68,7 @@ export const createBasicGridGraph = (maxWeight: number, isWeighted: boolean): Gr
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(
-                graph,
-                i,
-                neighbor,
-                nodes[i].weight,
-                nodes[neighbor.toString()].weight,
-                isWeighted,
-                false,
-            );
+            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, false);
         });
     }
 
@@ -119,7 +111,7 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
         // Shuffle the neighbors so we visit them in a random order.
         neighbors = neighbors.sort(() => Math.random() - 0.5);
 
-        neighbors.forEach((neighbor) => dfs(parseInt(neighbor.id), path, visited));
+        neighbors.forEach((neighbor) => dfs(neighbor, path, visited));
 
         path.pop();
     };
@@ -129,16 +121,16 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
     for (let i = 0; i < GRID_SIZE; i++) {
         // We mark nodes that are not in the final DFS path with the max weight.
         if (!finalPath.has(i)) {
-            nodes[i] = { id: i.toString(), weight: MAX_WEIGHT };
+            nodes[i] = MAX_WEIGHT;
         } else {
-            nodes[i] = { id: i.toString(), weight: 1 };
+            nodes[i] = 1;
         }
     }
 
     const isWeighted = globalVariablesManager.getIsWeighted();
 
     for (let i = 0; i < GRID_SIZE; i++) {
-        graph[i.toString()] = [];
+        graph[i] = [];
 
         const up = i - COLS;
         const down = i + COLS;
@@ -157,15 +149,7 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(
-                graph,
-                i,
-                neighbor,
-                nodes[i].weight,
-                nodes[neighbor.toString()].weight,
-                isWeighted,
-                true,
-            );
+            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
         });
     }
 
@@ -184,7 +168,7 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
     globalVariablesManager.setEndNode(endNode);
 
     const graph: Graph = {};
-    const nodes: Nodes = {};
+    const nodes: Nodes = [];
 
     const walls = new Set<number>();
 
@@ -200,16 +184,16 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
     for (let i = 0; i < GRID_SIZE; i++) {
         // We mark walls with the max weight.
         if (walls.has(i)) {
-            nodes[i] = { id: i.toString(), weight: MAX_WEIGHT };
+            nodes[i] = MAX_WEIGHT;
         } else {
-            nodes[i] = { id: i.toString(), weight: 1 };
+            nodes[i] = 1;
         }
     }
 
     const isWeighted = globalVariablesManager.getIsWeighted();
 
     for (let i = 0; i < GRID_SIZE; i++) {
-        graph[i.toString()] = [];
+        graph[i] = [];
 
         const up = i - COLS;
         const down = i + COLS;
@@ -227,15 +211,7 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(
-                graph,
-                i,
-                neighbor,
-                nodes[i].weight,
-                nodes[neighbor.toString()].weight,
-                isWeighted,
-                true,
-            );
+            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
         });
     }
     return { graph, nodes };
@@ -254,7 +230,7 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
 
     const graph: Graph = {};
-    const nodes: Nodes = {};
+    const nodes: Nodes = [];
 
     const walls = new Set<number>();
     const passageMap = new Set<number>();
@@ -264,16 +240,16 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     for (let i = 0; i < GRID_SIZE; i++) {
         // We mark walls with the max weight.
         if (walls.has(i)) {
-            nodes[i] = { id: i.toString(), weight: MAX_WEIGHT };
+            nodes[i] = MAX_WEIGHT;
         } else {
-            nodes[i] = { id: i.toString(), weight: 1 };
+            nodes[i] = 1;
         }
     }
 
     const isWeighted = globalVariablesManager.getIsWeighted();
 
     for (let i = 0; i < GRID_SIZE; i++) {
-        graph[i.toString()] = [];
+        graph[i] = [];
 
         // Direct neighbors
         const up = i - COLS;
@@ -292,15 +268,7 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(
-                graph,
-                i,
-                neighbor,
-                nodes[i].weight,
-                nodes[neighbor.toString()].weight,
-                isWeighted,
-                true,
-            );
+            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
         });
     }
 
@@ -355,7 +323,7 @@ const recrusiveDivide = (
         // Mark all cells on the row as walls except for one.
         for (let col = startCol; col <= endCol; col++) {
             if (col !== passageCol) {
-                walls.add(parseInt(getCellIdFromRowAndColumn(wallRow, col)));
+                walls.add(getCellIdFromRowAndColumn(wallRow, col));
             }
         }
         passageMap.add(passageCol);
@@ -372,7 +340,7 @@ const recrusiveDivide = (
         const passageRow = startRow + Math.floor(Math.random() * availableRows) + 1;
         for (let row = startRow; row <= endRow; row++) {
             if (row !== passageRow) {
-                walls.add(parseInt(getCellIdFromRowAndColumn(row, wallCol)));
+                walls.add(getCellIdFromRowAndColumn(row, wallCol));
             }
         }
         passageMap.add(passageRow);
@@ -405,7 +373,7 @@ const addAdjacentNode = (
     if (isWeighted) {
         weight = isMazeGraph ? neighborWeight : Math.max(neighborWeight - currentWeight, 0);
     }
-    graph[currentId].push({ id: neighborId.toString(), weight: weight });
+    graph[currentId].push(neighborId);
 };
 
 /**
@@ -423,22 +391,22 @@ const addAdjacentNode = (
  */
 export const getExampleGraph = (graphType: GraphType): GraphStorage => {
     switch (graphType) {
-        case GraphType.IdealAStar:
-            return aStarExampleGraphs[
-                Math.floor(Math.random() * aStarExampleGraphs.length)
-            ] as GraphStorage;
-        case GraphType.IdealDijkstra:
-            return dijkstraExampleGraphs[
-                Math.floor(Math.random() * dijkstraExampleGraphs.length)
-            ] as GraphStorage;
-        case GraphType.IdealBellmanFord:
-            return bellmanFordExampleGraphs[
-                Math.floor(Math.random() * bellmanFordExampleGraphs.length)
-            ] as GraphStorage;
-        case GraphType.IdealBfs:
-            return bfsExampleGraphs[
-                Math.floor(Math.random() * bfsExampleGraphs.length)
-            ] as GraphStorage;
+        // case GraphType.IdealAStar:
+        //     return aStarExampleGraphs[
+        //         Math.floor(Math.random() * aStarExampleGraphs.length)
+        //     ] as GraphStorage;
+        // case GraphType.IdealDijkstra:
+        //     return dijkstraExampleGraphs[
+        //         Math.floor(Math.random() * dijkstraExampleGraphs.length)
+        //     ] as GraphStorage;
+        // case GraphType.IdealBellmanFord:
+        //     return bellmanFordExampleGraphs[
+        //         Math.floor(Math.random() * bellmanFordExampleGraphs.length)
+        //     ] as GraphStorage;
+        // case GraphType.IdealBfs:
+        //     return bfsExampleGraphs[
+        //         Math.floor(Math.random() * bfsExampleGraphs.length)
+        //     ] as GraphStorage;
         default:
             throw new Error(
                 `Invalid graph type: ${graphType}. Expected one of: IdealAStar, IdealDijkstra, IdealBellmanFord, IdealBfs.`,
