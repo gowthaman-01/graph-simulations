@@ -1,7 +1,8 @@
 import { AVERAGE_SPEED, DEFAULT_WEIGHT } from '../common/constants';
 import {
+    AlgorithmType,
     AStarHeuristicType,
-    GraphGroup,
+    GraphDiv,
     GraphStructure,
     GraphType,
     SimulationSpeed,
@@ -27,7 +28,8 @@ class GlobalVariablesManager {
     private aStarHeuristicType: AStarHeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
-    private graphGroup: number;
+    private leftGraphDiv: GraphDiv | null;
+    private rightGraphDiv: GraphDiv | null;
     private showWeights: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
@@ -48,7 +50,8 @@ class GlobalVariablesManager {
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
         this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
-        this.graphGroup = 1;
+        this.rightGraphDiv = null;
+        this.leftGraphDiv = null;
         this.showWeights = false;
     }
 
@@ -176,13 +179,28 @@ class GlobalVariablesManager {
         return this.tutorialPageNumber;
     }
 
-    public getGraphGroup(): number {
-        return this.graphGroup;
+    public getGraphDivs(): GraphDiv[] {
+        if (!this.leftGraphDiv || !this.rightGraphDiv) {
+            return [];
+        } else {
+            return [this.leftGraphDiv, this.rightGraphDiv];
+        }
     }
 
-    public toggleGraphGroup(): number {
-        this.graphGroup = this.graphGroup === 1 ? 2 : 1;
-        return this.graphGroup;
+    public setGraphDivs(leftGraphDiv: GraphDiv, rightGraphDiv: GraphDiv): void {
+        this.leftGraphDiv = leftGraphDiv;
+        this.rightGraphDiv = rightGraphDiv;
+    }
+
+    public setGraphDiv(position: 'left' | 'right', algorithmType: AlgorithmType): void {
+        if (!this.leftGraphDiv || !this.rightGraphDiv) {
+            return;
+        }
+        if (position === 'left') {
+            this.leftGraphDiv.algorithmType = algorithmType;
+        } else if (position === 'right') {
+            this.rightGraphDiv.algorithmType = algorithmType;
+        }
     }
 
     public isExampleGraph() {

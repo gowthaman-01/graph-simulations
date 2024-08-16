@@ -7,15 +7,15 @@ import { getColorByWeight } from './color';
  *
  * @param {string} nodeName - The name of the node (cell) to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., Visiting, Unvisited).
- * @param {AlgorithmType} algorithmType - The algorithm associated with the grid.
+ * @param {string} graphPosition - The position of the graph (left or right).
  */
 export const markCell = (
     nodeName: string,
     nodeState: NodeState,
-    algorithmType: AlgorithmType,
+    graphPosition: 'left' | 'right',
 ): void => {
     // Get cell HTML element.
-    const cell = document.getElementById(`${algorithmType}-cell-${nodeName}`);
+    const cell = document.getElementById(`${graphPosition}-cell-${nodeName}`);
 
     if (!cell) return;
 
@@ -34,7 +34,7 @@ export const markCell = (
         cell.style.backgroundColor = getColorByWeight(weight);
     }
 
-    const mark = createMark(algorithmType, nodeName, nodeState);
+    const mark = createMark(graphPosition, nodeName, nodeState);
 
     cell.appendChild(mark);
 };
@@ -42,13 +42,13 @@ export const markCell = (
 /**
  * Creates an image element to mark a node in the grid based on the specified state.
  *
- * @param {AlgorithmType} algorithmType - The type of algorithm associated with the node.
+ * @param {string} graphPosition - The position of the graph (left or right).
  * @param {string} nodeName - The name of the node to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., StartNode, EndNode, Visiting).
  * @returns {HTMLImageElement | HTMLParagraphElement} The created image element to be used as a mark.
  */
 export const createMark = (
-    algorithmType: AlgorithmType,
+    graphPosition: 'left' | 'right',
     nodeName: string,
     nodeState: NodeState,
 ): HTMLImageElement | HTMLParagraphElement => {
@@ -65,7 +65,7 @@ export const createMark = (
     }
 
     const mark = document.createElement('img');
-    mark.id = `${algorithmType}-cell-${nodeName}-${nodeState}`;
+    mark.id = `${graphPosition}-cell-${nodeName}-${nodeState}`;
     mark.classList.add('mark');
 
     switch (nodeState) {

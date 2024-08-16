@@ -132,16 +132,12 @@ export const tutorialDataList: TutorialData[] = [
         body: `<div class="graph-buttons-container" style="justify-content: center;">
         <button>Settings</button>
         <button>Run</button>
-        <button class="arrow-button">
-            <img src="./assets/right-arrow.png" class="arrow-image" />
-        </button>
         </div><br>
         <u><b>Settings Button</b></u>
         <br>Access advanced configuration options for enhanced control and customization<br>
         <ul>
-            <li>Graph Group Selection - Choose which two graphs to display simultaneously</li>
             <li>Weight Visibility Toggle - Opt to show or hide weight values on each cell.</li>
-            <li>A Heuristic Selector - Switch between Manhattan and Euclidean distances for the A* Search algorithm.</li>
+            <li>A* Heuristic Selector - Switch between Manhattan and Euclidean distances</li>
         </ul>
         The settings modal additionally displays run statistics.<br><br>
         <u><b>Run Button</b></u>

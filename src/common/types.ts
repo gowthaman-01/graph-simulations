@@ -5,11 +5,6 @@ export interface Node {
 
 export type Nodes = Record<string, Node>;
 
-export interface StartEndNodes {
-    startNode: number;
-    endNode: number;
-}
-
 export enum NodeState {
     Unvisited = 'unvisited',
     Visiting = 'visiting',
@@ -31,6 +26,11 @@ export interface NodeMetadata {
 }
 
 export type NodeMetadataMap = Record<string, NodeMetadata>;
+
+export interface StartEndNodes {
+    startNode: number;
+    endNode: number;
+}
 
 export type Graph = Record<string, Node[]>;
 
@@ -63,6 +63,12 @@ export interface GraphStorage extends GraphStructure {
     endNode: number;
 }
 
+export interface GraphDiv {
+    graphDivElement: HTMLDivElement;
+    position: 'left' | 'right';
+    algorithmType: AlgorithmType;
+}
+
 export enum MazeType {
     RecursiveDivision = 'Recursive Divide',
     Dfs = 'DFS',
@@ -79,12 +85,6 @@ export enum AlgorithmType {
     Dijkstra = 'dijkstra',
     AStar = 'aStar',
     BellmanFord = 'bellmanFord',
-}
-
-export enum GraphGroup {
-    BfsBellman = 'bfsBellman',
-    BfsDijkstra = 'bfsDijkstra',
-    BfsAStar = 'bfsAStar',
 }
 
 export enum SimulationSpeed {

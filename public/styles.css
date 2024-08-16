@@ -172,7 +172,7 @@ th {
     min-width: 120px;
 }
 
-.settings-container {
+.settings-modal {
     justify-content: space-evenly;
 }
 
@@ -204,19 +204,12 @@ th {
     max-width: 35px;
 }
 
-.graph-group-dropdown-container {
+.settings-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
     display: flex;
     justify-content: center;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.graph-group-two-details {
-    min-width: 180px;
-}
-
-#graphGroupTwoGraphs {
-    margin-top: 28px;
+    gap: 40px;
 }
 
 .show-weight-switch-container {
@@ -233,12 +226,14 @@ th {
 }
 
 .heuristic-dropdown-container {
-    margin-top: 30px;
-    margin-bottom: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
+}
+
+.run-statistics-container {
+    margin-bottom: 50px;
 }
 
 .page-number {
@@ -247,13 +242,25 @@ th {
     right: 40px;
 }
 
+.algorithm-dropdown {
+    font-weight: bold;
+}
+
 .grid {
     margin-bottom: 20px;
 }
 
-.sub-grid-container {
+.grids-container {
     display: flex;
     gap: 50px;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .grid-cell {
@@ -560,7 +567,7 @@ th {
         font-size: 16px;
     }
 
-    .sub-grid-container {
+    .grids-container {
         display: grid;
         justify-content: center;
         gap: 0px;
