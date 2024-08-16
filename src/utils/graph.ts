@@ -68,7 +68,7 @@ export const createBasicGridGraph = (maxWeight: number, isWeighted: boolean): Gr
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, false);
+            graph[i].push(neighbor);
         });
     }
 
@@ -149,7 +149,7 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
+            graph[i].push(neighbor);
         });
     }
 
@@ -211,7 +211,7 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
+            graph[i].push(neighbor);
         });
     }
     return { graph, nodes };
@@ -268,7 +268,7 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
 
         // Add valid neighbors.
         neighbors.forEach((neighbor) => {
-            addAdjacentNode(graph, i, neighbor, nodes[i], nodes[neighbor], isWeighted, true);
+            graph[i].push(neighbor);
         });
     }
 
@@ -347,33 +347,6 @@ const recrusiveDivide = (
         recrusiveDivide(startRow, endRow, startCol, wallCol - 1, walls, passageMap);
         recrusiveDivide(startRow, endRow, wallCol + 1, endCol, walls, passageMap);
     }
-};
-
-/**
- * Adds an adjacent node to the graph with the specified properties.
- * @param graph The graph structure.
- * @param currentId The ID of the current node.
- * @param neighborId The ID of the neighboring node.
- * @param currentWeight The weight of the current node.
- * @param neighborWeight The weight of the neighboring node.
- * @param isWeighted Whether the graph is weighted.
- * @param isMaze Whether the graph is a maze.
- *
- */
-const addAdjacentNode = (
-    graph: Graph,
-    currentId: number,
-    neighborId: number,
-    currentWeight: number,
-    neighborWeight: number,
-    isWeighted: boolean,
-    isMazeGraph: boolean,
-): void => {
-    let weight = 1;
-    if (isWeighted) {
-        weight = isMazeGraph ? neighborWeight : Math.max(neighborWeight - currentWeight, 0);
-    }
-    graph[currentId].push(neighborId);
 };
 
 /**

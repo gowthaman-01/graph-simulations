@@ -48,7 +48,8 @@ export const bellmanFord = (): RunResults => {
             }
 
             for (const neighbor of graph[currentNode]) {
-                const newWeight = distances[currentNode] + nodes[neighbor];
+                const newWeight =
+                    distances[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
                 steps += 2;
 
                 if (distances[neighbor] > newWeight) {

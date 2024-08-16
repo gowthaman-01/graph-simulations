@@ -60,12 +60,14 @@ export const dijkstra = (): RunResults => {
                 predecessor = predecessors[predecessor];
             }
             runResults.setShortestPath(shortestPath);
+            console.log(shortestPath);
             return runResults;
         }
 
         for (const neighbor of graph[currentNode]) {
             if (visited[neighbor]) continue;
-            const newWeight = weights[currentNode] + nodes[neighbor];
+            const newWeight =
+                weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
 
             steps += 4;
 
