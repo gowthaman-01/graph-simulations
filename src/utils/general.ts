@@ -1,5 +1,6 @@
-import { COLS, MAX_SLIDER, MAX_WEIGHT } from '../common/constants';
+import { MAX_SLIDER, MAX_WEIGHT } from '../common/constants';
 import { AlgorithmType, Node } from '../common/types';
+import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 /**
  * Delays execution for a specified duration.
@@ -74,6 +75,7 @@ export const calculateManhattanDistance = (startNode: Node, endNode: Node): numb
  * @returns {object} An object containing the row and column of the cell.
  */
 const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } => {
+    const COLS = Math.sqrt(getGlobalVariablesManagerInstance().getGridSize());
     const row = Math.floor(cellId / COLS);
     const col = cellId % COLS;
     return { row, col };
@@ -86,6 +88,7 @@ const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } =
  * @returns {Node} The cell ID as a string.
  */
 export const getCellIdFromRowAndColumn = (row: number, col: number): Node => {
+    const COLS = Math.sqrt(getGlobalVariablesManagerInstance().getGridSize());
     return row * COLS + col;
 };
 

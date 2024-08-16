@@ -1,4 +1,4 @@
-import { GRID_SIZE, SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
+import { SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
 import { AlgorithmType, GraphDiv, Node, NodeState } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
@@ -34,7 +34,7 @@ export default class RunResults {
     private createNodeStateList = (): NodeState[] => {
         const nodeStateList: NodeState[] = [];
 
-        for (let i = 0; i < GRID_SIZE; i++) {
+        for (let i = 0; i < globalVariablesManager.getGridSize(); i++) {
             let nodeState: NodeState;
             switch (i) {
                 case globalVariablesManager.getStartNode():

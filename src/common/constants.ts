@@ -7,11 +7,6 @@ export const LIGHT_BLUE: Color = { r: 175, g: 216, b: 248 };
 export const BLUE: Color = { r: 0, g: 0, b: 200 };
 export const DARK_BLUE: Color = { r: 12, g: 53, b: 71 };
 
-// Graph properties.
-export const ROWS: number = 18;
-export const COLS: number = 18;
-export const GRID_SIZE: number = ROWS * COLS;
-
 // Graph control properties.
 export const MAX_WEIGHT: number = 100;
 export const MAX_SLIDER: number = 200;
@@ -21,7 +16,10 @@ export const AVERAGE_SPEED: number = 30;
 export const FAST_SPEED: number = 50;
 export const SLOW_SPEED: number = 10;
 export const SHORTEST_PATH_DELAY_MULTIPLIER = DEFAULT_DELAY * 2;
-export const WEIGHT_DEBOUNCE_DELAY = 100;
+export const DEBOUNCE_DELAY: number = 100;
 
 // Tutorial
-export const TOTAL_TUTORIAL_PAGES = 9;
+export const TOTAL_TUTORIAL_PAGES: number = 9;
+
+// Grid properities
+export const GRID_WIDTH: number = 580;

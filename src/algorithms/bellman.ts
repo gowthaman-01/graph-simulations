@@ -1,4 +1,3 @@
-import { GRID_SIZE } from '../common/constants';
 import { AlgorithmType, Node, NodeState } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
@@ -17,6 +16,7 @@ export const bellmanFord = (): RunResults => {
     const graph = globalVariablesManager.getGraph().graph;
 
     const runResults = new RunResults(AlgorithmType.BellmanFord);
+    const gridSize = globalVariablesManager.getGridSize();
 
     let steps = 0; // This will count the number of operations performed. A single step equates to a O(1) operation.
 
@@ -25,18 +25,18 @@ export const bellmanFord = (): RunResults => {
     const predecessors: { [key: Node]: Node | null } = { [startNode]: null };
 
     // Set all distances to Infinity except the startNode, which is set to 0.
-    for (let node = 0; node < GRID_SIZE; node++) {
+    for (let node = 0; node < gridSize; node++) {
         distances[node] = node === startNode ? 0 : Infinity;
     }
 
-    steps += GRID_SIZE + 2;
+    steps += gridSize + 2;
 
     // Relax all edges V - 1 times, where V is the number of nodes in the Graph.
-    for (let i = 0; i < GRID_SIZE - 1; i++) {
+    for (let i = 0; i < gridSize - 1; i++) {
         let distancesUpdated = false; // This flag checks if we made any changes to the distances map in this iteration.
         steps += 1;
 
-        for (let currentNode = 0; currentNode < GRID_SIZE; currentNode++) {
+        for (let currentNode = 0; currentNode < gridSize; currentNode++) {
             // Skip processing for nodes that are not yet reached.
             if (distances[currentNode] === Infinity) {
                 steps += 2;

@@ -1,4 +1,4 @@
-import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
+import { DEFAULT_DELAY, GRID_WIDTH } from '../common/constants';
 import { AlgorithmType, Node, NodeState, GraphDiv } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
@@ -18,6 +18,9 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
+    const gridSize = globalVariablesManager.getGridSize();
+    const rows = Math.sqrt(gridSize);
+    const cols = Math.sqrt(gridSize);
 
     const graphDivs = globalVariablesManager.getGraphDivs();
 
@@ -34,18 +37,23 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
         // Create grid container.
         graphDivElement.innerHTML = '';
         graphDivElement.style.display = 'grid';
-        graphDivElement.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
-        graphDivElement.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+        graphDivElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        graphDivElement.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
         // Create grid cells using DocumentFragment for performance.
         const fragment = document.createDocumentFragment();
 
-        for (let i = 0; i < GRID_SIZE; i++) {
+        for (let i = 0; i < gridSize; i++) {
             const cell = document.createElement('div');
 
             cell.id = `${graphDiv.position}-cell-${i}`;
             cell.className = 'grid-cell';
             cell.style.border = 'solid 1px #0C3547';
+
+            const cellWidth = getCellWidth(rows);
+
+            cell.style.width = `${cellWidth}px`;
+            cell.style.height = `${cellWidth}px`;
 
             const weight = nodes[i];
             cell.style.backgroundColor = getColorByWeight(weight);
@@ -66,6 +74,45 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
 
         graphDivElement.appendChild(fragment);
     }
+};
+
+/**
+ * Calculates the width of each cell in a grid based on the number of rows.
+ *
+ * @param {number} rows - The number of rows in the grid.
+ * @returns {number} - The calculated width of each cell.
+ *
+ */
+const getCellWidth = (rows: number): number => {
+    // Define the minimum and maximum number of rows for scaling
+    const minRows = 10;
+    const maxRows = 30;
+    const midPoint = 20;
+
+    /**
+     * Scale factor that adjusts the width of each cell based on the number of rows.
+     *
+     * - If the number of rows is below the midpoint, the scale increases as the number of rows decreases.
+     * - If the number of rows is above the midpoint, the scale decreases as the number of rows increases.
+     *
+     * The specific scaling factors (0.028 for below midpoint, 0.042 for above midpoint) are chosen to create a smooth transition.
+     */
+    let scale: number;
+    if (rows <= midPoint) {
+        // Increase the scale as the number of rows decreases below the midpoint
+        scale = 1 + ((midPoint - rows) / (midPoint - minRows)) * 0.035;
+    } else {
+        // Decrease the scale as the number of rows increases above the midpoint
+        scale = 1 - ((rows - midPoint) / (maxRows - midPoint)) * 0.034;
+    }
+
+    // Ensure scale doesn't go below 0
+    scale = Math.max(scale, 0);
+
+    // Calculate the cell width based on the grid width, scale, and number of rows
+    const cellWidth = (GRID_WIDTH * scale) / rows;
+
+    return cellWidth;
 };
 
 /**

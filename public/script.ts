@@ -1,6 +1,5 @@
 import {
-    WEIGHT_DEBOUNCE_DELAY,
-    GRID_SIZE,
+    DEBOUNCE_DELAY,
     MAX_WEIGHT,
     AVERAGE_SPEED,
     SLOW_SPEED,
@@ -60,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const aStarHeuristicTypeDropDown = document.getElementById(
         'aStarHeuristicTypeDropdown',
     ) as HTMLInputElement;
+    const gridSizeSlider = document.getElementById('gridSizeSlider') as HTMLInputElement;
+
     const leftGraphDropdown = document.getElementById('leftGraphDropdown') as HTMLSelectElement;
     const rightGraphDropdown = document.getElementById('rightGraphDropdown') as HTMLSelectElement;
     const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !viewSettingsButton ||
         !closeSettingsButton ||
         !aStarHeuristicTypeDropDown ||
+        !gridSizeSlider ||
         !leftGraphDropdown ||
         !rightGraphDropdown ||
         !changeEndNodeButton ||
@@ -149,6 +151,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const enableWeightSlider = () => {
         weightSlider.style.cursor = 'pointer';
         weightSlider.disabled = false;
+    };
+
+    const disableGridSizeSlider = () => {
+        gridSizeSlider.style.cursor = 'not-allowed';
+        gridSizeSlider.disabled = true;
+    };
+
+    const enableGridSizeSlider = () => {
+        gridSizeSlider.style.cursor = 'pointer';
+        gridSizeSlider.disabled = false;
     };
 
     const hideWeightSlider = () => {
@@ -342,7 +354,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const setNewStartEndNode = (nodeState: NodeState) => {
         for (const graphDiv of globalVariablesManager.getGraphDivs()) {
-            for (let i = 0; i < GRID_SIZE; i++) {
+            for (let i = 0; i < globalVariablesManager.getGridSize(); i++) {
                 // When the user clicks the 'Change Start Node' button, all cells will
                 // temporarily show the startNode image except the endNode and vice versa.
                 if (
@@ -490,6 +502,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         disableWeightControls();
         disableStepsSlider();
         disableSpeedControls();
+        disableGridSizeSlider();
 
         // Reset grid for subsequent renders.
         if (!globalVariablesManager.isFirstRender()) {
@@ -506,6 +519,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         enableWeightControls();
         enableStepsSlider();
         enableSpeedControls();
+        enableGridSizeSlider();
 
         // Generating new start and end nodes for example graphs is not allowed.
         if (globalVariablesManager.isExampleGraph()) {
@@ -627,7 +641,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         debounce(async () => {
             globalVariablesManager.setMaxWeight(getMaxWeight(weightSlider.value));
             generateNewGraphWithReachableEndNode();
-        }, WEIGHT_DEBOUNCE_DELAY),
+        }, DEBOUNCE_DELAY),
+    );
+
+    gridSizeSlider.addEventListener(
+        'input',
+        debounce(async () => {
+            const newGridSize = Math.pow(parseInt(gridSizeSlider.value), 2);
+            globalVariablesManager.setGridSize(newGridSize);
+            generateNewGraphWithReachableEndNode();
+        }, DEBOUNCE_DELAY),
     );
 
     stepsSlider.addEventListener('input', () => {

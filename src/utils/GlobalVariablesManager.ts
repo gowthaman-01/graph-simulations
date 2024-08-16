@@ -16,6 +16,7 @@ import { createBasicGridGraph, generateStartAndEndNode } from './graph';
 class GlobalVariablesManager {
     private static instance: GlobalVariablesManager;
     private graph: GraphStructure;
+    private gridSize: number;
     private runResults: RunResults[];
     private startNode: number;
     private endNode: number;
@@ -36,9 +37,10 @@ class GlobalVariablesManager {
     private readonly TUTORIAL_PAGE_MAX = 10;
 
     private constructor() {
-        this.graph = createBasicGridGraph(DEFAULT_WEIGHT, true); // The default graph is unweighted, with 0 max weight.
+        this.gridSize = 400;
+        this.graph = createBasicGridGraph(DEFAULT_WEIGHT, this.gridSize); // The default graph is unweighted, with 0 max weight.
         this.runResults = [];
-        const { startNode, endNode } = generateStartAndEndNode();
+        const { startNode, endNode } = generateStartAndEndNode(this.gridSize);
         this.startNode = startNode;
         this.endNode = endNode;
         this.graphType = GraphType.Standard;
@@ -68,6 +70,14 @@ class GlobalVariablesManager {
 
     public getGraph(): GraphStructure {
         return this.graph;
+    }
+
+    public setGridSize(newGridSize: number): void {
+        this.gridSize = newGridSize;
+    }
+
+    public getGridSize(): number {
+        return this.gridSize;
     }
 
     public setRunResults(runResults: RunResults[]): void {

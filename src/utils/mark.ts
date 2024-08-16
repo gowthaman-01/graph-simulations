@@ -61,6 +61,13 @@ export const createMark = (
         weightDisplay.innerHTML = weight.toString();
         weightDisplay.style.color = getColorByWeight(weight, true);
 
+        const gridSize = globalVariablesManager.getGridSize();
+
+        // Calculate the font size based on the grid size, decreasing as grid size increases.
+        const fontSize = -0.01 * gridSize + 20;
+
+        weightDisplay.style.fontSize = `${fontSize}px`;
+
         return weightDisplay;
     }
 
