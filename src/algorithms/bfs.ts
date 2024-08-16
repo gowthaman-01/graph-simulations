@@ -1,4 +1,4 @@
-import { AlgorithmType, NewNodeState, Node, NodeState, VisitedSet } from '../common/types';
+import { AlgorithmType, Node, NodeState, VisitedSet } from '../common/types';
 import { Queue } from '../data-structures/Queue';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
@@ -13,7 +13,6 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
 export const bfs = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
-    const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
 
     const runResults = new RunResults(AlgorithmType.Bfs);
@@ -21,12 +20,12 @@ export const bfs = (): RunResults => {
     let steps = 0;
 
     // Initialize visited set, queue and predecessors map.
-    const visited: VisitedSet = {};
-    const queue = new Queue<string>();
-    const predecessorsMap: { [key: string]: string | null } = { [startNode]: null }; // 2 * O(1)
+    const visited: VisitedSet = [];
+    const queue = new Queue<Node>();
+    const predecessorsMap: { [key: Node]: Node | null } = { [startNode]: null }; // 2 * O(1)
 
     // Add startNode to queue and mark it as visited.
-    queue.enqueue(startNode.toString()); // 2 * O(1)
+    queue.enqueue(startNode); // 2 * O(1)
     visited[startNode] = true;
 
     steps += 7;
@@ -34,25 +33,18 @@ export const bfs = (): RunResults => {
     while (queue.getSize() > 0) {
         // Dequeue node at the front of the queue.
         const currentNode = queue.dequeue();
-        if (!currentNode) continue;
-        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
-            const newNodeState: NewNodeState = {
-                id: currentNode,
-                newState: NodeState.Visiting,
-            };
-            runResults.addStep(steps, [newNodeState]);
+        if (currentNode === null) continue;
+        if (currentNode !== startNode && currentNode !== endNode) {
+            runResults.addStep(steps, currentNode, NodeState.Visiting);
         }
         steps += 3; // getSize() and > operations are O(1) each.
 
         // Set shortest path if endNode is reached. No steps are added here.
-        if (currentNode === endNode.toString()) {
+        if (currentNode === endNode) {
             let shortestPath: Node[] = [];
-            let predecessor: string | null = currentNode;
+            let predecessor: Node | null = currentNode;
             while (predecessor !== null) {
-                shortestPath.unshift({
-                    id: predecessor,
-                    weight: nodes[predecessor].weight,
-                });
+                shortestPath.unshift(predecessor);
                 predecessor = predecessorsMap[predecessor];
             }
             runResults.setShortestPath(shortestPath);
@@ -61,29 +53,21 @@ export const bfs = (): RunResults => {
 
         // Explore neighbors of the current node
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor.id]) continue; // 2 * O(1)
-            queue.enqueue(neighbor.id);
-            visited[neighbor.id] = true;
-            predecessorsMap[neighbor.id] = currentNode;
+            if (visited[neighbor]) continue; // 2 * O(1)
+            queue.enqueue(neighbor);
+            visited[neighbor] = true;
+            predecessorsMap[neighbor] = currentNode;
             steps += 5;
 
             // Set visiting marker. Steps are not added here.
-            if (neighbor.id !== startNode.toString() && neighbor.id !== endNode.toString()) {
-                const newNodeState: NewNodeState = {
-                    id: neighbor.id,
-                    newState: NodeState.Exploring,
-                };
-                runResults.addStep(steps, [newNodeState]);
+            if (neighbor !== startNode && neighbor !== endNode) {
+                runResults.addStep(steps, neighbor, NodeState.Exploring);
             }
         }
 
         // Set visited marker. Steps are not added here.
-        if (currentNode !== startNode.toString() && currentNode !== endNode.toString()) {
-            const newNodeState: NewNodeState = {
-                id: currentNode,
-                newState: NodeState.Visited,
-            };
-            runResults.addStep(steps, [newNodeState]);
+        if (currentNode !== startNode && currentNode !== endNode) {
+            runResults.addStep(steps, currentNode, NodeState.Visited);
         }
     }
 

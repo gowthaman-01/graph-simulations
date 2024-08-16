@@ -61,14 +61,14 @@ export const tutorialDataList: TutorialData[] = [
             marginTop: 30,
         },
     },
+    // {
+    //     pageNumber: 6,
+    //     title: 'Graph Types',
+    //     body: `<b>3. Ideal Graph</b>
+    //     <br><br>Ideal graphs are pre-configured graphs showcasing ideal conditions for demonstrating algorithm performance. These graphs are useful for comparing how different algorithms handle similar starting conditions.`,
+    // },
     {
         pageNumber: 6,
-        title: 'Graph Types',
-        body: `<b>3. Ideal Graph</b>
-        <br><br>Ideal graphs are pre-configured graphs showcasing ideal conditions for demonstrating algorithm performance. These graphs are useful for comparing how different algorithms handle similar starting conditions.`,
-    },
-    {
-        pageNumber: 7,
         title: 'Legend',
         body: `
         <div class="legend">
@@ -109,7 +109,7 @@ export const tutorialDataList: TutorialData[] = [
         </div>`,
     },
     {
-        pageNumber: 8,
+        pageNumber: 7,
         title: 'Control Elements',
         body: `<u><b>Generate New Graph</b></u>
         <br>Generates a new graph based on the selected type and weight settings.<br><br>
@@ -127,7 +127,7 @@ export const tutorialDataList: TutorialData[] = [
         <br>Allows manual control of the progression through each stage of the algorithm.`,
     },
     {
-        pageNumber: 10,
+        pageNumber: 8,
         title: 'Control Elements',
         body: `<div class="graph-buttons-container" style="justify-content: center;">
         <button>Settings</button>
@@ -146,7 +146,7 @@ export const tutorialDataList: TutorialData[] = [
         <br>Allows you to switch between the two graph groups`,
     },
     {
-        pageNumber: 10,
+        pageNumber: 9,
         title: 'Run Statistics',
         body: `The run statistics table compares the performance of different algorithms (BFS, Bellman-Ford, Dijkstra, and A* Search). 
         <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.

@@ -2,7 +2,7 @@ import { DARK_BLUE, MAX_WEIGHT, WHITE } from '../common/constants';
 
 /**
  * Calculates and returns a RGB color based on a given weight.
- * The color is interpolated between light and dark blue. (Can be changed)
+ * The color is interpolated between light and dark blue.
  *
  * @param {number} weight - The weight value used to determine the color.
  * @param {boolean} [reversed=false] - Optional flag to reverse the color gradient.

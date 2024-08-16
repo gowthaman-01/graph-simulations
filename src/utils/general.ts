@@ -1,5 +1,5 @@
 import { COLS, MAX_SLIDER, MAX_WEIGHT } from '../common/constants';
-import { AlgorithmType } from '../common/types';
+import { AlgorithmType, Node } from '../common/types';
 
 /**
  * Delays execution for a specified duration.
@@ -44,11 +44,11 @@ export const getMaxWeight = (weightSliderValue: string): number => {
 
 /**
  * Calculates the Euclidean distance between two nodes in a grid.
- * @param {string} startNode - The ID of the start node.
- * @param {string} endNode - The ID of the end node.
+ * @param {Node} startNode - The ID of the start node.
+ * @param {Node} endNode - The ID of the end node.
  * @returns {number} The Euclidean distance between the two nodes.
  */
-export const calculateEuclideanDistance = (startNode: string, endNode: string): number => {
+export const calculateEuclideanDistance = (startNode: Node, endNode: Node): number => {
     const { row: startRow, col: startCol } = getRowAndColumnFromCellId(startNode);
     const { row: endRow, col: endCol } = getRowAndColumnFromCellId(endNode);
     const dx = endRow - startRow;
@@ -62,7 +62,7 @@ export const calculateEuclideanDistance = (startNode: string, endNode: string): 
  * @param {string} endNode - The ID of the end node.
  * @returns {number} The Manhattan distance between the two nodes.
  */
-export const calculateManhattanDistance = (startNode: string, endNode: string): number => {
+export const calculateManhattanDistance = (startNode: Node, endNode: Node): number => {
     const { row: startRow, col: startCol } = getRowAndColumnFromCellId(startNode);
     const { row: endRow, col: endCol } = getRowAndColumnFromCellId(endNode);
     return Math.abs(endRow - startRow) + Math.abs(endCol - startCol);
@@ -70,13 +70,12 @@ export const calculateManhattanDistance = (startNode: string, endNode: string): 
 
 /**
  * Finds the row and column of a cell given its ID in a grid graph.
- * @param {string} cellId - The ID of the cell.
+ * @param {Node} cellId - The ID of the cell.
  * @returns {object} An object containing the row and column of the cell.
  */
-const getRowAndColumnFromCellId = (cellId: string): { row: number; col: number } => {
-    const numericCellId = parseInt(cellId);
-    const row = Math.floor(numericCellId / COLS);
-    const col = numericCellId % COLS;
+const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } => {
+    const row = Math.floor(cellId / COLS);
+    const col = cellId % COLS;
     return { row, col };
 };
 
@@ -84,10 +83,10 @@ const getRowAndColumnFromCellId = (cellId: string): { row: number; col: number }
  * Finds the cell ID of a cell given its row and column in a grid graph.
  * @param {number} row - The row of the cell.
  * @param {number} col - The column of the cell.
- * @returns {string} The cell ID as a string.
+ * @returns {Node} The cell ID as a string.
  */
-export const getCellIdFromRowAndColumn = (row: number, col: number): string => {
-    return (row * COLS + col).toString();
+export const getCellIdFromRowAndColumn = (row: number, col: number): Node => {
+    return row * COLS + col;
 };
 
 /**

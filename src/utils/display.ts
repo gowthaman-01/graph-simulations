@@ -1,11 +1,5 @@
-import {
-    COLS,
-    DEFAULT_DELAY,
-    GRID_SIZE,
-    ROWS,
-    SHORTEST_PATH_DELAY_MULTIPLIER,
-} from '../common/constants';
-import { AlgorithmType, Node, StepMetadata, NodeState, GraphDiv } from '../common/types';
+import { COLS, DEFAULT_DELAY, GRID_SIZE, ROWS } from '../common/constants';
+import { AlgorithmType, Node, NodeState, GraphDiv } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { createMark, markCell } from './mark';
@@ -16,27 +10,16 @@ import { getBestAlgorithm } from './run';
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Resets the grid graph display and updates the statistics table. If an algorithm is specified, only that algorithm's statistics will be reset.
+ * Resets the grid graph display. If an algorithm is specified, only that algorithm's statistics will be reset.
  *
  * @param {AlgorithmType} [algorithmToClear] - Optional. The specific algorithm whose statistics should be reset. If not provided, all visible algorithms will be reset.
  */
-export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): void => {
+export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
-    const runResults = globalVariablesManager.getRunResults();
-    const runStatisticTable = document.getElementById('runStatistics') as HTMLTableElement;
-    const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
-    const graphDivs = globalVariablesManager.getGraphDivs();
 
-    // Initializes the HTML structure for the statistics table
-    let tableHtml = ` 
-    <tr>
-        <th>Algorithm</th>
-        <th>Steps</th>
-        <th>Weight</th>
-        <th>Nodes</th>
-    </tr>`;
+    const graphDivs = globalVariablesManager.getGraphDivs();
 
     for (const graphDiv of graphDivs) {
         const algorithmType = graphDiv.algorithmType;
@@ -51,7 +34,7 @@ export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): vo
         // Create grid container.
         graphDivElement.innerHTML = '';
         graphDivElement.style.display = 'grid';
-        graphDivElement.style.gridTemplateColumns = `repeat(${COLS}, 140fr)`;
+        graphDivElement.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
         graphDivElement.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
 
         // Create grid cells using DocumentFragment for performance.
@@ -64,17 +47,17 @@ export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): vo
             cell.className = 'grid-cell';
             cell.style.border = 'solid 1px #0C3547';
 
-            const weight = nodes[i.toString()].weight;
+            const weight = nodes[i];
             cell.style.backgroundColor = getColorByWeight(weight);
 
             if (i === startNode || i === endNode) {
                 // Mark
                 const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
-                const mark = createMark(graphPosition, i.toString(), nodeState);
+                const mark = createMark(graphPosition, i, nodeState);
                 cell.appendChild(mark);
             } else {
                 // Weight
-                const weight = createMark(graphPosition, i.toString(), NodeState.Unvisited);
+                const weight = createMark(graphPosition, i, NodeState.Unvisited);
                 cell.appendChild(weight);
             }
 
@@ -82,8 +65,29 @@ export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): vo
         }
 
         graphDivElement.appendChild(fragment);
+    }
+};
 
-        // Update statistics table.
+/**
+ * Resets the Run Statistics Table.
+ */
+export const resetStatisticTable = () => {
+    const graphDivs = globalVariablesManager.getGraphDivs();
+    const runResults = globalVariablesManager.getRunResults();
+    const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
+
+    // Initialize the HTML structure.
+    let tableHtml = ` 
+    <tr>
+        <th>Algorithm</th>
+        <th>Steps</th>
+        <th>Weight</th>
+        <th>Nodes</th>
+    </tr>`;
+
+    for (const graphDiv of graphDivs) {
+        const algorithmType = graphDiv.algorithmType;
+
         const runResult = runResults.find(
             (runResult) => runResult.getAlgorithmType() === algorithmType,
         );
@@ -106,6 +110,7 @@ export const resetGridAndStatisticTable = (algorithmToClear?: AlgorithmType): vo
             : 'End node not reachable from start node! Please regenerate the graph.';
     }
 
+    const runStatisticTable = document.getElementById('runStatistics') as HTMLTableElement;
     runStatisticTable.innerHTML = tableHtml;
 };
 
@@ -160,30 +165,30 @@ export const displayStep = (step: number, runResult: RunResults): void => {
     if (!graphDiv) {
         return;
     }
-    const currentStep = findNearestStep(runResult.getStepMetadataList(), step);
-    Object.values(currentStep.nodeMetadataMap).forEach((nodeMetadata) => {
-        markCell(nodeMetadata.id, nodeMetadata.state, graphDiv.position);
+    const currentStep = findNearestStep(runResult.getStepList(), step);
+    runResult.getNodeStateList()[currentStep].forEach((nodeState, node) => {
+        markCell(node, nodeState, graphDiv.position);
     });
 };
 
 /**
- * Finds the nearest step metadata to the provided step number using binary search.
- * @param {StepMetadata[]} stepMetadataList - The list of step metadata.
+ * Finds the nearest step to the provided step number using binary search.
+ * @param {StepMetadata[]} stepList - The list of all the steps taken by the algorithm..
  * @param {number} currentStep - The current step number.
- * @returns {StepMetadata} The nearest step metadata to the current step.
+ * @returns {number} The nearest step to the current step.
  */
-const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number): StepMetadata => {
+const findNearestStep = (stepList: number[], currentStep: number): number => {
     let start = 0;
-    let end = stepMetadataList.length - 1;
-    let nearestStep = stepMetadataList[0];
+    let end = stepList.length - 1;
+    let nearestStep = 0;
 
     // Binary search.
     while (start <= end) {
         let mid = Math.floor((start + end) / 2);
-        if (stepMetadataList[mid].steps === currentStep) {
-            return stepMetadataList[mid];
-        } else if (stepMetadataList[mid].steps < currentStep) {
-            nearestStep = stepMetadataList[mid];
+        if (stepList[mid] === currentStep) {
+            return mid;
+        } else if (stepList[mid] < currentStep) {
+            nearestStep = mid;
             start = mid + 1;
         } else {
             end = mid - 1;
@@ -196,23 +201,23 @@ const findNearestStep = (stepMetadataList: StepMetadata[], currentStep: number):
 /**
  * Displays the shortest path of the algorithm.
  * @param {Node[]} shortestPath - The nodes in the shortest path.
- * @param {GraphDiv} GraphDiv - The Graph div metadata of the graph in which the shortest path has to be shown.
+ * @param {GraphDiv} graphDiv - The Graph div metadata of the graph in which the shortest path has to be shown.
  */
 export const displayShortestPath = async (
     shortestPath: Node[],
     graphDiv: GraphDiv,
 ): Promise<void> => {
     // Once the algorithm is complete, an empty grid is shown for a split second before the shortest path is shown.
-    resetGridAndStatisticTable(graphDiv.algorithmType);
+    resetGrid(graphDiv.algorithmType);
 
     for (let i = 0; i < shortestPath.length; i++) {
         const node = shortestPath[i];
         // Mark every shortest path node except the start and the end.
         if (i !== 0 && i !== shortestPath.length - 1) {
-            markCell(node.id, NodeState.ShortestPath, graphDiv.position);
+            markCell(node, NodeState.ShortestPath, graphDiv.position);
 
             // We use a longer step increment to slow down the simulation when the shortest path is displayed.
-            await delay(globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER);
+            await delay(globalVariablesManager.getStepIncrement());
         }
     }
 };

@@ -1,4 +1,4 @@
-import { AlgorithmType, NodeState } from '../common/types';
+import { Node, NodeState } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { getColorByWeight } from './color';
 
@@ -10,12 +10,12 @@ import { getColorByWeight } from './color';
  * @param {string} graphPosition - The position of the graph (left or right).
  */
 export const markCell = (
-    nodeName: string,
+    node: Node,
     nodeState: NodeState,
     graphPosition: 'left' | 'right',
 ): void => {
     // Get cell HTML element.
-    const cell = document.getElementById(`${graphPosition}-cell-${nodeName}`);
+    const cell = document.getElementById(`${graphPosition}-cell-${node}`);
 
     if (!cell) return;
 
@@ -30,11 +30,11 @@ export const markCell = (
         // Set cell background back to original color.
         cell.classList.remove('cell-visiting');
         const nodes = getGlobalVariablesManagerInstance().getGraph().nodes;
-        const weight = nodes[nodeName].weight;
+        const weight = nodes[node];
         cell.style.backgroundColor = getColorByWeight(weight);
     }
 
-    const mark = createMark(graphPosition, nodeName, nodeState);
+    const mark = createMark(graphPosition, node, nodeState);
 
     cell.appendChild(mark);
 };
@@ -43,19 +43,19 @@ export const markCell = (
  * Creates an image element to mark a node in the grid based on the specified state.
  *
  * @param {string} graphPosition - The position of the graph (left or right).
- * @param {string} nodeName - The name of the node to mark.
+ * @param {string} node - The id of the node to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., StartNode, EndNode, Visiting).
  * @returns {HTMLImageElement | HTMLParagraphElement} The created image element to be used as a mark.
  */
 export const createMark = (
     graphPosition: 'left' | 'right',
-    nodeName: string,
+    node: Node,
     nodeState: NodeState,
 ): HTMLImageElement | HTMLParagraphElement => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     if (nodeState === NodeState.Unvisited && globalVariablesManager.isShowWeights()) {
         const nodes = globalVariablesManager.getGraph().nodes;
-        const weight = nodes[nodeName].weight;
+        const weight = nodes[node];
 
         const weightDisplay = document.createElement('p');
         weightDisplay.innerHTML = weight.toString();
@@ -65,7 +65,7 @@ export const createMark = (
     }
 
     const mark = document.createElement('img');
-    mark.id = `${graphPosition}-cell-${nodeName}-${nodeState}`;
+    mark.id = `${graphPosition}-cell-${node}-${nodeState}`;
     mark.classList.add('mark');
 
     switch (nodeState) {
