@@ -52,9 +52,8 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
             cell.style.border = 'solid 1px #0C3547';
 
             // Calculate and set the cell's width and height based on the number of rows.
-            const cellWidth = getCellWidth(rows);
-            cell.style.width = `${cellWidth}px`;
-            cell.style.height = `${cellWidth}px`;
+            const cellSize = getCellWidth(rows);
+            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
 
             // Set the cell's color based on its weight.
             const weight = nodes[i];

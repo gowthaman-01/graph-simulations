@@ -1,9 +1,24 @@
+:root {
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-smaller: 12px;
+    --grid-cell-base-size: var(--cell-size);
+    --grid-cell-small-size: calc(var(--cell-size) * 0.9);
+    --grid-cell-smaller-size: calc(var(--cell-size) * 0.8);
+    --grid-cell-smallest-size: calc(var(--cell-size) * 0.7);
+    --grid-cell-tiny-size: calc(var(--cell-size) * 0.5);
+    --padding-button: 10px 20px;
+    --padding-button-small: 10px;
+    --padding-button-smaller: 5px;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff;
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    font-size: var(--font-size-base);
 }
 
 h1 {
@@ -13,7 +28,6 @@ h1 {
 p {
     color: #666;
     text-align: center;
-    font-size: 16px;
 }
 
 img {
@@ -21,9 +35,9 @@ img {
 }
 
 button {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     color: #666;
-    padding: 10px 20px;
+    padding: var(--padding-button);
     border-radius: 5px;
     border: 0.5px solid #ccc;
     background-color: #ffffff;
@@ -43,13 +57,13 @@ label:disabled {
 }
 
 select {
-    font-size: 16px;
+    font-size: var(--font-size-base);
 }
 
 table {
     font-family: arial, sans-serif;
     color: #666;
-    font-size: 16px;
+    font-size: var(--font-size-base);
     border-collapse: collapse;
     width: 100%;
 }
@@ -158,7 +172,7 @@ th {
 }
 
 .modal-body {
-    font-size: 16px;
+    font-size: var(--font-size-base);
     text-align: justify;
     color: #636363;
 }
@@ -276,6 +290,8 @@ th {
 }
 
 .grid-cell {
+    width: var(--grid-cell-base-size);
+    height: var(--grid-cell-base-size);
     position: relative;
     display: flex;
     justify-content: center;
@@ -463,16 +479,19 @@ th {
     width: 160px;
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1360px) {
 
     p,
     button,
     .dropdown,
-    .dropdown,
-    .modal-body,
-    .settings-container,
     .legend p {
-        font-size: 14px !important;
+        font-size: var(--font-size-small);
+    }
+
+    .modal-container p,
+    .modal-container button,
+    .modal-container .dropdown {
+        font-size: var(--font-size-base);
     }
 
     .modal-container {
@@ -484,8 +503,8 @@ th {
     }
 
     .grid-cell {
-        width: 28px;
-        height: 28px;
+        width: var(--grid-cell-small-size);
+        height: var(--grid-cell-small-size);
     }
 
     .bottom-middle-container {
@@ -506,7 +525,7 @@ th {
     }
 }
 
-@media screen and (max-width: 1152px) {
+@media screen and (max-width: 1200px) {
 
     p,
     button,
@@ -514,10 +533,12 @@ th {
         font-size: 13px;
     }
 
+    .modal-container p,
     .modal-container button,
-    table,
-    .legend p {
-        font-size: 14px;
+    .modal-container .dropdown,
+    .modal-body,
+    table {
+        font-size: var(--font-size-base);
     }
 
     .modal-container {
@@ -525,8 +546,8 @@ th {
     }
 
     .grid-cell {
-        width: 24px;
-        height: 24px;
+        width: var(--grid-cell-smaller-size);
+        height: var(--grid-cell-smaller-size);
     }
 
     .bottom-left-container {
@@ -551,11 +572,11 @@ th {
     }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1080px) {
 
     p,
     button {
-        font-size: 16px;
+        font-size: var(--font-size-base);
     }
 
     button {
@@ -578,7 +599,7 @@ th {
     }
 
     .dropdown {
-        font-size: 16px;
+        font-size: var(--font-size-base);
     }
 
     .grids-container {
@@ -588,8 +609,8 @@ th {
     }
 
     .grid-cell {
-        width: 32px;
-        height: 32px;
+        width: var(--cell-size);
+        height: var(--cell-size);
     }
 
     .bottom {
@@ -601,6 +622,7 @@ th {
         flex-direction: column;
         justify-content: center;
         gap: 30px;
+        width: 90%;
     }
 
     .bottom-left-container {
@@ -657,49 +679,67 @@ th {
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 810px) {
     .modal-container {
         width: 70%;
     }
 }
 
+@media screen and (max-width: 700px) {
+    .modal-container {
+        width: 80%;
+    }
+}
+
+
+
 @media screen and (max-width: 640px) {
+
+    p,
+    button,
+    .dropdown {
+        font-size: var(--font-size-small);
+    }
+
+    button {
+        height: auto;
+    }
+
+
+    .grid-cell {
+        width: var(--grid-cell-small-size);
+        height: var(--grid-cell-small-size);
+    }
+}
+
+@media screen and (max-width: 610px) {
 
     table,
     p,
     button,
-    .dropdown,
-    .legend p {
-        font-size: 14px;
+    .dropdown {
+        font-size: var(--font-size-smaller);
     }
 
-    .grid-cell {
-        width: 28px;
-        height: 28px;
+    .modal-container p,
+    .modal-container button,
+    .modal-container .dropdown,
+    .modal-body,
+    table {
+        font-size: var(--font-size-small);
     }
 
     .modal-container {
         width: 75%;
     }
-}
 
-@media screen and (max-width: 540px) {
-
-    table,
-    p,
-    button,
-    .dropdown,
-    .legend p {
-        font-size: 12px;
-    }
-
-    .modal-container button {
-        font-size: 14px;
+    .settings-container {
+        flex-direction: column;
     }
 
     .grid-cell {
-        width: 24px;
-        height: 24px;
+        width: var(--grid-cell-smallest-size);
+        height: var(--grid-cell-smallest-size);
     }
 
     .weight-slider-container {
@@ -708,21 +748,33 @@ th {
 }
 
 @media screen and (max-width: 480px) {
+
+    .grid-cell {
+        width: calc(var(--cell-size) * 0.6);
+        height: calc(var(--cell-size) * 0.6);
+    }
+
+    .bottom-right-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .weight-slider-container {
+        width: 65%;
+    }
+}
+
+@media screen and (max-width: 400px) {
     .bottom-container {
         width: 100%;
     }
 
     .grid-cell {
-        width: 18px;
-        height: 18px;
-    }
-
-    .bottom-right-container {
-        flex-direction: column;
-        align-items: start;
+        width: var(--grid-cell-tiny-size);
+        height: var(--grid-cell-tiny-size);
     }
 
     .weight-slider-container {
-        width: 65%;
+        width: 55%;
     }
 }

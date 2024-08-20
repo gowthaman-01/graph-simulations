@@ -5,18 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Simulations</title>
+    <!-- Link to external CSS -->
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
 <body>
     <div>
-        <!--Tutorial Modal-->
+        <!-- Tutorial Modal -->
         <div class="modal-container" id="tutorialContainer">
             <div class="page-number">
                 <p id="pageNumber">1/9</p>
             </div>
             <div class="modal-content" id="tutorialContent">
+                <!-- Dynamic tutorial content will be loaded here -->
             </div>
             <div class="modal-buttons">
                 <div class="left-tutorial-buttons">
@@ -30,10 +33,11 @@
             </div>
         </div>
 
-        <!--Settings Modal-->
+        <!-- Settings Modal -->
         <div class="modal-container settings-modal" id="settingsModal" style="display: none;">
             <p><u>Legend</u></p>
             <div class="legend-container">
+                <!-- Legend Items -->
                 <div>
                     <div class="legend">
                         <div class="legend-image-container-large">
@@ -75,6 +79,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Settings Controls -->
             <div class="settings-container">
                 <div class="show-weight-switch-container">
                     <p>Weight Visibility</p>
@@ -93,6 +99,7 @@
                 </div>
             </div>
 
+            <!-- Grid Size Controls -->
             <div class="grid-size-controls">
                 <p>Grid Size</p>
                 <div class="grid-size-slider-container">
@@ -100,13 +107,16 @@
                 </div>
             </div>
 
-
+            <!-- Run Statistics -->
             <div class="run-statistics-container">
                 <p><u>Run Statistics</u></p>
                 <table id="runStatistics">
+                    <!-- Dynamic statistics will be loaded here -->
                 </table>
                 <p style="margin-top: 25px;" id="bestAlgorithm">Best Algorithm: </p>
             </div>
+
+            <!-- Modal Buttons -->
             <div class="modal-buttons settings-buttons">
                 <div>
                     <button id="viewTutorialButton">View Tutorial</button>
@@ -117,49 +127,55 @@
             </div>
         </div>
 
-        <div id="mainBody" class="main-body-blur">
-            <!--Graphs-->
-            <div>
-                <div id="graphGroupOne">
-                    <div class="grids-container">
-                        <div class="grid-container">
-                            <select id="leftGraphDropdown" class="dropdown algorithm-dropdown">
-                                <option value="bfs"><b>BFS</b></option>
-                                <option value="dijkstra">Dijkstra</option>
-                                <option value="aStar">A* Search</option>
-                                <option value="bellmanFord">Bellman-Ford</option>
-                            </select>
-                            <div class="grid" id="leftGraph"></div>
+        <!-- Main Body -->
+        <main id="mainBody" class="main-body-blur">
+            <!-- Graphs Section -->
+            <section id="graphGroupOne">
+                <div class="grids-container">
+                    <div class="grid-container">
+                        <select id="leftGraphDropdown" class="dropdown algorithm-dropdown">
+                            <option value="bfs"><b>BFS</b></option>
+                            <option value="dijkstra">Dijkstra</option>
+                            <option value="aStar">A* Search</option>
+                            <option value="bellmanFord">Bellman-Ford</option>
+                        </select>
+                        <div class="grid" id="leftGraph">
+                            <!-- Left graph will be rendered here -->
                         </div>
-                        <div class="grid-container">
-                            <select id="rightGraphDropdown" class="dropdown algorithm-dropdown">
-                                <option value="bellmanFord"><b>Bellman-Ford</b></option>
-                                <option value="bfs">BFS</option>
-                                <option value="dijkstra">Dijkstra</option>
-                                <option value="aStar">A* Search</option>
-                            </select>
-                            <div class="grid" id="rightGraph"></div>
+                    </div>
+                    <div class="grid-container">
+                        <select id="rightGraphDropdown" class="dropdown algorithm-dropdown">
+                            <option value="bellmanFord"><b>Bellman-Ford</b></option>
+                            <option value="bfs">BFS</option>
+                            <option value="dijkstra">Dijkstra</option>
+                            <option value="aStar">A* Search</option>
+                        </select>
+                        <div class="grid" id="rightGraph">
+                            <!-- Right graph will be rendered here -->
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="bottom">
+            </section>
+
+            <!-- Bottom Controls -->
+            <section class="bottom">
                 <div class="bottom-container">
                     <div class="bottom-left-container">
+                        <!-- Graph Controls -->
                         <div class="graph-controls-container">
                             <div class="graph-dropdown-container">
                                 <p id="dropdownText">Graph type</p>
                                 <select id="primaryGraphTypeDropdown" class="dropdown">
                                     <option value="standard">Standard</option>
                                     <option value="maze">Maze</option>
-                                    <!-- <option value="ideal">Ideal</option> -->
                                 </select>
                                 <select id="secondaryGraphTypeDropdown" class="dropdown">
+                                    <!-- Secondary graph options will be dynamically loaded here -->
                                 </select>
                             </div>
                             <div class="weight-controls" id="weightControls">
                                 <div class="weight-control-container">
-                                    <p style="text-align: start;">Weight</p>
+                                    <p style="text-align: start;">Weights</p>
                                     <div class="weight-checkbox">
                                         <input type="checkbox" id="weightCheckbox" class="checkbox" checked>
                                         <label for="weightCheckbox" id="weightSwitch" class="switch"></label>
@@ -173,6 +189,7 @@
                     </div>
 
                     <div class="bottom-middle-container">
+                        <!-- Step Slider and Buttons -->
                         <div class="steps-slider-container">
                             <input type="range" id="stepSlider" min="0" max="1000" step="1">
                             <p style="text-align: center; display: none;" id="stepCount">Steps: 0</p>
@@ -184,6 +201,7 @@
                     </div>
 
                     <div class="bottom-right-container">
+                        <!-- Speed Controls and Graph Buttons -->
                         <div class="speed-control-container">
                             <p id="dropdownText" style="text-align: start;">Speed: </p>
                             <select id="speedDropdown" class="dropdown speed-dropdown">
@@ -199,10 +217,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-        </div>
+            </section>
+        </main>
     </div>
+    <!-- External JavaScript -->
     <script src="./bundle.js" defer></script>
 </body>
 
