@@ -488,6 +488,10 @@ th {
         font-size: var(--font-size-small);
     }
 
+    .dropdown {
+        height: 37px;
+    }
+
     .modal-container p,
     .modal-container button,
     .modal-container .dropdown {
@@ -575,7 +579,8 @@ th {
 @media screen and (max-width: 1080px) {
 
     p,
-    button {
+    button,
+    .dropdown {
         font-size: var(--font-size-base);
     }
 
@@ -599,7 +604,7 @@ th {
     }
 
     .dropdown {
-        font-size: var(--font-size-base);
+        height: 40px;
     }
 
     .grids-container {
@@ -701,6 +706,10 @@ th {
         font-size: var(--font-size-small);
     }
 
+    .dropdown {
+        height: 38px;
+    }
+
     button {
         height: auto;
     }
@@ -727,6 +736,10 @@ th {
     .modal-body,
     table {
         font-size: var(--font-size-small);
+    }
+
+    .dropdown {
+        height: 36px;
     }
 
     .modal-container {
