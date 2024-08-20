@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/pathium",
+            "destination": "https://graphsim.vercel.app/"
+        }
+    ]
+}
