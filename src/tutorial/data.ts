@@ -3,7 +3,7 @@ import { TutorialData } from '../common/types';
 export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 1,
-        title: 'Welcome to Graph Simulations!',
+        title: 'Welcome to Pathium!',
         body: `This tutorial will walk you through every single feature of the application, ensuring you understand how to effectively use the tool to visualize various shortest path algorithms. 
         <br><br> If you want to dive right in, feel free to press the "Skip" button below. Otherwise, press "Next"!`,
         img: {
