@@ -415,6 +415,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         nodeState === NodeState.StartNode ? 'end' : 'start',
                         true,
                     );
+                    globalVariablesManager.setIsChangingStartEndNode(false);
                 });
             }
         }
