@@ -24,7 +24,6 @@ class GlobalVariablesManager {
     private isWeighted: boolean;
     private maxWeight: number;
     private stepIncrement: number;
-    private firstRender: boolean;
     private endNodeReachable: boolean;
     private aStarHeuristicType: AStarHeuristicType;
     private simulationSpeed: SimulationSpeed;
@@ -32,6 +31,8 @@ class GlobalVariablesManager {
     private leftGraphDiv: GraphDiv | null;
     private rightGraphDiv: GraphDiv | null;
     private showWeights: boolean;
+    private isSimulationRunning: boolean;
+    private isChangingStartEndNode: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
@@ -47,7 +48,6 @@ class GlobalVariablesManager {
         this.isWeighted = true;
         this.maxWeight = DEFAULT_WEIGHT;
         this.stepIncrement = AVERAGE_SPEED;
-        this.firstRender = true;
         this.endNodeReachable = false;
         this.aStarHeuristicType = AStarHeuristicType.Manhattan;
         this.simulationSpeed = SimulationSpeed.Average;
@@ -55,6 +55,8 @@ class GlobalVariablesManager {
         this.rightGraphDiv = null;
         this.leftGraphDiv = null;
         this.showWeights = false;
+        this.isSimulationRunning = false;
+        this.isChangingStartEndNode = false;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -134,14 +136,6 @@ class GlobalVariablesManager {
 
     public getStepIncrement(): number {
         return this.stepIncrement;
-    }
-
-    public setFirstRender(firstRender: boolean): void {
-        this.firstRender = firstRender;
-    }
-
-    public isFirstRender(): boolean {
-        return this.firstRender;
     }
 
     public setEndNodeReachable(endNodeReachable: boolean): void {
@@ -236,6 +230,26 @@ class GlobalVariablesManager {
 
     public setShowWeights(showWeights: boolean) {
         this.showWeights = showWeights;
+    }
+
+    public getIsSimulationRunning(): boolean {
+        return this.isSimulationRunning;
+    }
+
+    public stopSimulation() {
+        this.isSimulationRunning = false;
+    }
+
+    public setIsSimulationRunning() {
+        this.isSimulationRunning = true;
+    }
+
+    public getIsChangingStartEndNode(): boolean {
+        return this.isChangingStartEndNode;
+    }
+
+    public setIsChangingStartEndNode(isChangingStartEndNode: boolean) {
+        this.isChangingStartEndNode = isChangingStartEndNode;
     }
 }
 

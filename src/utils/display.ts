@@ -194,6 +194,9 @@ export const displayAllRunResults = async (
 
     // Loop through and display each step until the maximum total steps are reached.
     while (step <= maxTotalSteps) {
+        if (!globalVariablesManager.getIsSimulationRunning()) {
+            return;
+        }
         for (const runResult of runResults) {
             if (step >= runResult.getLatestTotalSteps() && !runResult.isDisplayComplete()) {
                 runResult.setDisplayComplete();

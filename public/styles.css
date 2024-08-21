@@ -479,6 +479,10 @@ th {
     width: 160px;
 }
 
+#runAlgorithms {
+    min-width: 100px;
+}
+
 @media screen and (max-width: 1360px) {
 
     p,
