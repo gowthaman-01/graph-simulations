@@ -731,7 +731,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         globalVariablesManager.setStepIncrement(speed);
-        resetGridAndRerun();
     });
 
     aStarHeuristicTypeDropDown.addEventListener('change', () => {
