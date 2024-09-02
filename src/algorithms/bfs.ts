@@ -14,38 +14,42 @@ export const bfs = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const graph = globalVariablesManager.getGraph().graph;
-
     const runResults = new RunResults(AlgorithmType.Bfs);
-    // This will count the number of operations performed. A single step equates to a O(1) operation.
+
+    // This will estimate the number of machine operations performed.
+    // For more details, please refer to /docs/step_counting_stadards.md.
+    // Note: Steps involved in adding to runResults and consolidating the shortest path are excluded from this calculation.
     let steps = 0;
 
-    // Initialize visited set, queue and predecessors map.
+    // Initialize visited set, queue and predecessors list.
     const visited: VisitedSet = [];
     const queue = new Queue<Node>();
-    const predecessorsMap: { [key: Node]: Node | null } = { [startNode]: null }; // 2 * O(1)
+    const predecessors: Node[] = [];
+    steps += 3;
 
     // Add startNode to queue and mark it as visited.
-    queue.enqueue(startNode); // 2 * O(1)
+    queue.enqueue(startNode);
     visited[startNode] = true;
-
-    steps += 7;
+    predecessors[startNode] = -1;
+    steps += 8;
 
     while (queue.getSize() > 0) {
         // Dequeue node at the front of the queue.
         const currentNode = queue.dequeue();
         if (currentNode === null) continue;
+        steps += 10;
+
         if (currentNode !== startNode && currentNode !== endNode) {
             runResults.addStep(steps, currentNode, NodeState.Visiting);
         }
-        steps += 3; // getSize() and > operations are O(1) each.
 
         // Set shortest path if endNode is reached. No steps are added here.
         if (currentNode === endNode) {
             let shortestPath: Node[] = [];
-            let predecessor: Node | null = currentNode;
-            while (predecessor !== null) {
+            let predecessor: Node = currentNode;
+            while (predecessor !== -1) {
                 shortestPath.unshift(predecessor);
-                predecessor = predecessorsMap[predecessor];
+                predecessor = predecessors[predecessor];
             }
             runResults.setShortestPath(shortestPath);
             return runResults;
@@ -53,19 +57,17 @@ export const bfs = (): RunResults => {
 
         // Explore neighbors of the current node
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor]) continue; // 2 * O(1)
+            if (visited[neighbor]) continue;
             queue.enqueue(neighbor);
             visited[neighbor] = true;
-            predecessorsMap[neighbor] = currentNode;
-            steps += 5;
+            predecessors[neighbor] = currentNode;
+            steps += 10;
 
-            // Set visiting marker. Steps are not added here.
             if (neighbor !== startNode && neighbor !== endNode) {
                 runResults.addStep(steps, neighbor, NodeState.Exploring);
             }
         }
 
-        // Set visited marker. Steps are not added here.
         if (currentNode !== startNode && currentNode !== endNode) {
             runResults.addStep(steps, currentNode, NodeState.Visited);
         }

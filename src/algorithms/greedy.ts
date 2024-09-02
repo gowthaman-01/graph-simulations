@@ -14,11 +14,11 @@ import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
 /**
- * Finds the shortest path using the A* Search algorithm from startNode to endNode in the given graph.
+ * Finds the shortest path using the Greedy Best-First from startNode to endNode in the given graph.
  *
  * @returns {RunResults}
  */
-export const aStarSearch = (): RunResults => {
+export const greedy = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
@@ -27,7 +27,7 @@ export const aStarSearch = (): RunResults => {
         globalVariablesManager.getHeuristicType() === HeuristicType.Manhattan
             ? calculateManhattanDistance
             : calculateEuclideanDistance;
-    const runResults = new RunResults(AlgorithmType.AStar);
+    const runResults = new RunResults(AlgorithmType.Greedy);
     const gridSize = globalVariablesManager.getGridSize();
 
     // This will estimate the number of machine operations performed.
@@ -83,14 +83,14 @@ export const aStarSearch = (): RunResults => {
             const newWeight =
                 weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
             // Calculating the heuristic takes approximately 13 steps.
-            const newWeightWithHeuristic = newWeight + heuristicAlgorithm(neighbor, endNode);
-            steps += 24;
+            const heuristic = heuristicAlgorithm(neighbor, endNode);
+            steps += 22;
 
             // If a shorter path is found.
             if (newWeight < weights[neighbor]) {
                 weights[neighbor] = newWeight;
                 predecessors[neighbor] = currentNode;
-                heapPushSteps = heap.push({ id: neighbor, priority: newWeightWithHeuristic });
+                heapPushSteps = heap.push({ id: neighbor, priority: heuristic });
                 steps += heapPushSteps + 3;
 
                 if (neighbor !== startNode && neighbor !== endNode) {

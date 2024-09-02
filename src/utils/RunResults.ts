@@ -91,9 +91,6 @@ export default class RunResults {
         this.algorithmSteps = this.getLatestTotalSteps();
         this.shortestPath = shortestPath;
 
-        // Set the end node's reachability status based on whether the shortest path exists.
-        globalVariablesManager.setEndNodeReachable(this.shortestPath.length !== 0);
-
         // Push an empty state step to briefly clear the grid before displaying the shortest path.
         this.stepList.push(this.getLatestTotalSteps() + 10);
         this.nodeStateList.push(this.createNodeStateList());
@@ -112,8 +109,7 @@ export default class RunResults {
 
             // Push the updated state with a delay to slow down the visualization of the shortest path.
             this.stepList.push(
-                this.getLatestTotalSteps() +
-                    globalVariablesManager.getStepIncrement() * SHORTEST_PATH_DELAY_MULTIPLIER,
+                this.getLatestTotalSteps() + globalVariablesManager.getStepIncrement(),
             );
             this.nodeStateList.push(newNodeStateList);
         });

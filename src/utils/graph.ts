@@ -1,4 +1,4 @@
-import { getCellIdFromRowAndColumn, randomWeight } from './general';
+import { getCellIdFromRowAndColumn, randomWeight, shuffleArray } from './general';
 import {
     Graph,
     GraphStorage,
@@ -9,10 +9,6 @@ import {
 } from '../common/types';
 import { MAX_WEIGHT } from '../common/constants';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
-import aStarExampleGraphs from '../examples/aStar-data.json';
-import dijkstraExampleGraphs from '../examples/dijkstra-data.json';
-import bellmanFordExampleGraphs from '../examples/bellmanFord-data.json';
-import bfsExampleGraphs from '../examples/bfs-data.json';
 
 /**
  * Recreates the graph based on the current graph type setting on subsequent renders of the application.
@@ -137,10 +133,8 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
             return;
         }
 
-        let neighbors = graph[currentNode];
-
         // Shuffle the neighbors so we visit them in a random order.
-        neighbors = neighbors.sort(() => Math.random() - 0.5);
+        let neighbors = shuffleArray(graph[currentNode]);
 
         neighbors.forEach((neighbor) => dfs(neighbor, path, visited));
 

@@ -7,7 +7,7 @@ import {
     TOTAL_TUTORIAL_PAGES,
 } from '../src/common/constants';
 import {
-    AStarHeuristicType,
+    HeuristicType,
     AlgorithmType,
     GraphType,
     MazeType,
@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const settingsModalDiv = document.getElementById('settingsModal') as HTMLDivElement;
     const viewSettingsButton = document.getElementById('viewSettingsButton') as HTMLButtonElement;
     const closeSettingsButton = document.getElementById('closeSettingsButton') as HTMLDivElement;
-    const aStarHeuristicTypeDropDown = document.getElementById(
-        'aStarHeuristicTypeDropdown',
+    const heuristicTypeDropDown = document.getElementById(
+        'heuristicTypeDropdown',
     ) as HTMLInputElement;
     const gridSizeSlider = document.getElementById('gridSizeSlider') as HTMLInputElement;
 
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !settingsModalDiv ||
         !viewSettingsButton ||
         !closeSettingsButton ||
-        !aStarHeuristicTypeDropDown ||
+        !heuristicTypeDropDown ||
         !gridSizeSlider ||
         !leftGraphDropdown ||
         !rightGraphDropdown ||
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             position: 'left',
         },
         {
-            algorithmType: AlgorithmType.BellmanFord,
+            algorithmType: AlgorithmType.Dijkstra,
             graphDivElement: rightGraphDiv,
             position: 'right',
         },
@@ -194,25 +194,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const disableGraphControls = () => {
         leftGraphDropdown.disabled = true;
         rightGraphDropdown.disabled = true;
-        runButton.disabled = true;
         generateNewGraphButton.disabled = true;
         changeStartNodeButton.disabled = true;
         changeEndNodeButton.disabled = true;
         primaryGraphTypeDropdown.disabled = true;
         secondaryGraphTypeDropdown.disabled = true;
-        aStarHeuristicTypeDropDown.disabled = true;
+        heuristicTypeDropDown.disabled = true;
     };
 
     const enableGraphControls = () => {
         leftGraphDropdown.disabled = false;
         rightGraphDropdown.disabled = false;
-        runButton.disabled = false;
         generateNewGraphButton.disabled = false;
         changeStartNodeButton.disabled = false;
         changeEndNodeButton.disabled = false;
         primaryGraphTypeDropdown.disabled = false;
         secondaryGraphTypeDropdown.disabled = false;
-        aStarHeuristicTypeDropDown.disabled = false;
+        heuristicTypeDropDown.disabled = false;
     };
 
     const disableSecondaryGraphTypeDropdown = () => {
@@ -249,14 +247,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         speedDropdown.disabled = false;
     };
 
-    const disableStartEndNodeButton = () => {
-        changeStartNodeButton.disabled = true;
-        changeEndNodeButton.disabled = true;
-    };
+    const toggleStartEndNodeButton = (button: 'start' | 'end' | 'both', enable: boolean) => {
+        const isDisabled = !enable;
 
-    const enableStartEndNodeButton = () => {
-        changeStartNodeButton.disabled = false;
-        changeEndNodeButton.disabled = false;
+        switch (button) {
+            case 'start':
+                changeStartNodeButton.disabled = isDisabled;
+                break;
+            case 'end':
+                changeEndNodeButton.disabled = isDisabled;
+                break;
+            case 'both':
+                changeStartNodeButton.disabled = isDisabled;
+                changeEndNodeButton.disabled = isDisabled;
+                break;
+        }
     };
 
     // Other helper functions
@@ -342,6 +347,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
+
+        globalVariablesManager.setEndNodeReachable(true);
+        newRunResults.forEach((runResult) => {
+            if (runResult.getShortestPath().length <= 1) {
+                globalVariablesManager.setEndNodeReachable(false);
+            }
+        });
+
         globalVariablesManager.setRunResults(newRunResults);
     };
 
@@ -353,6 +366,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const setNewStartEndNode = (nodeState: NodeState) => {
+        if (globalVariablesManager.getIsChangingStartEndNode()) {
+            globalVariablesManager.setIsChangingStartEndNode(false);
+            resetGrid();
+            toggleStartEndNodeButton(nodeState === NodeState.StartNode ? 'end' : 'start', true);
+            return;
+        }
+
+        // Disable the other button.
+        toggleStartEndNodeButton(nodeState === NodeState.StartNode ? 'end' : 'start', false);
+        globalVariablesManager.setIsChangingStartEndNode(true);
+
         for (const graphDiv of globalVariablesManager.getGraphDivs()) {
             for (let i = 0; i < globalVariablesManager.getGridSize(); i++) {
                 // When the user clicks the 'Change Start Node' button, all cells will
@@ -395,6 +419,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         globalVariablesManager.setEndNode(getNodeIdFromCellElementId(cell.id));
                     }
                     resetGridAndRerun();
+                    toggleStartEndNodeButton(
+                        nodeState === NodeState.StartNode ? 'end' : 'start',
+                        true,
+                    );
+                    globalVariablesManager.setIsChangingStartEndNode(false);
                 });
             }
         }
@@ -405,7 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Weight controls are disabled for example graphs.
             hideWeightControls();
             // Generating new start and end nodes for example graphs is not allowed.
-            disableStartEndNodeButton();
+            toggleStartEndNodeButton('both', false);
 
             const exampleGraph = getExampleGraph(globalVariablesManager.getGraphType());
             if (exampleGraph) {
@@ -424,7 +453,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Other graph types.
         showWeightControls();
-        enableStartEndNodeButton();
+        toggleStartEndNodeButton('both', true);
 
         // Weight slider is not shown for maze graphs.
         if (globalVariablesManager.getIsWeighted() && !globalVariablesManager.isMazeGraph()) {
@@ -498,35 +527,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Event listeners for control elements.
     runButton.addEventListener('click', async () => {
-        // These control elements are disabled when the simulation is running.
-        disableGraphControls();
-        disableWeightControls();
-        disableStepsSlider();
-        disableSpeedControls();
-        disableGridSizeSlider();
-
-        // Reset grid before running the simulation on subsequent renders.
-        if (!globalVariablesManager.isFirstRender()) {
-            resetGridAndRerun();
-        }
-
-        globalVariablesManager.setFirstRender(false);
-
-        // Display simulation.
-        await displayAllRunResults(stepsSlider, stepsCount);
-
-        // Enable control elements once simulations are completed.
-        enableGraphControls();
-        enableWeightControls();
-        enableStepsSlider();
-        enableSpeedControls();
-        enableGridSizeSlider();
-
-        // Generating new start and end nodes for example graphs is not allowed.
-        if (globalVariablesManager.isExampleGraph()) {
-            disableStartEndNodeButton();
+        if (globalVariablesManager.getIsSimulationRunning()) {
+            globalVariablesManager.stopSimulation();
+            runButton.innerHTML = 'Run';
         } else {
-            enableStartEndNodeButton();
+            globalVariablesManager.setIsSimulationRunning();
+            runButton.innerHTML = 'Stop';
+
+            // These control elements are disabled when the simulation is running.
+            disableGraphControls();
+            disableWeightControls();
+            disableStepsSlider();
+            disableSpeedControls();
+            disableGridSizeSlider();
+
+            // Reset grid before running the simulation on subsequent renders.
+            if (stepsSlider.value === stepsSlider.max) {
+                resetGrid();
+                resetStepsSlider();
+            }
+
+            // Display simulation.
+            await displayAllRunResults(stepsSlider, stepsCount);
+
+            // Enable control elements once simulations are completed.
+            enableGraphControls();
+            enableWeightControls();
+            enableStepsSlider();
+            enableSpeedControls();
+            enableGridSizeSlider();
+
+            // Generating new start and end nodes for example graphs is not allowed.
+            if (globalVariablesManager.isExampleGraph()) {
+                toggleStartEndNodeButton('both', false);
+            } else {
+                toggleStartEndNodeButton('both', true);
+            }
+
+            globalVariablesManager.stopSimulation();
+            runButton.innerHTML = 'Run';
         }
     });
 
@@ -701,12 +740,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         globalVariablesManager.setStepIncrement(speed);
-        resetGridAndRerun();
     });
 
-    aStarHeuristicTypeDropDown.addEventListener('change', () => {
-        const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
-        globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
+    heuristicTypeDropDown.addEventListener('change', () => {
+        const heuristicType = heuristicTypeDropDown.value as HeuristicType;
+        globalVariablesManager.setHeuristicType(heuristicType);
         resetGridAndRerun();
     });
 

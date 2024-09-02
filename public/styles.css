@@ -88,6 +88,21 @@ th {
     text-align: center;
 }
 
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    border: 0.5px solid #ccc;
+    border-radius: 10px;
+    /* Rounded corners for the dropdown menu */
+    box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+    width: 100%;
+}
+
 .checkbox {
     display: none;
 }
@@ -477,6 +492,10 @@ th {
 
 #changeStart {
     width: 160px;
+}
+
+#runAlgorithms {
+    min-width: 100px;
 }
 
 @media screen and (max-width: 1360px) {

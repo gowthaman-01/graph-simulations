@@ -1,7 +1,7 @@
 import { AVERAGE_SPEED, DEFAULT_WEIGHT } from '../common/constants';
 import {
     AlgorithmType,
-    AStarHeuristicType,
+    HeuristicType,
     GraphDiv,
     GraphStructure,
     GraphType,
@@ -24,14 +24,15 @@ class GlobalVariablesManager {
     private isWeighted: boolean;
     private maxWeight: number;
     private stepIncrement: number;
-    private firstRender: boolean;
     private endNodeReachable: boolean;
-    private aStarHeuristicType: AStarHeuristicType;
+    private heuristicType: HeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
     private leftGraphDiv: GraphDiv | null;
     private rightGraphDiv: GraphDiv | null;
     private showWeights: boolean;
+    private isSimulationRunning: boolean;
+    private isChangingStartEndNode: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
@@ -47,14 +48,15 @@ class GlobalVariablesManager {
         this.isWeighted = true;
         this.maxWeight = DEFAULT_WEIGHT;
         this.stepIncrement = AVERAGE_SPEED;
-        this.firstRender = true;
         this.endNodeReachable = false;
-        this.aStarHeuristicType = AStarHeuristicType.Manhattan;
+        this.heuristicType = HeuristicType.Euclidean;
         this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.rightGraphDiv = null;
         this.leftGraphDiv = null;
         this.showWeights = false;
+        this.isSimulationRunning = false;
+        this.isChangingStartEndNode = false;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -136,14 +138,6 @@ class GlobalVariablesManager {
         return this.stepIncrement;
     }
 
-    public setFirstRender(firstRender: boolean): void {
-        this.firstRender = firstRender;
-    }
-
-    public isFirstRender(): boolean {
-        return this.firstRender;
-    }
-
     public setEndNodeReachable(endNodeReachable: boolean): void {
         this.endNodeReachable = endNodeReachable;
     }
@@ -152,12 +146,12 @@ class GlobalVariablesManager {
         return this.endNodeReachable;
     }
 
-    public getAStarHeuristicType(): AStarHeuristicType {
-        return this.aStarHeuristicType;
+    public getHeuristicType(): HeuristicType {
+        return this.heuristicType;
     }
 
-    public setAStarHeuristicType(newType: AStarHeuristicType) {
-        this.aStarHeuristicType = newType;
+    public setHeuristicType(newType: HeuristicType) {
+        this.heuristicType = newType;
     }
 
     public getSimulationSpeed(): SimulationSpeed {
@@ -236,6 +230,26 @@ class GlobalVariablesManager {
 
     public setShowWeights(showWeights: boolean) {
         this.showWeights = showWeights;
+    }
+
+    public getIsSimulationRunning(): boolean {
+        return this.isSimulationRunning;
+    }
+
+    public stopSimulation() {
+        this.isSimulationRunning = false;
+    }
+
+    public setIsSimulationRunning() {
+        this.isSimulationRunning = true;
+    }
+
+    public getIsChangingStartEndNode(): boolean {
+        return this.isChangingStartEndNode;
+    }
+
+    public setIsChangingStartEndNode(isChangingStartEndNode: boolean) {
+        this.isChangingStartEndNode = isChangingStartEndNode;
     }
 }
 

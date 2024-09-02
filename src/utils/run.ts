@@ -5,6 +5,8 @@ import { bellmanFord } from '../algorithms/bellman';
 import { AlgorithmType, GraphDiv } from '../common/types';
 import RunResults from './RunResults';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { greedy } from '../algorithms/greedy';
+import { dfs } from '../algorithms/dfs';
 
 /**
  * Executes the specified graph traversal algorithm.
@@ -17,6 +19,9 @@ export const runAlgorithm = (graphDiv: GraphDiv): RunResults => {
         case AlgorithmType.Bfs:
             algorithm = bfs;
             break;
+        case AlgorithmType.Dfs:
+            algorithm = dfs;
+            break;
         case AlgorithmType.BellmanFord:
             algorithm = bellmanFord;
             break;
@@ -25,6 +30,9 @@ export const runAlgorithm = (graphDiv: GraphDiv): RunResults => {
             break;
         case AlgorithmType.AStar:
             algorithm = aStarSearch;
+            break;
+        case AlgorithmType.Greedy:
+            algorithm = greedy;
             break;
     }
 

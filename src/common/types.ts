@@ -61,6 +61,8 @@ export enum AlgorithmType {
     Dijkstra = 'dijkstra',
     AStar = 'aStar',
     BellmanFord = 'bellmanFord',
+    Greedy = 'greedy',
+    Dfs = 'dfs',
 }
 
 export enum MazeType {
@@ -69,7 +71,7 @@ export enum MazeType {
     RandomWalls = 'Random walls',
 }
 
-export enum AStarHeuristicType {
+export enum HeuristicType {
     Manhattan = 'manhattan',
     Euclidean = 'euclidean',
 }

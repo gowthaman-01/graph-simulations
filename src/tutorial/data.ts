@@ -16,15 +16,17 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 2,
         title: 'What is a SSP Algorithm?',
         body: `A shortest path (SSP) algorithm finds the most efficient route between two points (or nodes) in a graph, minimizing the sum of the weights of the edges it traverses. These algorithms are crucial in many real-world applications such as GPS navigation, network routing, and robotics.
-        <br><br> This simulation contains 4 of the most popular SSP algorithms:
+        <br><br> This simulation contains the following SSP algorithms:
         <br>
         <ul>
             <li><b>BFS (Breadth-First Search):</b> Ideal for unweighted graphs</li>
             <li><b>Dijkstra:</b> Suitable for graphs with varying edge weights.</li>
             <li><b>Bellman-Ford:</b> Capable of handling negative weights.</li>
             <li><b>A* Search:</b> Enhances Dijkstra's algorithm with heuristics to guide the search more efficiently towards the target.</li>
-        </ul>
-        Note: The A* Star search heuristics available in this simulation are the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">manhattan distance</a> and the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">euclidean distance</a>.`,
+            <li><b>DFS (Depth-First Search):</b> Explores each branch as far as possible before backtracking.</li>
+            <li><b>Greedy Best-First Search:</b> Prioritizes nodes that appear to be closest to the goal, using a heuristic to guide the search, but DOES NOT guarantee the shortest path.</li>
+        </ul>   
+        Note: The A* Star search heuristics available in this simulation are the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">euclidean distance</a> and the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">manhattan distance</a>.`,
     },
     {
         pageNumber: 3,
