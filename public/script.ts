@@ -7,7 +7,7 @@ import {
     TOTAL_TUTORIAL_PAGES,
 } from '../src/common/constants';
 import {
-    AStarHeuristicType,
+    HeuristicType,
     AlgorithmType,
     GraphType,
     MazeType,
@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const settingsModalDiv = document.getElementById('settingsModal') as HTMLDivElement;
     const viewSettingsButton = document.getElementById('viewSettingsButton') as HTMLButtonElement;
     const closeSettingsButton = document.getElementById('closeSettingsButton') as HTMLDivElement;
-    const aStarHeuristicTypeDropDown = document.getElementById(
-        'aStarHeuristicTypeDropdown',
+    const heuristicTypeDropDown = document.getElementById(
+        'heuristicTypeDropdown',
     ) as HTMLInputElement;
     const gridSizeSlider = document.getElementById('gridSizeSlider') as HTMLInputElement;
 
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !settingsModalDiv ||
         !viewSettingsButton ||
         !closeSettingsButton ||
-        !aStarHeuristicTypeDropDown ||
+        !heuristicTypeDropDown ||
         !gridSizeSlider ||
         !leftGraphDropdown ||
         !rightGraphDropdown ||
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             position: 'left',
         },
         {
-            algorithmType: AlgorithmType.BellmanFord,
+            algorithmType: AlgorithmType.Dijkstra,
             graphDivElement: rightGraphDiv,
             position: 'right',
         },
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = true;
         primaryGraphTypeDropdown.disabled = true;
         secondaryGraphTypeDropdown.disabled = true;
-        aStarHeuristicTypeDropDown.disabled = true;
+        heuristicTypeDropDown.disabled = true;
     };
 
     const enableGraphControls = () => {
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton.disabled = false;
         primaryGraphTypeDropdown.disabled = false;
         secondaryGraphTypeDropdown.disabled = false;
-        aStarHeuristicTypeDropDown.disabled = false;
+        heuristicTypeDropDown.disabled = false;
     };
 
     const disableSecondaryGraphTypeDropdown = () => {
@@ -347,6 +347,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         stepsSlider.max = Math.max(
             ...newRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
+
+        globalVariablesManager.setEndNodeReachable(true);
+        newRunResults.forEach((runResult) => {
+            if (runResult.getShortestPath().length <= 1) {
+                globalVariablesManager.setEndNodeReachable(false);
+            }
+        });
+
         globalVariablesManager.setRunResults(newRunResults);
     };
 
@@ -535,7 +543,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Reset grid before running the simulation on subsequent renders.
             if (stepsSlider.value === stepsSlider.max) {
-                resetGridAndRerun();
+                resetGrid();
+                resetStepsSlider();
             }
 
             // Display simulation.
@@ -733,9 +742,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         globalVariablesManager.setStepIncrement(speed);
     });
 
-    aStarHeuristicTypeDropDown.addEventListener('change', () => {
-        const aStarHeuristicType = aStarHeuristicTypeDropDown.value as AStarHeuristicType;
-        globalVariablesManager.setAStarHeuristicType(aStarHeuristicType);
+    heuristicTypeDropDown.addEventListener('change', () => {
+        const heuristicType = heuristicTypeDropDown.value as HeuristicType;
+        globalVariablesManager.setHeuristicType(heuristicType);
         resetGridAndRerun();
     });
 

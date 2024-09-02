@@ -283,7 +283,7 @@ export const displayShortestPath = async (
             markCell(node, NodeState.ShortestPath, graphDiv.position);
 
             // Introduce a delay between marking nodes to slow down the visualization.
-            await delay(globalVariablesManager.getStepIncrement());
+            await delay(1);
         }
     }
 };

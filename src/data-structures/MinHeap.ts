@@ -53,7 +53,7 @@ export class MinHeap<T> {
         const top: T = this.heap[0];
         this.heap[0] = this.heap[this.heap.length - 1];
         this.heap.pop();
-        let steps = 4;
+        let steps = 7;
 
         steps += this.heapifyDown();
 
@@ -66,10 +66,8 @@ export class MinHeap<T> {
      * @returns {number} The number of steps taken to perform the operation.
      */
     public push(item: T): number {
-        this.heap.push(item);
-        let steps = 1;
-        steps += this.heapifyUp();
-        return steps;
+        this.heap.push(item); // 1 step.
+        return this.heapifyUp() + 1;
     }
 
     /**
@@ -124,36 +122,45 @@ export class MinHeap<T> {
 
     private heapifyUp(): number {
         let index: number = this.heap.length - 1;
-        let steps = 1;
+        let steps = 2;
+
+        // Both this.hasParent() and this.parent() take 2 steps each, while heap access and the comparator take 1 step each,
+        // resulting in the while condition having a total of 7 steps.
         while (this.hasParent(index) && this.comparator(this.parent(index), this.heap[index])) {
-            this.swap(this.getParentIndex(index), index);
-            index = this.getParentIndex(index);
-            steps += 4;
+            this.swap(this.getParentIndex(index), index); // 4 steps
+            index = this.getParentIndex(index); // 2 steps
+            steps += 13;
         }
+
         return steps;
     }
 
     private heapifyDown(): number {
-        let index: number = 0;
+        let index: number = 0; // 1 step
         let steps = 1;
+
+        // this.hasLeftChild(), this.hasRightChild() this.leftChild() and this.rightChild() take 2 steps each.
         while (this.hasLeftChild(index)) {
             let smallerChildIndex: number = this.getLeftChildIndex(index);
-            steps += 2;
+            steps += 4;
+
             if (
                 this.hasRightChild(index) &&
                 this.comparator(this.leftChild(index), this.rightChild(index))
             ) {
                 smallerChildIndex = this.getRightChildIndex(index);
-                steps += 5;
+                steps += 9;
             }
+
             if (this.comparator(this.heap[index], this.heap[smallerChildIndex])) {
                 this.swap(index, smallerChildIndex);
-                steps += 6;
+                steps += 3;
             } else {
                 break;
             }
+
             index = smallerChildIndex;
-            steps += 1;
+            steps += 4;
         }
         return steps;
     }

@@ -92,9 +92,9 @@
 
                 <div class="heuristic-dropdown-container">
                     <p>Heuristic</p>
-                    <select id="aStarHeuristicTypeDropdown" class="dropdown">
-                        <option value="manhattan">Manhattan distance</option>
+                    <select id="heuristicTypeDropdown" class="dropdown">
                         <option value="euclidean">Euclidean distance</option>
+                        <option value="manhattan">Manhattan distance</option>
                     </select>
                 </div>
             </div>
@@ -134,9 +134,11 @@
                 <div class="grids-container">
                     <div class="grid-container">
                         <select id="leftGraphDropdown" class="dropdown algorithm-dropdown">
-                            <option value="bfs"><b>BFS</b></option>
+                            <option value="bfs">BFS</option>
+                            <option value="dfs">DFS</option>
                             <option value="dijkstra">Dijkstra</option>
                             <option value="aStar">A* Search</option>
+                            <option value="greedy">Greedy</option>
                             <option value="bellmanFord">Bellman-Ford</option>
                         </select>
                         <div class="grid" id="leftGraph">
@@ -145,10 +147,12 @@
                     </div>
                     <div class="grid-container">
                         <select id="rightGraphDropdown" class="dropdown algorithm-dropdown">
-                            <option value="bellmanFord"><b>Bellman-Ford</b></option>
-                            <option value="bfs">BFS</option>
                             <option value="dijkstra">Dijkstra</option>
+                            <option value="bfs">BFS</option>
+                            <option value="dfs">DFS</option>
                             <option value="aStar">A* Search</option>
+                            <option value="greedy">Greedy</option>
+                            <option value="bellmanFord">Bellman-Ford</option>
                         </select>
                         <div class="grid" id="rightGraph">
                             <!-- Right graph will be rendered here -->

@@ -1,7 +1,7 @@
 import { AVERAGE_SPEED, DEFAULT_WEIGHT } from '../common/constants';
 import {
     AlgorithmType,
-    AStarHeuristicType,
+    HeuristicType,
     GraphDiv,
     GraphStructure,
     GraphType,
@@ -25,7 +25,7 @@ class GlobalVariablesManager {
     private maxWeight: number;
     private stepIncrement: number;
     private endNodeReachable: boolean;
-    private aStarHeuristicType: AStarHeuristicType;
+    private heuristicType: HeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
     private leftGraphDiv: GraphDiv | null;
@@ -49,7 +49,7 @@ class GlobalVariablesManager {
         this.maxWeight = DEFAULT_WEIGHT;
         this.stepIncrement = AVERAGE_SPEED;
         this.endNodeReachable = false;
-        this.aStarHeuristicType = AStarHeuristicType.Manhattan;
+        this.heuristicType = HeuristicType.Euclidean;
         this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.rightGraphDiv = null;
@@ -146,12 +146,12 @@ class GlobalVariablesManager {
         return this.endNodeReachable;
     }
 
-    public getAStarHeuristicType(): AStarHeuristicType {
-        return this.aStarHeuristicType;
+    public getHeuristicType(): HeuristicType {
+        return this.heuristicType;
     }
 
-    public setAStarHeuristicType(newType: AStarHeuristicType) {
-        this.aStarHeuristicType = newType;
+    public setHeuristicType(newType: HeuristicType) {
+        this.heuristicType = newType;
     }
 
     public getSimulationSpeed(): SimulationSpeed {

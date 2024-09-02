@@ -14,34 +14,38 @@ export const bellmanFord = (): RunResults => {
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
     const graph = globalVariablesManager.getGraph().graph;
-
     const runResults = new RunResults(AlgorithmType.BellmanFord);
     const gridSize = globalVariablesManager.getGridSize();
 
-    let steps = 0; // This will count the number of operations performed. A single step equates to a O(1) operation.
+    // This will estimate the number of machine operations performed.
+    // For more details, please refer to /docs/step_counting_stadards.md.
+    // Note: Steps involved in adding to runResults and consolidating the shortest path are excluded from this calculation.
+    let steps = 0;
 
     // Initialize distances and predecessors. Each step takes O(1) time.
-    const distances: number[] = [];
-    const predecessors: { [key: Node]: Node | null } = { [startNode]: null };
+    const weights: number[] = [];
+    const predecessors: Node[] = [];
+    predecessors[startNode] = -1;
+    steps += 3;
 
-    // Set all distances to Infinity except the startNode, which is set to 0.
+    // Set all weights to Infinity except the startNode, which is set to 0.
     for (let node = 0; node < gridSize; node++) {
-        distances[node] = node === startNode ? 0 : Infinity;
+        weights[node] = node === startNode ? 0 : Infinity;
+        steps += 3;
     }
-
-    steps += gridSize + 2;
 
     // Relax all edges V - 1 times, where V is the number of nodes in the Graph.
     for (let i = 0; i < gridSize - 1; i++) {
-        let distancesUpdated = false; // This flag checks if we made any changes to the distances map in this iteration.
-        steps += 1;
+        let distancesUpdated = false; // This flag checks if we made any changes to the weights map in this iteration.
+        steps += 2;
 
         for (let currentNode = 0; currentNode < gridSize; currentNode++) {
             // Skip processing for nodes that are not yet reached.
-            if (distances[currentNode] === Infinity) {
-                steps += 2;
+            if (weights[currentNode] === Infinity) {
                 continue;
             }
+
+            steps += 3;
 
             if (currentNode !== startNode && currentNode !== endNode) {
                 runResults.addStep(steps, currentNode, NodeState.Visiting);
@@ -49,11 +53,11 @@ export const bellmanFord = (): RunResults => {
 
             for (const neighbor of graph[currentNode]) {
                 const newWeight =
-                    distances[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
-                steps += 2;
+                    weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
+                steps += 8;
 
-                if (distances[neighbor] > newWeight) {
-                    distances[neighbor] = newWeight;
+                if (newWeight < weights[neighbor]) {
+                    weights[neighbor] = newWeight;
                     predecessors[neighbor] = currentNode;
                     distancesUpdated = true;
                     steps += 3;
@@ -75,7 +79,7 @@ export const bellmanFord = (): RunResults => {
     // Check for negative weight cycles
     for (const node in graph) {
         for (const neighbor of graph[node]) {
-            if (distances[neighbor] > distances[node] + nodes[neighbor]) {
+            if (weights[neighbor] > weights[node] + nodes[neighbor]) {
                 console.error('Graph contains a negative weight cycle');
                 return runResults; // Early exit if a negative cycle is detected
             }
@@ -88,7 +92,7 @@ export const bellmanFord = (): RunResults => {
 
     // If endNode is reachable.
     if (predecessors[currentNode]) {
-        while (currentNode !== null && currentNode !== undefined) {
+        while (currentNode !== -1) {
             shortestPath.unshift(currentNode);
             currentNode = predecessors[currentNode];
         }

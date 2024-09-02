@@ -110,12 +110,16 @@ export const getAlgorithmDisplayName = (algorithmType: AlgorithmType): string =>
     switch (algorithmType) {
         case AlgorithmType.Bfs:
             return 'BFS';
+        case AlgorithmType.Dfs:
+            return 'DFS';
         case AlgorithmType.Dijkstra:
             return 'Dijkstra';
         case AlgorithmType.BellmanFord:
             return 'Bellman-Ford';
         case AlgorithmType.AStar:
             return 'A* Search';
+        case AlgorithmType.Greedy:
+            return 'Greedy Best-First';
         default:
             return '';
     }
@@ -148,4 +152,24 @@ export const debounce = <T extends (...args: any[]) => void>(
             func.apply(undefined, args);
         }, wait);
     };
+};
+
+/**
+ * Shuffles an array of integers in place using the Fisher-Yates algorithm.
+ * This function mutates the original array.
+ *
+ * @param {number[]} array - The array of integers to shuffle.
+ * @returns {number[]} - The shuffled array.
+ *
+ * @example
+ * const arr: number[] = [1, 2, 3, 4, 5];
+ * const shuffledArr = shuffleArray(arr);
+ * console.log(shuffledArr); // Output: A randomly shuffled version of the array
+ */
+export const shuffleArray = (array: number[]): number[] => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // Generate a random index between 0 and i (inclusive)
+        [array[i], array[j]] = [array[j], array[i]]; // Swap the elements at indices i and j
+    }
+    return array;
 };
