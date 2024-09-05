@@ -1,4 +1,4 @@
-import { AlgorithmType, Node, NodeState } from '../common/types';
+import { AlgorithmType, Node, NodeState, WeightType } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
 
@@ -41,7 +41,7 @@ export const bellmanFord = (): RunResults => {
 
         for (let currentNode = 0; currentNode < gridSize; currentNode++) {
             // Skip processing for nodes that are not yet reached.
-            if (weights[currentNode] === Infinity) {
+            if (weights[currentNode] === Infinity || nodes[currentNode] === Infinity) {
                 continue;
             }
 
@@ -52,8 +52,19 @@ export const bellmanFord = (): RunResults => {
             }
 
             for (const neighbor of graph[currentNode]) {
-                const newWeight =
-                    weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
+                let neighborWeight;
+                switch (globalVariablesManager.getWeightType()) {
+                    case WeightType.Unweighted:
+                        neighborWeight = 1;
+                        break;
+                    case WeightType.Negative:
+                        neighborWeight = nodes[neighbor] - nodes[currentNode];
+                        break;
+                    case WeightType.NonNegative:
+                        neighborWeight = Math.max(nodes[neighbor] - nodes[currentNode], 0);
+                        break;
+                }
+                const newWeight = weights[currentNode] + neighborWeight;
                 steps += 8;
 
                 if (newWeight < weights[neighbor]) {
@@ -76,17 +87,6 @@ export const bellmanFord = (): RunResults => {
         if (!distancesUpdated) break; // No change means we can exit early.
     }
 
-    // Check for negative weight cycles
-    for (const node in graph) {
-        for (const neighbor of graph[node]) {
-            if (weights[neighbor] > weights[node] + nodes[neighbor]) {
-                console.error('Graph contains a negative weight cycle');
-                return runResults; // Early exit if a negative cycle is detected
-            }
-        }
-    }
-
-    // Construct the path if there's no negative cycle
     let currentNode: Node | null = endNode;
     const shortestPath: Node[] = [];
 

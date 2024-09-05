@@ -1,3 +1,4 @@
+import { GRAPH_POSITION } from '../common/constants';
 import { Node, NodeState } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { getColorByWeight } from './color';
@@ -7,13 +8,9 @@ import { getColorByWeight } from './color';
  *
  * @param {Node} node - The id of the cell to mark.
  * @param {NodeState} nodeState - The state of the cell (e.g., Visiting, Unvisited).
- * @param {'left' | 'right'} graphPosition - The position of the graph HTML Div in the application (left or right).
+ * @param {GRAPH_POSITION} graphPosition - The position of the graph HTML Div in the application (left or right).
  */
-export const markCell = (
-    node: Node,
-    nodeState: NodeState,
-    graphPosition: 'left' | 'right',
-): void => {
+export const markCell = (node: Node, nodeState: NodeState, graphPosition: GRAPH_POSITION): void => {
     // Get cell HTML cell element.
     const cell = document.getElementById(`${graphPosition}-cell-${node}`);
 
@@ -36,6 +33,8 @@ export const markCell = (
 
     const mark = createMark(node, nodeState, graphPosition);
 
+    mark.id = `${graphPosition}-cell-${node}-mark}`;
+
     cell.appendChild(mark);
 };
 
@@ -47,13 +46,13 @@ export const markCell = (
  *
  * @param {string} node - The id of the node to mark.
  * @param {NodeState} nodeState - The state of the node (e.g., StartNode, EndNode, Visiting).
- * @param {string} graphPosition - The position of the graph HTML Div in the application (left or right).
+ * @param {GRAPH_POSITION} graphPosition - The position of the graph HTML Div in the application (left or right).
  * @returns {HTMLImageElement | HTMLParagraphElement} The created element representing the node's state.
  */
 export const createMark = (
     node: Node,
     nodeState: NodeState,
-    graphPosition: 'left' | 'right',
+    graphPosition: GRAPH_POSITION,
 ): HTMLImageElement | HTMLParagraphElement => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
 
@@ -67,8 +66,9 @@ export const createMark = (
         const fontSize = -0.01 * gridSize + 20;
 
         // Create paragraph element to show weight on the grid cell.
-        const weightDisplay = document.createElement('p');
-        weightDisplay.innerHTML = weight.toString();
+        const weightDisplay = document.createElement('div');
+        weightDisplay.className = 'weight-display';
+        weightDisplay.innerHTML = weight === Infinity ? '∞' : weight.toString();
         weightDisplay.style.color = getColorByWeight(weight, true);
         weightDisplay.style.fontSize = `${fontSize}px`;
 

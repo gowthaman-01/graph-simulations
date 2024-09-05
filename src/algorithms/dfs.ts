@@ -15,7 +15,7 @@ export const dfs = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const graph = globalVariablesManager.getGraph().graph;
-    const runResults = new RunResults(AlgorithmType.Dfs);
+    const runResults = new RunResults(AlgorithmType.DFS);
 
     // This will estimate the number of machine operations performed.
     // For more details, please refer to /docs/step_counting_stadards.md.
@@ -43,7 +43,8 @@ export const dfs = (): RunResults => {
         let neighbors = shuffleArray(graph[node]);
 
         for (const neighbor of neighbors) {
-            if (visited[neighbor]) continue;
+            if (visited[neighbor] || globalVariablesManager.getGraph().nodes[neighbor] === Infinity)
+                continue;
             visited[neighbor] = true;
             predecessors[neighbor] = node;
             steps += 40;

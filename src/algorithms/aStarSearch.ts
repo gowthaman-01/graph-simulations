@@ -5,6 +5,7 @@ import {
     Node,
     NodeState,
     VisitedSet,
+    WeightType,
 } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
@@ -79,9 +80,20 @@ export const aStarSearch = (): RunResults => {
         }
 
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor]) continue;
-            const newWeight =
-                weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
+            if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
+            let neighborWeight;
+            switch (globalVariablesManager.getWeightType()) {
+                case WeightType.Unweighted:
+                    neighborWeight = 1;
+                    break;
+                case WeightType.Negative:
+                    neighborWeight = nodes[neighbor] - nodes[currentNode];
+                    break;
+                case WeightType.NonNegative:
+                    neighborWeight = Math.max(nodes[neighbor] - nodes[currentNode], 0);
+                    break;
+            }
+            const newWeight = weights[currentNode] + neighborWeight;
             // Calculating the heuristic takes approximately 13 steps.
             const newWeightWithHeuristic = newWeight + heuristicAlgorithm(neighbor, endNode);
             steps += 24;

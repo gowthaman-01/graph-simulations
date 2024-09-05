@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pathium</title>
     <!-- Link to external CSS -->
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -14,15 +14,15 @@
 <body>
     <div>
         <!-- Tutorial Modal -->
-        <div class="modal-container" id="tutorialContainer">
-            <div class="page-number">
-                <p id="pageNumber">1/9</p>
+        <div class="modal-container" id="tutorialContainer" style="display: none;">
+            <div class=" page-number">
+                <p id="pageNumber">1/10</p>
             </div>
             <div class="modal-content" id="tutorialContent">
                 <!-- Dynamic tutorial content will be loaded here -->
             </div>
             <div class="modal-buttons">
-                <div class="left-tutorial-buttons">
+                <div class=" left-tutorial-buttons">
                     <button id="tutorialSkipButton">Skip</button>
                 </div>
                 <div class="right-tutorial-buttons">
@@ -35,75 +35,28 @@
 
         <!-- Settings Modal -->
         <div class="modal-container settings-modal" id="settingsModal" style="display: none;">
-            <p><u>Legend</u></p>
-            <div class="legend-container">
-                <!-- Legend Items -->
-                <div>
-                    <div class="legend">
-                        <div class="legend-image-container-large">
-                            <img src="./assets/start.png" alt="Start Node" />
-                        </div>
-                        <p>Start node</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-large">
-                            <img src="./assets/end.png" alt="End Node" />
-                        </div>
-                        <p>End node</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
-                        </div>
-                        <p>Visited</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter" />
-                        </div>
-                        <p>Exploring</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter" />
-                        </div>
-                        <p>Shortest path</p>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-image-container-small" style="opacity: 0.8;">
-                            <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter" />
-                        </div>
-                        <p>Visiting</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Settings Controls -->
-            <div class="settings-container">
+            <div class="settings-subcontainer general-settings-container">
                 <div class="show-weight-switch-container">
-                    <p>Weight Visibility</p>
+                    <p>Show Cell Weights</p>
                     <div class="show-weight-checkbox">
                         <input type="checkbox" id="showWeightCheckbox" class="checkbox">
                         <label for="showWeightCheckbox" id="showWeightSwitch" class="switch"></label>
                     </div>
                 </div>
-
                 <div class="heuristic-dropdown-container">
-                    <p>Heuristic</p>
-                    <select id="heuristicTypeDropdown" class="dropdown">
-                        <option value="euclidean">Euclidean distance</option>
-                        <option value="manhattan">Manhattan distance</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Grid Size Controls -->
-            <div class="grid-size-controls">
-                <p>Grid Size</p>
-                <div class="grid-size-slider-container">
-                    <input type="range" id="gridSizeSlider" min="10" max="30" step="1">
+                    <p>A* Search Heuristic</p>
+                    <div class="dropdown-wrapper">
+                        <button id="heuristicTypeDropdownButton" class="dropdown heuristic-dropdown">Euclidean
+                            Distance</button>
+                        <div id="heuristicTypeDropdownMenu" class="dropdown-menu heuristic-dropdown-menu">
+                            <div class="heuristicTypeDropdownMenu-item dropdown-item" data-value="Euclidean">
+                                Euclidean Distance</div>
+                            <div class="heuristicTypeDropdownMenu-item dropdown-item" data-value="Manhattan">
+                                Manhattan Distance
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -121,6 +74,9 @@
                 <div>
                     <button id="viewTutorialButton">View Tutorial</button>
                 </div>
+                <div>
+                    <button class="graph-editor-button">Graph Editor</button>
+                </div>
                 <div class="close-settings-button-container">
                     <button id="closeSettingsButton">Close</button>
                 </div>
@@ -128,32 +84,50 @@
         </div>
 
         <!-- Main Body -->
-        <main id="mainBody" class="main-body-blur">
+        <main id="mainBody">
             <!-- Graphs Section -->
             <section id="graphGroupOne">
                 <div class="grids-container">
                     <div class="grid-container">
-                        <select id="leftGraphDropdown" class="dropdown algorithm-dropdown">
-                            <option value="bfs">BFS</option>
-                            <option value="dfs">DFS</option>
-                            <option value="dijkstra">Dijkstra</option>
-                            <option value="aStar">A* Search</option>
-                            <option value="greedy">Greedy</option>
-                            <option value="bellmanFord">Bellman-Ford</option>
-                        </select>
+                        <div class="dropdown-wrapper">
+                            <button id="leftGraphDropdownButton" class="dropdown algorithm-dropdown">
+                                BFS
+                            </button>
+                            <div id="leftGraphDropdownMenu" class="dropdown-menu algorithm-dropdown-menu">
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="BFS">BFS</div>
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="DFS">DFS</div>
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="Dijkstra">Dijkstra
+                                </div>
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="A* Search">A* Search
+                                </div>
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="Greedy">Greedy</div>
+                                <div class="leftGraphDropdownMenu-item dropdown-item" data-value="Bellman-Ford">
+                                    Bellman-Ford
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="grid" id="leftGraph">
                             <!-- Left graph will be rendered here -->
                         </div>
                     </div>
                     <div class="grid-container">
-                        <select id="rightGraphDropdown" class="dropdown algorithm-dropdown">
-                            <option value="dijkstra">Dijkstra</option>
-                            <option value="bfs">BFS</option>
-                            <option value="dfs">DFS</option>
-                            <option value="aStar">A* Search</option>
-                            <option value="greedy">Greedy</option>
-                            <option value="bellmanFord">Bellman-Ford</option>
-                        </select>
+                        <div class="dropdown-wrapper">
+                            <button id="rightGraphDropdownButton" class="dropdown algorithm-dropdown">
+                                Dijkstra
+                            </button>
+                            <div id="rightGraphDropdownMenu" class="dropdown-menu algorithm-dropdown-menu">
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="Dijkstra">Dijkstra
+                                </div>
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="BFS">BFS</div>
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="DFS">DFS</div>
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="A* Search">A* Search
+                                </div>
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="Greedy">Greedy</div>
+                                <div class="rightGraphDropdownMenu-item dropdown-item" data-value="Bellman-Ford">
+                                    Bellman-Ford</div>
+                            </div>
+                        </div>
                         <div class="grid" id="rightGraph">
                             <!-- Right graph will be rendered here -->
                         </div>
@@ -168,24 +142,50 @@
                         <!-- Graph Controls -->
                         <div class="graph-controls-container">
                             <div class="graph-dropdown-container">
-                                <p id="dropdownText">Graph type</p>
-                                <select id="primaryGraphTypeDropdown" class="dropdown">
-                                    <option value="standard">Standard</option>
-                                    <option value="maze">Maze</option>
-                                </select>
-                                <select id="secondaryGraphTypeDropdown" class="dropdown">
-                                    <!-- Secondary graph options will be dynamically loaded here -->
-                                </select>
-                            </div>
-                            <div class="weight-controls" id="weightControls">
-                                <div class="weight-control-container">
-                                    <p style="text-align: start;">Weights</p>
-                                    <div class="weight-checkbox">
-                                        <input type="checkbox" id="weightCheckbox" class="checkbox" checked>
-                                        <label for="weightCheckbox" id="weightSwitch" class="switch"></label>
+                                <p id="dropdownText">Graph Type</p>
+                                <div class="dropdown-wrapper">
+                                    <button id="primaryGraphTypeDropdownButton" class="dropdown graph-dropdown">
+                                    </button>
+                                    <div id="primaryGraphTypeDropdownMenu" class="dropdown-menu graph-dropdown-menu">
+                                        <div class="primaryGraphTypeDropdownMenu-item dropdown-item"
+                                            data-value="Standard">
+                                            Standard</div>
+                                        <div class="primaryGraphTypeDropdownMenu-item dropdown-item" data-value="Maze">
+                                            Maze</div>
+                                        <div class="primaryGraphTypeDropdownMenu-item dropdown-item"
+                                            data-value="Custom">
+                                            Custom</div>
                                     </div>
-                                    <div class="weight-slider-container">
-                                        <input type="range" id="weightSlider" min="10" max="200" step="0.1">
+                                </div>
+                                <div class="dropdown-wrapper">
+                                    <button id="secondaryGraphTypeDropdownButton"
+                                        class="dropdown secondary-graph-dropdown">
+                                    </button>
+                                    <div id="secondaryGraphTypeDropdownMenu"
+                                        class="dropdown-menu secondary-graph-dropdown-menu">
+                                        <div class="secondaryGraphTypeDropdownMenu-item dropdown-item" data-value="DFS">
+                                            DFS</div>
+                                        <div class="secondaryGraphTypeDropdownMenu-item dropdown-item"
+                                            data-value="Random-Walls">
+                                            Random Walls</div>
+                                        <div class="secondaryGraphTypeDropdownMenu-item dropdown-item"
+                                            data-value="Recursive-Division">
+                                            Recursive Division</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="weight-controls" id="weightControls">
+                                <p style="text-align: start;">Weights</p>
+                                <div class="dropdown-wrapper">
+                                    <button id="weightDropdownButton" class="dropdown weight-dropdown"></button>
+                                    <div id="weightDropdownMenu" class="dropdown-menu weight-dropdown-menu">
+                                        <div class="weightDropdownMenu-item dropdown-item" data-value="Unweighted">
+                                            Unweighted</div>
+                                        <div class="weightDropdownMenu-item dropdown-item" data-value="Non-Negative">
+                                            Non-Negative</div>
+                                        <div class="weightDropdownMenu-item dropdown-item" data-value="Negative">
+                                            Negative</div>
                                     </div>
                                 </div>
                             </div>
@@ -199,6 +199,7 @@
                             <p style="text-align: center; display: none;" id="stepCount">Steps: 0</p>
                         </div>
                         <div class="graph-buttons-container">
+                            <button class="graph-editor-button">Graph Editor</button>
                             <button id="viewSettingsButton">Settings</button>
                             <button id="runAlgorithms">Run</button>
                         </div>
@@ -208,11 +209,16 @@
                         <!-- Speed Controls and Graph Buttons -->
                         <div class="speed-control-container">
                             <p id="dropdownText" style="text-align: start;">Speed: </p>
-                            <select id="speedDropdown" class="dropdown speed-dropdown">
-                                <option value="average">Average</option>
-                                <option value="fast">Fast</option>
-                                <option value="slow">Slow</option>
-                            </select>
+                            <div class="dropdown-wrapper">
+                                <button id="speedDropdownButton" class="dropdown speed-dropdown">
+                                    Average
+                                </button>
+                                <div id="speedDropdownMenu" class="dropdown-menu speed-dropdown-menu">
+                                    <div class="speedDropdownMenu-item dropdown-item" data-value="Average">Average</div>
+                                    <div class="speedDropdownMenu-item dropdown-item" data-value="Fast">Fast</div>
+                                    <div class="speedDropdownMenu-item dropdown-item" data-value="Slow">Slow</div>
+                                </div>
+                            </div>
                             <button id="newGraph">New Graph</button>
                         </div>
                         <div class="graph-buttons-container">
@@ -225,7 +231,7 @@
         </main>
     </div>
     <!-- External JavaScript -->
-    <script src="./bundle.js" defer></script>
+    <script src="./main.js" defer></script>
 </body>
 
 </html>

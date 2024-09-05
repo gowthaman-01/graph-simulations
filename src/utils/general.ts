@@ -1,5 +1,13 @@
-import { MAX_SLIDER, MAX_WEIGHT } from '../common/constants';
-import { AlgorithmType, Node } from '../common/types';
+import { MAX_WEIGHT } from '../common/constants';
+import {
+    AlgorithmType,
+    GraphType,
+    HeuristicType,
+    Node,
+    SimulationSpeed,
+    WeightType,
+} from '../common/types';
+import { getColorByWeight } from './color';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 
 /**
@@ -29,18 +37,17 @@ export const randomWeight = (maxWeight: number): number => {
 };
 
 /**
- * Calculates the maximum weight based on the value of the weight slider.
- *
- * This function uses a non-linear transformation of the slider value to determine
- * the maximum weight. The non-linear transformation is used to create more isolated
- * dark cells in the graph, enhancing contrast and making the graph visually more
- * distinct and easier to interpret.
- *
- * @param {string} weightSliderValue - The value of the weight slider.
- * @returns {number} The maximum weight based on the slider value.
+ * Sets the weight color for the user interface (UI) based on the provided maximum weight.
+ * This function calculates the weight color by taking 90% of the maximum weight and then
+ * uses this value to determine the appropriate color. The calculated color is then applied
+ * to the document's root element as a CSS variable, which can be used throughout the UI
+ * to ensure consistent styling based on the weight.
+ * @param {number} maxWeight - The maximum weight.
  */
-export const getMaxWeight = (weightSliderValue: string): number => {
-    return (Math.floor(Math.pow(parseInt(weightSliderValue), 1.2)) / MAX_SLIDER) * MAX_WEIGHT;
+export const setWeightColor = () => {
+    // Default weight color is set to 90% of the maximum weight.
+    const weightColor = getColorByWeight(MAX_WEIGHT * 0.9);
+    document.documentElement.style.setProperty('--weight-color', weightColor);
 };
 
 /**
@@ -102,15 +109,15 @@ export const getNodeIdFromCellElementId = (cellElementId: string): number => {
 };
 
 /**
- * Get the display name of the algorithm based on its type.
+ * Get the display name of the algorithm.
  * @param {AlgorithmType} algorithmType - The type of the algorithm.
  * @returns {string} The display name of the algorithm.
  */
 export const getAlgorithmDisplayName = (algorithmType: AlgorithmType): string => {
     switch (algorithmType) {
-        case AlgorithmType.Bfs:
+        case AlgorithmType.BFS:
             return 'BFS';
-        case AlgorithmType.Dfs:
+        case AlgorithmType.DFS:
             return 'DFS';
         case AlgorithmType.Dijkstra:
             return 'Dijkstra';
@@ -119,9 +126,94 @@ export const getAlgorithmDisplayName = (algorithmType: AlgorithmType): string =>
         case AlgorithmType.AStar:
             return 'A* Search';
         case AlgorithmType.Greedy:
-            return 'Greedy Best-First';
+            return 'Greedy';
         default:
-            return '';
+            return 'BFS';
+    }
+};
+
+/**
+ * Get the display name of the primary graph type.
+ * @param {GraphType} graphType - The type of the graph.
+ * @returns {string} The display name of the primary graph type.
+ */
+export const getPrimaryGraphTypeDisplayName = (graphType: GraphType): string => {
+    switch (graphType) {
+        case GraphType.Standard:
+            return 'Standard';
+        case GraphType.Custom:
+            return 'Custom';
+        case GraphType.DFS:
+        case GraphType.RandomWalls:
+        case GraphType.RecursiveDivision:
+            return 'Maze';
+        default:
+            return 'Standard';
+    }
+};
+
+/**
+ * Get the display name of the secondary graph type.
+ * @param {GraphType} graphType - The type of the graph.
+ * @returns {string} The display name of the secondary graph type.
+ */
+export const getSecondaryGraphTypeDisplayName = (graphType: GraphType): string => {
+    switch (graphType) {
+        case GraphType.DFS:
+            return 'DFS';
+        case GraphType.RandomWalls:
+            return 'Random Walls';
+        case GraphType.RecursiveDivision:
+            return 'Recursive Division';
+        default:
+            return 'Recursive Division';
+    }
+};
+
+/**
+ * Get the display name of the heuristic type.
+ * @param {HeuristicType} heuristicType - The type of the heuristic.
+ * @returns {string} The display name of the heuristic type.
+ */
+export const getHeuristicTypeDisplayName = (heuristicType: HeuristicType): string => {
+    switch (heuristicType) {
+        case HeuristicType.Manhattan:
+            return 'Manhattan Distance';
+        case HeuristicType.Euclidean:
+            return 'Euclidean Distance';
+        default:
+            return 'Euclidean Distance';
+    }
+};
+
+export const getWeightTypeDisplayName = (weightType: WeightType): string => {
+    switch (weightType) {
+        case WeightType.Unweighted:
+            return 'Unweighted';
+        case WeightType.Negative:
+            return 'Negative';
+        case WeightType.NonNegative:
+            return 'Non-Negative';
+        default:
+            return 'Unweighted';
+    }
+};
+
+/**
+ * Get the display name of the simulation speed.
+ * @param {SimulationSpeed} simulationSpeed - The type of the simulation speed.
+ * @returns {string} The display name of the simulation speed.
+ */
+export const getSimulationSpeedDisplayName = (simulationSpeed: SimulationSpeed): string => {
+    switch (simulationSpeed) {
+        case SimulationSpeed.Average:
+            return 'Average';
+        case SimulationSpeed.Fast:
+            return 'Fast';
+        case SimulationSpeed.Slow:
+            return 'Slow';
+        default:
+            return 'Average';
     }
 };
 

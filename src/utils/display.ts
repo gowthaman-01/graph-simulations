@@ -15,6 +15,19 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
  * @param {AlgorithmType} [algorithmToClear] - Optional. The specific algorithm whose graph display should be reset. If not provided, all grid graphs will be reset.
  */
 export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
+    const isEditor = algorithmToClear === AlgorithmType.Editor;
+    const graphDivs = globalVariablesManager.getGraphDivs(isEditor);
+    for (const graphDiv of graphDivs) {
+        const algorithmType = graphDiv.algorithmType;
+        // If a specific algorithm is provided, skip clearing statistics for other algorithms.
+        if (algorithmToClear && algorithmToClear !== algorithmType) {
+            continue;
+        }
+        displayGrid(graphDiv);
+    }
+};
+
+export const displayGrid = (graphDiv: GraphDiv) => {
     const nodes = globalVariablesManager.getGraph().nodes;
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
@@ -22,63 +35,48 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
     const gridSize = globalVariablesManager.getGridSize();
     const rows = Math.sqrt(gridSize);
     const cols = Math.sqrt(gridSize);
+    const graphDivElement = graphDiv.graphDivElement;
+    const graphPosition = graphDiv.position;
 
-    const graphDivs = globalVariablesManager.getGraphDivs();
+    // Create grid container.
+    graphDivElement.innerHTML = '';
+    graphDivElement.style.display = 'grid';
+    graphDivElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    graphDivElement.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-    for (const graphDiv of graphDivs) {
-        const algorithmType = graphDiv.algorithmType;
-        const graphDivElement = graphDiv.graphDivElement;
-        const graphPosition = graphDiv.position;
+    // Create grid cells using DocumentFragment to optimise performance.
+    const fragment = document.createDocumentFragment();
 
-        // If a specific algorithm is provided, skip clearing statistics for other algorithms.
-        if (algorithmToClear && algorithmToClear !== algorithmType) {
-            continue;
+    for (let i = 0; i < gridSize; i++) {
+        const cell = document.createElement('div');
+
+        cell.id = `${graphDiv.position}-cell-${i}`;
+        cell.className = 'grid-cell';
+        cell.style.border = 'solid 1px #0C3547';
+
+        // Calculate and set the cell's width and height based on the number of rows.
+        const cellSize = getCellWidth(rows);
+        document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+
+        // Set the cell's color based on its weight.
+        const weight = nodes[i];
+        cell.style.backgroundColor = getColorByWeight(weight);
+
+        if (i === startNode || i === endNode) {
+            // If the cell is the start or end node, create a mark to indicate it.
+            const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
+            const mark = createMark(i, nodeState, graphPosition);
+            cell.appendChild(mark);
+        } else if (i !== startNode && i !== endNode && globalVariablesManager.shouldShowWeights()) {
+            // If the cell is not a start or end node, display the weight of the node.
+            const weight = createMark(i, NodeState.Unvisited, graphPosition);
+            cell.appendChild(weight);
         }
 
-        // Create grid container.
-        graphDivElement.innerHTML = '';
-        graphDivElement.style.display = 'grid';
-        graphDivElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        graphDivElement.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-        // Create grid cells using DocumentFragment to optimise performance.
-        const fragment = document.createDocumentFragment();
-
-        for (let i = 0; i < gridSize; i++) {
-            const cell = document.createElement('div');
-
-            cell.id = `${graphDiv.position}-cell-${i}`;
-            cell.className = 'grid-cell';
-            cell.style.border = 'solid 1px #0C3547';
-
-            // Calculate and set the cell's width and height based on the number of rows.
-            const cellSize = getCellWidth(rows);
-            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
-
-            // Set the cell's color based on its weight.
-            const weight = nodes[i];
-            cell.style.backgroundColor = getColorByWeight(weight);
-
-            if (i === startNode || i === endNode) {
-                // If the cell is the start or end node, create a mark to indicate it.
-                const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
-                const mark = createMark(i, nodeState, graphPosition);
-                cell.appendChild(mark);
-            } else if (
-                i !== startNode &&
-                i !== endNode &&
-                globalVariablesManager.shouldShowWeights()
-            ) {
-                // If the cell is not a start or end node, display the weight of the node.
-                const weight = createMark(i, NodeState.Unvisited, graphPosition);
-                cell.appendChild(weight);
-            }
-
-            fragment.appendChild(cell);
-        }
-
-        graphDivElement.appendChild(fragment);
+        fragment.appendChild(cell);
     }
+
+    graphDivElement.appendChild(fragment);
 };
 
 /**
@@ -121,7 +119,6 @@ const getCellWidth = (rows: number): number => {
  * Resets and updates the Run Statistics Table based on the current run results.
  */
 export const resetStatisticTable = () => {
-    const graphDivs = globalVariablesManager.getGraphDivs();
     const runResults = globalVariablesManager.getRunResults();
     const isEndNodeReachable = globalVariablesManager.isEndNodeReachable();
 
@@ -135,23 +132,22 @@ export const resetStatisticTable = () => {
     </tr>`;
 
     // Populate the table rows with data for each algorithm.
-    for (const graphDiv of graphDivs) {
-        const algorithmType = graphDiv.algorithmType;
-
+    Object.values(AlgorithmType).forEach((algorithmType) => {
         const runResult = runResults.find(
             (runResult) => runResult.getAlgorithmType() === algorithmType,
         );
-        if (!runResult) continue;
 
         // Add a row to the table with the algorithm's name, steps, total weight, and node count.
-        tableHtml += `
+        if (runResult) {
+            tableHtml += `
         <tr>
             <td>${getAlgorithmDisplayName(algorithmType)}</td>
             <td>${isEndNodeReachable ? runResult.getAlgorithmSteps().toString() : '-'}</td>
             <td>${isEndNodeReachable ? runResult.getTotalWeight().toString() : '-'}</td>
             <td>${isEndNodeReachable ? runResult.getShortestPath().length.toString() : '-'}</td>
         </tr>`;
-    }
+        }
+    });
 
     // Update the run statistics table in the DOM with the generated HTML.
     const runStatisticTable = document.getElementById('runStatistics') as HTMLTableElement;
@@ -163,7 +159,7 @@ export const resetStatisticTable = () => {
     ) as HTMLParagraphElement;
     bestAlgorithmParagraphElement.textContent = isEndNodeReachable
         ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
-        : 'End node not reachable from start node! Please regenerate the graph.';
+        : 'End node not reachable from start node! Please generate a new graph.';
 };
 
 /**
@@ -177,7 +173,9 @@ export const displayAllRunResults = async (
     stepsSlider: HTMLInputElement,
     stepsCount: HTMLParagraphElement,
 ): Promise<void> => {
-    const runResults = globalVariablesManager.getRunResults();
+    const runResults = globalVariablesManager
+        .getRunResults()
+        .filter((runResult) => runResult.getIsDisplayed());
 
     const maxTotalSteps = Math.max(
         ...runResults.map((runResult) => runResult.getLatestTotalSteps()),

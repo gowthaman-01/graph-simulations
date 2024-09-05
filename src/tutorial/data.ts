@@ -116,7 +116,7 @@ export const tutorialDataList: TutorialData[] = [
         body: `<u><b>Generate New Graph</b></u>
         <br>Generates a new graph based on the selected type and weight settings.<br><br>
         <u><b>Graph Type Selector</b></u>
-        <br>Allows the user to chose between different graph types - Standard, Maze and Ideal.<br><br>
+        <br>Allows the user to choose between different graph types - Standard, Maze and Ideal.<br><br>
         <u><b>Change Start Node / End Node</b></u>
         <br>Allows you to select a new starting or ending node on the graph.<br><br>
         <u><b>Weight Toggle</b></u>
@@ -189,5 +189,17 @@ export const tutorialDataList: TutorialData[] = [
                 <td id="aStar-nodes">22</td>
             </tr>
         </table>`,
+    },
+    {
+        pageNumber: 11,
+        title: 'Graph Editor',
+        body: `The Graph Editor enables you to design and customize graphs for algorithm visualization and testing.
+    <br><br><b>Walls</b>: Add wall nodes to create obstacles.
+    <br><b>Weights</b>: Adjust node weights to create varying path costs.
+    <br><b>Clear</b>: Remove walls and reset weights for selected nodes.
+    <br><b>Reset</b>: Restore the graph to its initial unweighted state.
+    <br><b>Start Node</b>: Set a new starting point for the algorithms.
+    <br><b>End Node</b>: Set a new destination point for the algorithms.
+    <br><br>Leverage these tools to create complex challenges and evaluate how algorithms perform in your custom-designed environments.`,
     },
 ];

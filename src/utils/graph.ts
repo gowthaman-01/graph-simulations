@@ -6,67 +6,117 @@ import {
     GraphType,
     Nodes,
     StartEndNodes,
+    WeightType,
 } from '../common/types';
-import { MAX_WEIGHT } from '../common/constants';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { DEFAULT_WEIGHT, MAX_WEIGHT } from '../common/constants';
 
 /**
- * Recreates the graph based on the current graph type setting on subsequent renders of the application.
+ * Generates a new graph with an accessible end node.
  *
- * @returns {GraphStructure} The newly recreated graph along with its collection of nodes.
+ * This function generates a new graph and ensures that the end node is reachable from the start node.
+ * It continuously generates new graphs until the end node is reachable, using the provided callback function
+ * to update the graph after each generation.
+ *
+ * @param callbackFunction - A function to be called after each graph generation to update the graph.
  */
-export const recreateGraph = (): GraphStructure => {
+export const generateNewGraphWithReachableEndNode = (callbackFunction: () => void) => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
-    const graphType = globalVariablesManager.getGraphType();
-
-    switch (graphType) {
-        case GraphType.Dfs:
-            return createMazeGraphUsingDfs();
-        case GraphType.RandomWalls:
-            return createMazeGraphWithRandomWalls();
-        case GraphType.RecursiveDivision:
-            return createMazeGraphUsingRecursiveDivision();
-        default:
-            const maxWeight = globalVariablesManager.getMaxWeight();
-            return createBasicGridGraph(maxWeight);
-    }
+    do {
+        generateNewGraph();
+        callbackFunction();
+    } while (!globalVariablesManager.isEndNodeReachable());
 };
 
 /**
- * Creates a basic grid graph with the specified maximum weight for the nodes.
- *
- * This function generates a grid of nodes, each with a random weight, and connects them to their valid neighbors to form a graph. The grid size can be optionally specified; if not, it is retrieved from the global variables manager.
- *
- * If the start or end nodes are outside the grid limits, they are reset to valid positions.
- *
- * @param {number} maxWeight - The maximum weight that any node in the grid can have.
- * @param {number} [gridSize] - The optional size of the grid; if not provided, it is retrieved from the global variables manager.
- * @returns {GraphStructure} The generated graph structure, including the graph connections and node weights.
+ * Recreates the graph based on the current graph type setting on subsequent renders of the application.
  */
-export const createBasicGridGraph = (maxWeight: number, gridSize?: number): GraphStructure => {
+export const generateNewGraph = () => {
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const graphType = globalVariablesManager.getGraphType();
+
+    let newGraph: GraphStructure;
+
+    switch (graphType) {
+        case GraphType.DFS:
+            newGraph = createMazeGraphUsingDfs();
+            break;
+        case GraphType.RandomWalls:
+            newGraph = createMazeGraphWithRandomWalls();
+            break;
+        case GraphType.RecursiveDivision:
+            newGraph = createMazeGraphUsingRecursiveDivision();
+            break;
+        default:
+            newGraph = createBasicGridGraphDuringSubsequentRenders();
+    }
+
+    if (
+        newGraph.nodes[globalVariablesManager.getEndNode()] > 10 ||
+        newGraph.nodes[globalVariablesManager.getStartNode()] > 10
+    ) {
+        const { startNode, endNode } = generateStartAndEndNode(
+            newGraph,
+            globalVariablesManager.getGridSize(),
+        );
+
+        globalVariablesManager.setStartNode(startNode);
+        globalVariablesManager.setEndNode(endNode);
+    }
+
+    globalVariablesManager.setGraph(newGraph);
+};
+
+/**
+ * Creates a basic grid graph for subsequent renders.
+ *
+ * This function ensures that the start and end nodes are within the grid boundaries.
+ * If the nodes are out of bounds, it generates new start and end nodes.
+ * After validating the nodes, it creates a basic grid graph.
+ *
+ * @returns {GraphStructure} The newly created basic grid graph along with its collection of nodes.
+ */
+export const createBasicGridGraphDuringSubsequentRenders = (): GraphStructure => {
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+    const gridSize = globalVariablesManager.getGridSize();
+
+    // Reset Start and End nodes if they are not within grid limits.
+    if (
+        globalVariablesManager.getStartNode() >= gridSize ||
+        globalVariablesManager.getEndNode() >= gridSize
+    ) {
+        const { startNode, endNode } = generateStartAndEndNode(
+            globalVariablesManager.getGraph(),
+            gridSize,
+        );
+        globalVariablesManager.setStartNode(startNode);
+        globalVariablesManager.setEndNode(endNode);
+    }
+
+    return createBasicGridGraph(isWeighted, gridSize);
+};
+
+/**
+ * Creates a basic grid graph with specified properties.
+ *
+ * This function initializes a grid graph by creating nodes and establishing their connections.
+ * If the graph is weighted, it assigns random weights to the nodes. The grid is represented as
+ * a square matrix, where each node is connected to its valid neighbors (up, down, left, right).
+ *
+ * @param {boolean} isWeighted - A flag indicating whether the graph should be weighted.
+ * @param {number} gridSize - The total number of nodes in the grid (must be a perfect square).
+ * @returns {GraphStructure} An object containing the created grid graph and its collection of nodes.
+ */
+export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): GraphStructure => {
     const graph: Graph = {};
     const nodes: Nodes = [];
-
-    if (!gridSize) {
-        const globalVariablesManager = getGlobalVariablesManagerInstance();
-        gridSize = globalVariablesManager.getGridSize();
-
-        // Reset Start and End nodes if they are not within grid limits.
-        if (
-            globalVariablesManager.getStartNode() >= gridSize ||
-            globalVariablesManager.getEndNode() >= gridSize
-        ) {
-            const { startNode, endNode } = generateStartAndEndNode(gridSize);
-            globalVariablesManager.setStartNode(startNode);
-            globalVariablesManager.setEndNode(endNode);
-        }
-    }
 
     const cols = Math.sqrt(gridSize);
 
     // Create nodes with random weights.
     for (let i = 0; i < gridSize; i++) {
-        nodes[i] = randomWeight(maxWeight);
+        nodes[i] = isWeighted ? randomWeight(DEFAULT_WEIGHT) : 0;
     }
 
     // Create graph connections.
@@ -115,7 +165,7 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
     globalVariablesManager.setEndNode(endNode);
 
     // Initialize the graph with no weights (all weights set to 0).
-    const { graph, nodes } = createBasicGridGraph(0);
+    const { graph, nodes } = createBasicGridGraph(false, gridSize);
     const finalPath = new Set<number>();
 
     // Recursive Depth-First Search function to explore the grid and generate the maze path.
@@ -145,18 +195,17 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
     // Start DFS from the start node to generate the maze.
     dfs(startNode, [], new Set());
 
+    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+
     // Assign maximum weight to nodes not in the final path, marking them as walls.
     for (let i = 0; i < gridSize; i++) {
         if (!finalPath.has(i)) {
-            nodes[i] = MAX_WEIGHT;
+            nodes[i] = Infinity;
         } else {
-            nodes[i] = 1;
+            nodes[i] = isWeighted ? randomWeight(MAX_WEIGHT / 2) : 0;
         }
     }
 
-    const isWeighted = globalVariablesManager.getIsWeighted();
-
-    // Rebuild the graph connections based on the final DFS path and whether the graph is weighted.
     for (let i = 0; i < gridSize; i++) {
         graph[i] = [];
 
@@ -167,13 +216,10 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
 
         // Collate valid neighbors.
         const neighbors = [];
-        if (up >= 0 && (isWeighted || (!isWeighted && finalPath.has(up)))) neighbors.push(up);
-        if (down < gridSize && (isWeighted || (!isWeighted && finalPath.has(down))))
-            neighbors.push(down);
-        if (left !== -1 && (isWeighted || (!isWeighted && finalPath.has(left))))
-            neighbors.push(left);
-        if (right !== -1 && (isWeighted || (!isWeighted && finalPath.has(right))))
-            neighbors.push(right);
+        if (up >= 0) neighbors.push(up);
+        if (down < gridSize) neighbors.push(down);
+        if (left !== -1) neighbors.push(left);
+        if (right !== -1) neighbors.push(right);
 
         // Add valid neighbors to the graph.
         neighbors.forEach((neighbor) => {
@@ -216,16 +262,16 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
         }
     }
 
+    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+
     // Assign maximum weight to wall nodes, minimal weight to path nodes
     for (let i = 0; i < gridSize; i++) {
         if (walls.has(i)) {
-            nodes[i] = MAX_WEIGHT;
+            nodes[i] = Infinity;
         } else {
-            nodes[i] = 1;
+            nodes[i] = isWeighted ? randomWeight(MAX_WEIGHT / 2) : 0;
         }
     }
-
-    const isWeighted = globalVariablesManager.getIsWeighted();
 
     // Build the graph connections.
     for (let i = 0; i < gridSize; i++) {
@@ -238,12 +284,10 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
 
         // Collate valid neighbors.
         const neighbors = [];
-        if (up >= 0 && (isWeighted || (!isWeighted && !walls.has(up)))) neighbors.push(up);
-        if (down < gridSize && (isWeighted || (!isWeighted && !walls.has(down))))
-            neighbors.push(down);
-        if (left !== -1 && (isWeighted || (!isWeighted && !walls.has(left)))) neighbors.push(left);
-        if (right !== -1 && (isWeighted || (!isWeighted && !walls.has(right))))
-            neighbors.push(right);
+        if (up >= 0) neighbors.push(up);
+        if (down < gridSize) neighbors.push(down);
+        if (left !== -1) neighbors.push(left);
+        if (right !== -1 && !walls.has(right)) neighbors.push(right);
 
         // Add valid neighbors to the graph.
         neighbors.forEach((neighbor) => {
@@ -277,16 +321,16 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     // Start the recursive division process to create walls and passages.
     recrusiveDivide(0, rows - 1, 0, cols - 1, walls, passageMap);
 
+    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+
     // Assign maximum weight to wall nodes, minimal weight to path nodes
     for (let i = 0; i < gridSize; i++) {
         if (walls.has(i)) {
-            nodes[i] = MAX_WEIGHT;
+            nodes[i] = Infinity;
         } else {
-            nodes[i] = 1;
+            nodes[i] = isWeighted ? randomWeight(MAX_WEIGHT / 2) : 0;
         }
     }
-
-    const isWeighted = globalVariablesManager.getIsWeighted();
 
     for (let i = 0; i < gridSize; i++) {
         graph[i] = [];
@@ -298,12 +342,10 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
 
         // Collate valid neighbors.
         const neighbors = [];
-        if (up >= 0 && (isWeighted || (!isWeighted && !walls.has(up)))) neighbors.push(up);
-        if (down < gridSize && (isWeighted || (!isWeighted && !walls.has(down))))
-            neighbors.push(down);
-        if (left !== -1 && (isWeighted || (!isWeighted && !walls.has(left)))) neighbors.push(left);
-        if (right !== -1 && (isWeighted || (!isWeighted && !walls.has(right))))
-            neighbors.push(right);
+        if (up >= 0) neighbors.push(up);
+        if (down < gridSize) neighbors.push(down);
+        if (left !== -1) neighbors.push(left);
+        if (right !== -1 && !walls.has(right)) neighbors.push(right);
 
         // Add valid neighbors to the graph.
         neighbors.forEach((neighbor) => {
@@ -312,12 +354,12 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     }
 
     // Generate start and end nodes, ensuring they are placed in non-wall locations.
-    let { startNode, endNode } = generateStartAndEndNode(gridSize);
+    let { startNode, endNode } = generateStartAndEndNode({ graph, nodes }, gridSize);
     while (walls.has(startNode)) {
-        startNode = generateStartAndEndNode(gridSize).startNode;
+        startNode = generateStartAndEndNode({ graph, nodes }, gridSize).startNode;
     }
     while (walls.has(endNode)) {
-        endNode = generateStartAndEndNode(gridSize).endNode;
+        endNode = generateStartAndEndNode({ graph, nodes }, gridSize).endNode;
     }
     globalVariablesManager.setStartNode(startNode);
     globalVariablesManager.setEndNode(endNode);
@@ -430,17 +472,22 @@ export const getExampleGraph = (graphType: GraphType): GraphStorage => {
  * Generates random start and end node indices within the grid.
  *
  * This function ensures that the start and end nodes are not the same, providing
- * two distinct indices within the specified grid size.
- *
+ * two distinct indices within the specified grid size. The start node and end node is also
+ * guaranteed to be less than 50, ensuring that the graph is more navigable.
  * @param {number} gridSize - The total number of nodes in the grid.
  * @returns {StartEndNodes} An object containing both start and end node indices.
  */
-export const generateStartAndEndNode = (gridSize: number): StartEndNodes => {
-    const newStartNode = Math.floor(Math.random() * gridSize);
+export const generateStartAndEndNode = (graph: GraphStructure, gridSize: number): StartEndNodes => {
+    let newStartNode = Math.floor(Math.random() * gridSize);
+    do {
+        newStartNode = Math.floor(Math.random() * gridSize);
+    } while (graph.nodes[newStartNode] > 10);
+
     let newEndNode;
     do {
         newEndNode = Math.floor(Math.random() * gridSize);
-    } while (newStartNode === newEndNode);
+    } while (newStartNode === newEndNode || graph.nodes[newEndNode] > 10);
+
     return { startNode: newStartNode, endNode: newEndNode };
 };
 
