@@ -8,9 +8,9 @@ export const BLUE: Color = { r: 0, g: 0, b: 200 };
 export const DARK_BLUE: Color = { r: 12, g: 53, b: 71 };
 
 // Graph control properties.
-export const MAX_WEIGHT: number = 100;
+export const MAX_WEIGHT: number = 125;
 export const DEFAULT_DELAY: number = 1;
-export const DEFAULT_WEIGHT: number = 80;
+export const DEFAULT_WEIGHT: number = 100;
 export const AVERAGE_SPEED: number = 100;
 export const FAST_SPEED: number = 200;
 export const SLOW_SPEED: number = 50;
@@ -51,8 +51,8 @@ export enum STATUS {
 
 export enum EDITOR_MODE {
     ADD_WALLS = 'ADD_WALLS',
-    EDIT_WEIGHTS = 'EDIT_WEIGHTS',
-    CLEAR_CELL = 'CLEAR_CELL',
+    ADD_WEIGHT = 'ADD_WEIGHT',
+    CLEAR_WEIGHT = 'CLEAR_WEIGHT',
     CHANGE_START_NODE = 'CHANGE_START_NODE',
     CHANGE_END_NODE = 'CHANGE_END_NODE',
     CHANGE_GRID_SIZE = 'CHANGE_GRID_SIZE',

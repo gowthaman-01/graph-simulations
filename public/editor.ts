@@ -1,10 +1,4 @@
-import {
-    DEFAULT_WEIGHT,
-    DISPLAY_STYLE,
-    EDITOR_MODE,
-    GRAPH_POSITION,
-    STATUS,
-} from '../src/common/constants';
+import { DEFAULT_WEIGHT, EDITOR_MODE, GRAPH_POSITION, STATUS } from '../src/common/constants';
 import { AlgorithmType, GraphDiv, GraphType, NodeState } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
@@ -12,9 +6,8 @@ import { highlightButtonColor, setNewStartEndNode } from '../src/utils/element';
 import { getNodeIdFromCellElementId, setWeightColor } from '../src/utils/general';
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
-import { MAX_WEIGHT } from '../src/common/constants';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
-import { generateNewGraph, generateNewGraphWithReachableEndNode } from '../src/utils/graph';
+import { generateNewGraph } from '../src/utils/graph';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const graphEditorElement = document.getElementById('graphEditor') as HTMLDivElement;
@@ -77,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         (dataValue) => {
             globalVariablesManager.setGridSize(parseInt(dataValue));
             generateNewGraph();
-            displayGrid(graphEditorDiv);
+            resetGrid();
         },
     );
 
@@ -92,7 +85,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isEditor = true;
     let editorMode = EDITOR_MODE.NONE;
 
-    displayGrid(graphEditorDiv);
+    const resetGrid = () => {
+        if (editorMode === EDITOR_MODE.ADD_WEIGHT || editorMode === EDITOR_MODE.CLEAR_WEIGHT) {
+            globalVariablesManager.setShowWeights(true);
+        } else {
+            globalVariablesManager.setShowWeights(false);
+        }
+        displayGrid(graphEditorDiv);
+    };
+
+    resetGrid();
 
     setWeightColor();
 
@@ -103,11 +105,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 graphEditorDescription.innerHTML =
                     'Click or drag on the grid to place walls that act as obstacles';
                 break;
-            case EDITOR_MODE.EDIT_WEIGHTS:
+            case EDITOR_MODE.ADD_WEIGHT:
                 graphEditorDescription.innerHTML =
                     'Click or drag on grid cells to increase their weight, making paths harder to traverse';
                 break;
-            case EDITOR_MODE.CLEAR_CELL:
+            case EDITOR_MODE.CLEAR_WEIGHT:
                 graphEditorDescription.innerHTML =
                     'Click or drag on the grid to remove walls or reset cell weights';
                 break;
@@ -146,10 +148,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             case EDITOR_MODE.ADD_WALLS:
                 highlightButtonColor(addWallsButton, STATUS.ACTIVE);
                 break;
-            case EDITOR_MODE.EDIT_WEIGHTS:
+            case EDITOR_MODE.ADD_WEIGHT:
                 highlightButtonColor(editWeightsButton, STATUS.ACTIVE);
                 break;
-            case EDITOR_MODE.CLEAR_CELL:
+            case EDITOR_MODE.CLEAR_WEIGHT:
                 highlightButtonColor(clearCellButton, STATUS.ACTIVE);
                 break;
             default:
@@ -225,16 +227,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Event handlers
     const handleButtonClick = (mode: EDITOR_MODE) => {
         editorMode = mode;
-        displayGrid(graphEditorDiv);
+        resetGrid();
         updateButtons();
         updateGraphEditorDescription();
     };
 
     const handleAddWallsButton = () => handleButtonClick(EDITOR_MODE.ADD_WALLS);
 
-    const handleEditWeightsButton = () => handleButtonClick(EDITOR_MODE.EDIT_WEIGHTS);
+    const handleEditWeightsButton = () => handleButtonClick(EDITOR_MODE.ADD_WEIGHT);
 
-    const handleClearCellButton = () => handleButtonClick(EDITOR_MODE.CLEAR_CELL);
+    const handleClearCellButton = () => handleButtonClick(EDITOR_MODE.CLEAR_WEIGHT);
 
     const handleResetGraphButton = () => {
         const newNodes = Array(globalVariablesManager.getGridSize()).fill(0);
@@ -247,9 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             nodeState === NodeState.StartNode
                 ? EDITOR_MODE.CHANGE_START_NODE
                 : EDITOR_MODE.CHANGE_END_NODE;
-        setNewStartEndNode(nodeState, isEditor, toggleButtonsDuringStartEndNodeChange, () => {
-            displayGrid(graphEditorDiv);
-        });
+        setNewStartEndNode(nodeState, isEditor, toggleButtonsDuringStartEndNodeChange, resetGrid);
         updateButtons();
         updateGraphEditorDescription();
     };
@@ -266,12 +266,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         { button: addWallsButton, mode: EDITOR_MODE.ADD_WALLS, clickHandler: handleAddWallsButton },
         {
             button: editWeightsButton,
-            mode: EDITOR_MODE.EDIT_WEIGHTS,
+            mode: EDITOR_MODE.ADD_WEIGHT,
             clickHandler: handleEditWeightsButton,
         },
         {
             button: clearCellButton,
-            mode: EDITOR_MODE.CLEAR_CELL,
+            mode: EDITOR_MODE.CLEAR_WEIGHT,
             clickHandler: handleClearCellButton,
         },
         { button: resetGraphButton, mode: EDITOR_MODE.RESET, clickHandler: handleResetGraphButton },
@@ -306,10 +306,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 case EDITOR_MODE.ADD_WALLS:
                     addWall(nodeId);
                     break;
-                case EDITOR_MODE.EDIT_WEIGHTS:
+                case EDITOR_MODE.ADD_WEIGHT:
                     incrementWeight(nodeId);
                     break;
-                case EDITOR_MODE.CLEAR_CELL:
+                case EDITOR_MODE.CLEAR_WEIGHT:
                     clearCell(nodeId);
                     break;
             }
@@ -330,10 +330,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     case EDITOR_MODE.ADD_WALLS:
                         addWall(nodeId);
                         break;
-                    case EDITOR_MODE.EDIT_WEIGHTS:
+                    case EDITOR_MODE.ADD_WEIGHT:
                         incrementWeight(nodeId);
                         break;
-                    case EDITOR_MODE.CLEAR_CELL:
+                    case EDITOR_MODE.CLEAR_WEIGHT:
                         clearCell(nodeId);
                         break;
                 }
