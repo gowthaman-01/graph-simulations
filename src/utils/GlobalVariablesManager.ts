@@ -132,7 +132,6 @@ class GlobalVariablesManager {
     }
 
     public setGraphType(graphType: GraphType): void {
-        console.log('setting from', this.graphType, 'to', graphType);
         this.graphType = graphType;
     }
 
