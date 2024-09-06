@@ -40,6 +40,7 @@ import {
     getSimulationSpeedDisplayName,
     getWeightTypeDisplayName,
     setWeightColor,
+    updateProgressBarAndHideLoadingScreen,
 } from '../src/utils/general';
 import { runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
@@ -615,8 +616,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showWeightControls();
     }
 
-    // Hide loading screen after initialization
-    loadingScreen.style.display = 'none';
+    await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
 
     // Event listeners for control elements.
     runButton.addEventListener('click', async () => {

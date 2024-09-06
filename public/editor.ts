@@ -13,7 +13,11 @@ import {
     setNewStartEndNode,
     toggleElementVisibility,
 } from '../src/utils/element';
-import { getNodeIdFromCellElementId, setWeightColor } from '../src/utils/general';
+import {
+    getNodeIdFromCellElementId,
+    setWeightColor,
+    updateProgressBarAndHideLoadingScreen,
+} from '../src/utils/general';
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
@@ -121,9 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     resetGrid();
     setWeightColor();
-
-    // Hide loading screen after initialization
-    loadingScreen.style.display = 'none';
+    await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
 
     // Helper functions.
     const updateGraphEditorDescription = (mode: EDITOR_MODE = editorMode) => {

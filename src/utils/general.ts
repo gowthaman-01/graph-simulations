@@ -265,3 +265,23 @@ export const shuffleArray = (array: number[]): number[] => {
     }
     return array;
 };
+
+/**
+ * Updates the progress bar by incrementing its width from 0 to 100% and hides the loading screen.
+ * @param {HTMLElement} progressBar - The progress bar element to update.
+ * @param {HTMLElement} loadingScreen - The loading screen element to hide.
+ * @returns {Promise<void>} - A promise that resolves when the progress bar is fully updated.
+ */
+export const updateProgressBarAndHideLoadingScreen = async (
+    progressBar: HTMLElement,
+    loadingScreen: HTMLElement,
+): Promise<void> => {
+    for (let i = 0; i <= 100; i += 10) {
+        progressBar.style.width = `${i}%`;
+        await delay(0);
+    }
+
+    await delay(200);
+    // Hide loading screen after initialization
+    loadingScreen.style.display = 'none';
+};
