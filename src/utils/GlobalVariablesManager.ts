@@ -1,4 +1,4 @@
-import { AVERAGE_SPEED, DEFAULT_WEIGHT } from '../common/constants';
+import { AVERAGE_SPEED, GRAPH_POSITION } from '../common/constants';
 import {
     AlgorithmType,
     HeuristicType,
@@ -6,6 +6,8 @@ import {
     GraphStructure,
     GraphType,
     SimulationSpeed,
+    Node,
+    WeightType,
 } from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNode } from './graph';
@@ -21,39 +23,58 @@ class GlobalVariablesManager {
     private startNode: number;
     private endNode: number;
     private graphType: GraphType;
-    private isWeighted: boolean;
-    private maxWeight: number;
+    private weightType: WeightType;
     private stepIncrement: number;
     private endNodeReachable: boolean;
     private heuristicType: HeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
+    private showTutorial: boolean;
     private leftGraphDiv: GraphDiv | null;
     private rightGraphDiv: GraphDiv | null;
+    private editorGraphDiv: GraphDiv | null;
     private showWeights: boolean;
     private isSimulationRunning: boolean;
     private isChangingStartEndNode: boolean;
+    private customGraph: GraphStructure | null;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
 
     private constructor() {
-        this.gridSize = 400;
-        this.graph = createBasicGridGraph(DEFAULT_WEIGHT, this.gridSize); // The default graph is unweighted, with 0 max weight.
+        const savedData = this.loadFromLocalStorage();
+        if (savedData) {
+            this.gridSize = savedData.gridSize;
+            this.graph = savedData.graph;
+            this.startNode = savedData.startNode;
+            this.endNode = savedData.endNode;
+            this.showTutorial = savedData.showTutorial;
+            this.weightType = savedData.weightType;
+            this.graphType = savedData.graphType;
+            this.stepIncrement = savedData.stepIncrement;
+            this.heuristicType = savedData.heuristicType;
+            this.simulationSpeed = savedData.simulationSpeed;
+            this.customGraph = savedData.customGraph;
+        } else {
+            this.gridSize = 400;
+            this.graph = createBasicGridGraph(true, this.gridSize);
+            const { startNode, endNode } = generateStartAndEndNode(this.graph, this.gridSize);
+            this.startNode = startNode;
+            this.endNode = endNode;
+            this.showTutorial = true;
+            this.weightType = WeightType.NonNegative;
+            this.graphType = GraphType.Standard;
+            this.stepIncrement = AVERAGE_SPEED;
+            this.heuristicType = HeuristicType.Euclidean;
+            this.simulationSpeed = SimulationSpeed.Average;
+            this.customGraph = null;
+        }
         this.runResults = [];
-        const { startNode, endNode } = generateStartAndEndNode(this.gridSize);
-        this.startNode = startNode;
-        this.endNode = endNode;
-        this.graphType = GraphType.Standard;
-        this.isWeighted = true;
-        this.maxWeight = DEFAULT_WEIGHT;
-        this.stepIncrement = AVERAGE_SPEED;
         this.endNodeReachable = false;
-        this.heuristicType = HeuristicType.Euclidean;
-        this.simulationSpeed = SimulationSpeed.Average;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.rightGraphDiv = null;
         this.leftGraphDiv = null;
+        this.editorGraphDiv = null;
         this.showWeights = false;
         this.isSimulationRunning = false;
         this.isChangingStartEndNode = false;
@@ -68,6 +89,10 @@ class GlobalVariablesManager {
 
     public setGraph(graph: GraphStructure): void {
         this.graph = graph;
+    }
+
+    public setNodes(nodes: Node[]): void {
+        this.graph.nodes = nodes;
     }
 
     public getGraph(): GraphStructure {
@@ -114,20 +139,12 @@ class GlobalVariablesManager {
         return this.graphType;
     }
 
-    public setIsWeighted(isWeighted: boolean) {
-        this.isWeighted = isWeighted;
+    public setWeightType(weightType: WeightType) {
+        this.weightType = weightType;
     }
 
-    public getIsWeighted(): boolean {
-        return this.isWeighted;
-    }
-
-    public setMaxWeight(maxWeight: number): void {
-        this.maxWeight = Math.floor(maxWeight);
-    }
-
-    public getMaxWeight(): number {
-        return this.maxWeight;
+    public getWeightType(): WeightType {
+        return this.weightType;
     }
 
     public setStepIncrement(stepIncrement: number): void {
@@ -162,6 +179,14 @@ class GlobalVariablesManager {
         this.simulationSpeed = simulationSpeed;
     }
 
+    public getShowTutorial(): boolean {
+        return this.showTutorial;
+    }
+
+    public setShowTutorial(showTutorial: boolean) {
+        this.showTutorial = showTutorial;
+    }
+
     public getTutorialPageNumber(): number {
         return this.tutorialPageNumber;
     }
@@ -183,11 +208,13 @@ class GlobalVariablesManager {
         return this.tutorialPageNumber;
     }
 
-    public getGraphDivs(): GraphDiv[] {
-        if (!this.leftGraphDiv || !this.rightGraphDiv) {
-            return [];
-        } else {
+    public getGraphDivs(isEditor: boolean): GraphDiv[] {
+        if (isEditor && this.editorGraphDiv) {
+            return [this.editorGraphDiv];
+        } else if (!isEditor && this.leftGraphDiv && this.rightGraphDiv) {
             return [this.leftGraphDiv, this.rightGraphDiv];
+        } else {
+            return [];
         }
     }
 
@@ -196,29 +223,27 @@ class GlobalVariablesManager {
         this.rightGraphDiv = rightGraphDiv;
     }
 
-    public setGraphDiv(position: 'left' | 'right', algorithmType: AlgorithmType): void {
+    public setEditorGraphDiv(editorGraphDiv: GraphDiv): void {
+        this.editorGraphDiv = editorGraphDiv;
+    }
+
+    public setGraphDivAlgorithmType(position: GRAPH_POSITION, algorithmType: AlgorithmType): void {
         if (!this.leftGraphDiv || !this.rightGraphDiv) {
             return;
         }
-        if (position === 'left') {
-            this.leftGraphDiv.algorithmType = algorithmType;
-        } else if (position === 'right') {
-            this.rightGraphDiv.algorithmType = algorithmType;
+        switch (position) {
+            case GRAPH_POSITION.LEFT:
+                this.leftGraphDiv.algorithmType = algorithmType;
+                break;
+            case GRAPH_POSITION.RIGHT:
+                this.rightGraphDiv.algorithmType = algorithmType;
+                break;
         }
-    }
-
-    public isExampleGraph() {
-        return (
-            this.graphType === GraphType.IdealAStar ||
-            this.graphType === GraphType.IdealDijkstra ||
-            this.graphType === GraphType.IdealBellmanFord ||
-            this.graphType === GraphType.IdealBfs
-        );
     }
 
     public isMazeGraph() {
         return (
-            this.graphType === GraphType.Dfs ||
+            this.graphType === GraphType.DFS ||
             this.graphType === GraphType.RecursiveDivision ||
             this.graphType === GraphType.RandomWalls
         );
@@ -250,6 +275,93 @@ class GlobalVariablesManager {
 
     public setIsChangingStartEndNode(isChangingStartEndNode: boolean) {
         this.isChangingStartEndNode = isChangingStartEndNode;
+    }
+
+    public setCustomGraph(customGraph: GraphStructure): void {
+        this.customGraph = customGraph;
+    }
+
+    public getCustomGraph(): GraphStructure | null {
+        return this.customGraph;
+    }
+
+    public saveToLocalStorage(): void {
+        const serializedGraph = {
+            ...this.graph,
+            nodes: this.graph.nodes.map((weight) => (weight === Infinity ? 'Infinity' : weight)),
+        };
+
+        const serializedCustomGraph = this.customGraph
+            ? {
+                  ...this.customGraph,
+                  nodes: this.customGraph.nodes.map((weight) =>
+                      weight === Infinity ? 'Infinity' : weight,
+                  ),
+              }
+            : null;
+
+        const data = {
+            graph: serializedGraph,
+            gridSize: this.gridSize,
+            startNode: this.startNode,
+            endNode: this.endNode,
+            showTutorial: this.showTutorial,
+            weightType: this.weightType,
+            graphType: this.graphType,
+            stepIncrement: this.stepIncrement,
+            heuristicType: this.heuristicType,
+            simulationSpeed: this.simulationSpeed,
+            customGraph: serializedCustomGraph,
+        };
+
+        localStorage.setItem('pathium-global-variables', JSON.stringify(data));
+    }
+
+    private loadFromLocalStorage(): {
+        gridSize: number;
+        graph: GraphStructure;
+        startNode: number;
+        endNode: number;
+        showTutorial: boolean;
+        weightType: WeightType;
+        graphType: GraphType;
+        stepIncrement: number;
+        heuristicType: HeuristicType;
+        simulationSpeed: SimulationSpeed;
+        customGraph: GraphStructure | null;
+    } | null {
+        const data = localStorage.getItem('pathium-global-variables');
+        if (!data) {
+            return null;
+        }
+        const parsedData = JSON.parse(data);
+        const parsedGraph: GraphStructure = {
+            ...parsedData.graph,
+            nodes: parsedData.graph.nodes.map((weight: string | number) =>
+                weight === 'Infinity' ? Infinity : weight,
+            ),
+        };
+        const parsedCustomGraph: GraphStructure | null = parsedData.customGraph
+            ? {
+                  ...parsedData.customGraph,
+                  nodes: parsedData.customGraph.nodes.map((weight: string | number) =>
+                      weight === 'Infinity' ? Infinity : weight,
+                  ),
+              }
+            : null;
+        return {
+            gridSize: parsedData.gridSize,
+            graph: parsedGraph,
+            startNode: parsedData.startNode,
+            endNode: parsedData.endNode,
+            showTutorial: parsedData.showTutorial,
+            weightType: parsedData.weightType,
+            graphType: parsedData.graphType,
+            stepIncrement: parsedData.stepIncrement,
+            heuristicType: parsedData.heuristicType,
+            simulationSpeed: parsedData.simulationSpeed,
+            customGraph: parsedCustomGraph,
+        };
     }
 }
 

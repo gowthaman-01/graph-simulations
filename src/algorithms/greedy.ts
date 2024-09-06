@@ -79,7 +79,7 @@ export const greedy = (): RunResults => {
         }
 
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor]) continue;
+            if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
             const newWeight =
                 weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
             // Calculating the heuristic takes approximately 13 steps.

@@ -18,6 +18,7 @@ export default class RunResults {
     private displayComplete: boolean;
     // The HTML div element where the run results will be displayed.
     private graphDiv: GraphDiv | null;
+    private isDisplayed: boolean;
 
     public constructor(algorithmType: AlgorithmType) {
         this.algorithmType = algorithmType;
@@ -27,6 +28,7 @@ export default class RunResults {
         this.algorithmSteps = 0;
         this.displayComplete = false;
         this.graphDiv = null;
+        this.isDisplayed = false;
     }
 
     /**
@@ -163,5 +165,9 @@ export default class RunResults {
 
     public getGraphDiv = (): GraphDiv | null => {
         return this.graphDiv;
+    };
+
+    public getIsDisplayed = (): boolean => {
+        return this.graphDiv !== null;
     };
 }

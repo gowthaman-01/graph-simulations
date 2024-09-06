@@ -1,3 +1,5 @@
+import { GRAPH_POSITION } from './constants';
+
 export type Node = number;
 
 export type Nodes = Node[];
@@ -31,55 +33,59 @@ export interface GraphStorage extends GraphStructure {
 
 export interface GraphDiv {
     graphDivElement: HTMLDivElement;
-    position: 'left' | 'right';
+    position: GRAPH_POSITION;
     algorithmType: AlgorithmType;
 }
 
 export type VisitedSet = boolean[];
 
 export enum GraphType {
-    Standard,
-    Dfs,
-    RandomWalls,
-    RecursiveDivision,
-    IdealBfs,
-    IdealDijkstra,
-    IdealBellmanFord,
-    IdealAStar,
+    Standard = 'Standard',
+    DFS = 'DFS',
+    RandomWalls = 'Random-Walls',
+    RecursiveDivision = 'Recursive-Division',
+    Custom = 'Custom',
 }
 
 export enum PrimaryGraphType {
-    Standard = 'standard',
-    Maze = 'maze',
-    Ideal = 'ideal',
+    Standard = 'Standard',
+    Maze = 'Maze',
+    Custom = 'Custom',
 }
 
 export type SecondaryGraphType = MazeType | AlgorithmType;
 
 export enum AlgorithmType {
-    Bfs = 'bfs',
-    Dijkstra = 'dijkstra',
-    AStar = 'aStar',
-    BellmanFord = 'bellmanFord',
-    Greedy = 'greedy',
-    Dfs = 'dfs',
+    BFS = 'BFS',
+    Dijkstra = 'Dijkstra',
+    AStar = 'A* Search',
+    BellmanFord = 'Bellman-Ford',
+    Greedy = 'Greedy',
+    DFS = 'DFS',
+    Editor = 'Editor',
 }
 
 export enum MazeType {
-    RecursiveDivision = 'Recursive Divide',
-    Dfs = 'DFS',
-    RandomWalls = 'Random walls',
+    RecursiveDivision = 'Recursive-Division',
+    DFS = 'DFS',
+    RandomWalls = 'Random-Walls',
 }
 
 export enum HeuristicType {
-    Manhattan = 'manhattan',
-    Euclidean = 'euclidean',
+    Manhattan = 'Manhattan',
+    Euclidean = 'Euclidean',
 }
 
 export enum SimulationSpeed {
-    Average = 'average',
-    Fast = 'fast',
-    Slow = 'slow',
+    Average = 'Average',
+    Fast = 'Fast',
+    Slow = 'Slow',
+}
+
+export enum WeightType {
+    Unweighted = 'Unweighted',
+    NonNegative = 'Non-Negative',
+    Negative = 'Negative',
 }
 
 export interface TutorialData {

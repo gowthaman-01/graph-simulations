@@ -13,13 +13,17 @@ import { dfs } from '../algorithms/dfs';
  * @param {GraphDiv} graphDiv - The metadata of the HTML Div element that displays the graph.
  * @returns {RunResults} The results of running the selected algorithm, including step-by-step states and the final path.
  */
-export const runAlgorithm = (graphDiv: GraphDiv): RunResults => {
+export const runAlgorithm = (
+    graphDiv: GraphDiv | null,
+    algorithmType: AlgorithmType,
+): RunResults => {
     let algorithm = bfs;
-    switch (graphDiv.algorithmType) {
-        case AlgorithmType.Bfs:
+
+    switch (algorithmType) {
+        case AlgorithmType.BFS:
             algorithm = bfs;
             break;
-        case AlgorithmType.Dfs:
+        case AlgorithmType.DFS:
             algorithm = dfs;
             break;
         case AlgorithmType.BellmanFord:
@@ -37,7 +41,10 @@ export const runAlgorithm = (graphDiv: GraphDiv): RunResults => {
     }
 
     const runResults = algorithm();
-    runResults.setGraphDiv(graphDiv);
+
+    if (graphDiv) {
+        runResults.setGraphDiv(graphDiv);
+    }
 
     return runResults;
 };
@@ -72,5 +79,5 @@ export const getBestAlgorithm = (): AlgorithmType => {
     );
 
     // Return the type of the best algorithm, defaulting to BFS if none is found (though this should not occur).
-    return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.Bfs;
+    return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.BFS;
 };

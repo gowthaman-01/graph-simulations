@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Editor</title>
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="editor.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <div>
+        <p class="graph-editor-description" id="graphEditorDescription">Hover over any button for a description of
+            its functionality</p>
+        <div class="grid-container">
+            <div class="grid" id="graphEditor">
+            </div>
+        </div>
+        <div class="button-container">
+            <div class="editor-buttons-container" id="editorButtonsContainer">
+                <div class="editor-buttons-subcontainer">
+                    <button id="addWallsButton">Add Walls</button>
+                    <button id="editWeightsButton">Edit Weights</button>
+                </div>
+                <div class="editor-buttons-subcontainer">
+                    <button id="clearCellButton">Clear</button>
+                    <div class="dropdown-wrapper">
+                        <button id="gridSizeDropdownButton" class="dropdown grid-size-dropdown">Grid Size</button>
+                        <div id="gridSizeDropdownMenu" class="dropdown-menu grid-size-dropdown-menu">
+                            <div class="gridSizeDropdownMenu-item dropdown-item" data-value="100">10 x 10</div>
+                            <div class="gridSizeDropdownMenu-item dropdown-item" data-value="225">15 x 15</div>
+                            <div class="gridSizeDropdownMenu-item dropdown-item" data-value="400">20 x 20</div>
+                            <div class="gridSizeDropdownMenu-item dropdown-item" data-value="625">25 x 25</div>
+                            <div class="gridSizeDropdownMenu-item dropdown-item" data-value="900">30 x 30</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="editor-buttons-container">
+                <div class="editor-buttons-subcontainer">
+                    <button id="changeStartButton">Change Start</button>
+                    <button id="changeEndButton">Change End</button>
+                </div>
+                <div class="editor-buttons-subcontainer">
+                    <button id="resetGraphButton">Reset</button>
+                    <button id="saveButton">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- External JavaScript -->
+    <script src="./editor.js" defer></script>
+</body>
+
+</html>

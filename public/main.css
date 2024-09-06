@@ -21,6 +21,13 @@ body {
     font-size: var(--font-size-base);
 }
 
+body,
+.grid-cell {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
 h1 {
     color: #333;
 }
@@ -38,7 +45,7 @@ button {
     font-size: var(--font-size-base);
     color: #666;
     padding: var(--padding-button);
-    border-radius: 5px;
+    border-radius: 4px;
     border: 0.5px solid #ccc;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
@@ -76,31 +83,80 @@ th {
     width: 70px;
 }
 
+.dropdown-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
 .dropdown {
+    position: relative;
     color: #666;
     padding: 0px 10px 0px 10px;
-    border-radius: 5px;
-    border: 0.5px solid #ccc;
+    border-radius: 4px;
+    border: 0.5px solid #ccc transparent;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    height: 40px;
+    height: 40px !important;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown-arrow {
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .dropdown-menu {
     display: none;
     position: absolute;
     background-color: #ffffff;
-    border: 0.5px solid #ccc;
-    border-radius: 10px;
-    /* Rounded corners for the dropdown menu */
+    border-radius: 4px;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
     list-style-type: none;
     padding: 0;
     margin: 0;
     z-index: 1;
-    width: 100%;
+    top: 44px;
+    animation: dropdown-open-down 0.3s ease-out;
+}
+
+.dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    color: #666;
+    border-left: 0.5px solid #ccc;
+    border-right: 0.5px solid #ccc;
+}
+
+.dropdown-item:first-child {
+    border-top: 0.5px solid #ccc;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.dropdown-item:last-child {
+    border-bottom: 0.5px solid #ccc;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.dropdown-item:hover {
+    background-color: var(--weight-color);
+    color: #ffffff;
+    border-color: var(--weight-color);
+}
+
+.show {
+    display: inline-block;
 }
 
 .checkbox {
@@ -201,14 +257,6 @@ th {
     min-width: 120px;
 }
 
-.settings-modal {
-    justify-content: space-evenly;
-}
-
-.settings-buttons {
-    margin-top: 13px;
-}
-
 .legend-container {
     display: flex;
     justify-content: space-evenly;
@@ -233,12 +281,17 @@ th {
     max-width: 35px;
 }
 
-.settings-container {
-    margin-top: 30px;
-    margin-bottom: 30px;
+.settings-subcontainer {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 40px;
+    align-items: center;
+}
+
+
+.general-settings-container {
+    margin-top: 30px;
+    gap: 32px;
 }
 
 .show-weight-switch-container {
@@ -258,23 +311,16 @@ th {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
 }
 
-.grid-size-slider-container {
-    width: 50%;
+.heuristic-dropdown {
+    min-width: 200px !important;
 }
 
-.grid-size-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 18px;
-}
-
-.run-statistics-container {
-    margin-bottom: 25px;
+.heuristic-dropdown-menu {
+    min-width: 200px;
+    text-align: center;
 }
 
 .page-number {
@@ -285,6 +331,11 @@ th {
 
 .algorithm-dropdown {
     font-weight: bold;
+    min-width: 170px;
+}
+
+.algorithm-dropdown-menu {
+    min-width: 170px;
 }
 
 .grid {
@@ -359,7 +410,7 @@ th {
     display: flex;
     flex-direction: column;
     margin-top: 7px;
-    gap: 10px;
+    gap: 21px;
 }
 
 .graph-dropdown-container {
@@ -371,24 +422,42 @@ th {
     margin-bottom: -10px;
 }
 
+.graph-dropdown {
+    justify-content: space-between;
+    min-width: 110px;
+}
+
+.graph-dropdown-menu {
+    min-width: 110px;
+    top: -120px;
+}
+
+.secondary-graph-dropdown {
+    justify-content: space-between !important;
+    min-width: 170px;
+}
+
+.secondary-graph-dropdown-menu {
+    min-width: 170px;
+    top: -120px;
+}
+
 .weight-controls {
-    margin-top: 10px;
-}
-
-.weight-control-container {
     display: flex;
+    justify-content: left;
     align-items: center;
-    gap: 16px;
+    gap: 15px;
 }
 
-.weight-checkbox {
-    position: relative;
-    width: 54px;
-    height: 28px;
+.weight-dropdown {
+    min-width: 140px;
+    text-align: left;
+    justify-content: space-between;
 }
 
-.weight-slider-container {
-    width: 60%;
+.weight-dropdown-menu {
+    min-width: 140px;
+    top: -120px;
 }
 
 .bottom-middle-container {
@@ -398,6 +467,7 @@ th {
     align-items: center;
     width: 37%;
     margin-top: 9px;
+    margin-right: 20px;
 }
 
 .steps-slider-container {
@@ -436,22 +506,29 @@ th {
     gap: 13px;
 }
 
+.speed-dropdown {
+    min-width: 100px !important;
+    justify-content: space-between;
+}
+
+.speed-dropdown-menu {
+    min-width: 100px;
+    top: -120px;
+}
+
 .steps-slider-container input[type="range"],
-.weight-slider-container input[type="range"],
-.speed-slider-container input[type="range"],
 .grid-size-slider-container input[type="range"] {
     width: 100%;
     -webkit-appearance: none;
     appearance: none;
     height: 10px;
-    border-radius: 5px;
+    border-radius: 4px;
     background: #d3d3d3;
     outline: none;
     cursor: pointer;
 }
 
 .steps-slider-container input[type="range"]::-webkit-slider-thumb,
-.weight-slider-container input[type="range"]::-webkit-slider-thumb,
 .speed-slider-container input[type="range"]::-webkit-slider-thumb,
 .grid-size-slider-container input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -462,30 +539,20 @@ th {
     background: rgb(36, 73, 89);
 }
 
-.weight-slider-container input[type="range"]::-webkit-slider-thumb {
-    background: var(--weight-color);
-}
-
 #runAlgorithms {
     color: #666;
     padding: 10px 30px;
-    border-radius: 5px;
+    border-radius: 4px;
     border: 0.5px solid #ccc;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+    min-width: 100px;
 }
 
-#primaryGraphTypeDropdown {
-    width: 28%;
-    text-align: left;
+#openEditor {
+    min-width: 100px;
 }
 
-#secondaryGraphTypeDropdown {
-    width: 40%;
-    text-align: left;
-}
-
-#weightSlider:disabled::-webkit-slider-thumb,
 #gridSizeSlider:disabled::-webkit-slider-thumb {
     pointer-events: none;
 }
@@ -494,26 +561,20 @@ th {
     width: 160px;
 }
 
-#runAlgorithms {
-    min-width: 100px;
-}
-
 @media screen and (max-width: 1360px) {
 
     p,
     button,
     .dropdown,
+    .dropdown-item,
     .legend p {
         font-size: var(--font-size-small);
     }
 
-    .dropdown {
-        height: 37px;
-    }
-
     .modal-container p,
     .modal-container button,
-    .modal-container .dropdown {
+    .modal-container .dropdown,
+    .modal-container .dropdown-item {
         font-size: var(--font-size-base);
     }
 
@@ -535,12 +596,23 @@ th {
         margin-top: 5px;
     }
 
-    .bottom-right-container {
-        gap: 14px;
+    .dropdown {
+        height: 37px !important;
     }
 
-    #secondaryGraphTypeDropdown {
-        width: 41%;
+    .dropdown-menu {
+        top: 41px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -113px !important;
+    }
+
+    .bottom-right-container {
+        gap: 14px;
     }
 
     #changeStart {
@@ -552,13 +624,15 @@ th {
 
     p,
     button,
-    .dropdown {
+    .dropdown,
+    .dropdown-item {
         font-size: 13px;
     }
 
     .modal-container p,
     .modal-container button,
     .modal-container .dropdown,
+    .modal-container .dropdown-item,
     .modal-body,
     table {
         font-size: var(--font-size-base);
@@ -580,14 +654,22 @@ th {
     .bottom-middle-container {
         width: 30%;
         gap: 27px;
+        margin-right: 5%;
     }
 
-    #primaryGraphTypeDropdown {
-        width: 30%;
+    .dropdown {
+        height: 36px !important;
     }
 
-    #secondaryGraphTypeDropdown {
-        width: 40%;
+    .dropdown-menu {
+        top: 40px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -112px !important;
     }
 
     #changeStart {
@@ -599,7 +681,8 @@ th {
 
     p,
     button,
-    .dropdown {
+    .dropdown,
+    .dropdown-item {
         font-size: var(--font-size-base);
     }
 
@@ -623,7 +706,18 @@ th {
     }
 
     .dropdown {
-        height: 40px;
+        height: 40px !important;
+    }
+
+    .dropdown-menu {
+        top: 44px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -120px !important;
     }
 
     .grids-container {
@@ -645,17 +739,13 @@ th {
     .bottom-container {
         flex-direction: column;
         justify-content: center;
-        gap: 30px;
+        gap: 18px;
         width: 90%;
     }
 
     .bottom-left-container {
         width: 100%;
         order: 2;
-    }
-
-    .weight-slider-container {
-        width: 77%;
     }
 
     .bottom-middle-container {
@@ -672,6 +762,10 @@ th {
         align-items: center;
     }
 
+    .graph-dropdown-container {
+        gap: 38px !important;
+    }
+
     .graph-buttons-container {
         gap: 13px;
     }
@@ -682,24 +776,30 @@ th {
 
     .speed-control-container {
         align-items: center;
-    }
-
-    #primaryGraphTypeDropdown {
-        width: fit-content
-    }
-
-    #secondaryGraphTypeDropdown {
-        width: fit-content
+        gap: 11px;
     }
 
     #changeStart {
         width: auto;
+    }
+
+    #speedDropdownButton,
+    #speedDropdownMenu {
+        margin-left: 15px;
     }
 }
 
 @media screen and (max-width: 900px) {
     .modal-container {
         width: 60%;
+    }
+
+    .graph-dropdown-container {
+        gap: 34px;
+    }
+
+    .speed-control-container {
+        gap: 10px;
     }
 }
 
@@ -715,22 +815,36 @@ th {
     }
 }
 
-
-
 @media screen and (max-width: 640px) {
 
     p,
     button,
-    .dropdown {
+    .dropdown,
+    .dropdown-item {
         font-size: var(--font-size-small);
     }
 
     .dropdown {
-        height: 38px;
+        height: 37px !important;
     }
 
     button {
         height: auto;
+    }
+
+    .graph-dropdown-container {
+        gap: 35px !important;
+    }
+
+    .dropdown-menu {
+        top: 42px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -114px !important;
     }
 
 
@@ -745,13 +859,15 @@ th {
     table,
     p,
     button,
-    .dropdown {
+    .dropdown,
+    .dropdown-item {
         font-size: var(--font-size-smaller);
     }
 
     .modal-container p,
     .modal-container button,
     .modal-container .dropdown,
+    .modal-container .dropdown-item,
     .modal-body,
     table {
         font-size: var(--font-size-small);
@@ -765,8 +881,27 @@ th {
         width: 75%;
     }
 
+    .weight-controls {
+        gap: 18px;
+    }
+
+    .speed-control-container {
+        gap: 11px;
+    }
+
     .settings-container {
         flex-direction: column;
+    }
+
+    .dropdown-menu {
+        top: 41px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -108px !important;
     }
 
     .grid-cell {
@@ -774,13 +909,12 @@ th {
         height: var(--grid-cell-smallest-size);
     }
 
-    .weight-slider-container {
-        width: 70%;
+    #speedDropdownButton {
+        height: 49px !important;
     }
 }
 
 @media screen and (max-width: 480px) {
-
     .grid-cell {
         width: calc(var(--cell-size) * 0.6);
         height: calc(var(--cell-size) * 0.6);
@@ -789,10 +923,6 @@ th {
     .bottom-right-container {
         flex-direction: column;
         align-items: center;
-    }
-
-    .weight-slider-container {
-        width: 65%;
     }
 }
 
@@ -804,9 +934,5 @@ th {
     .grid-cell {
         width: var(--grid-cell-tiny-size);
         height: var(--grid-cell-tiny-size);
-    }
-
-    .weight-slider-container {
-        width: 55%;
     }
 }

@@ -14,7 +14,7 @@ export const bfs = (): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const graph = globalVariablesManager.getGraph().graph;
-    const runResults = new RunResults(AlgorithmType.Bfs);
+    const runResults = new RunResults(AlgorithmType.BFS);
 
     // This will estimate the number of machine operations performed.
     // For more details, please refer to /docs/step_counting_stadards.md.
@@ -57,7 +57,8 @@ export const bfs = (): RunResults => {
 
         // Explore neighbors of the current node
         for (const neighbor of graph[currentNode]) {
-            if (visited[neighbor]) continue;
+            if (visited[neighbor] || globalVariablesManager.getGraph().nodes[neighbor] === Infinity)
+                continue;
             queue.enqueue(neighbor);
             visited[neighbor] = true;
             predecessors[neighbor] = currentNode;
