@@ -424,21 +424,21 @@ th {
 
 .graph-dropdown {
     justify-content: space-between;
-    min-width: 120px;
+    min-width: 110px;
 }
 
 .graph-dropdown-menu {
-    min-width: 120px;
+    min-width: 110px;
     top: -120px;
 }
 
 .secondary-graph-dropdown {
     justify-content: space-between !important;
-    min-width: 180px;
+    min-width: 170px;
 }
 
 .secondary-graph-dropdown-menu {
-    min-width: 180px;
+    min-width: 170px;
     top: -120px;
 }
 
@@ -446,17 +446,17 @@ th {
     display: flex;
     justify-content: left;
     align-items: center;
-    gap: 37px;
+    gap: 15px;
 }
 
 .weight-dropdown {
-    min-width: 150px;
+    min-width: 140px;
     text-align: left;
     justify-content: space-between;
 }
 
 .weight-dropdown-menu {
-    min-width: 150px;
+    min-width: 140px;
     top: -120px;
 }
 
@@ -467,6 +467,7 @@ th {
     align-items: center;
     width: 37%;
     margin-top: 9px;
+    margin-right: 20px;
 }
 
 .steps-slider-container {
@@ -545,16 +546,11 @@ th {
     border: 0.5px solid #ccc;
     background-color: #ffffff;
     box-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.2);
+    min-width: 100px;
 }
 
-#primaryGraphTypeDropdown {
-    width: 28%;
-    text-align: left;
-}
-
-#secondaryGraphTypeDropdown {
-    width: 40%;
-    text-align: left;
+#openEditor {
+    min-width: 100px;
 }
 
 #gridSizeSlider:disabled::-webkit-slider-thumb {
@@ -565,10 +561,6 @@ th {
     width: 160px;
 }
 
-#runAlgorithms {
-    min-width: 100px;
-}
-
 @media screen and (max-width: 1360px) {
 
     p,
@@ -577,10 +569,6 @@ th {
     .dropdown-item,
     .legend p {
         font-size: var(--font-size-small);
-    }
-
-    .dropdown {
-        height: 37px;
     }
 
     .modal-container p,
@@ -608,12 +596,23 @@ th {
         margin-top: 5px;
     }
 
-    .bottom-right-container {
-        gap: 14px;
+    .dropdown {
+        height: 37px !important;
     }
 
-    #secondaryGraphTypeDropdown {
-        width: 41%;
+    .dropdown-menu {
+        top: 41px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -113px !important;
+    }
+
+    .bottom-right-container {
+        gap: 14px;
     }
 
     #changeStart {
@@ -655,14 +654,22 @@ th {
     .bottom-middle-container {
         width: 30%;
         gap: 27px;
+        margin-right: 5%;
     }
 
-    #primaryGraphTypeDropdown {
-        width: 30%;
+    .dropdown {
+        height: 36px !important;
     }
 
-    #secondaryGraphTypeDropdown {
-        width: 40%;
+    .dropdown-menu {
+        top: 40px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -112px !important;
     }
 
     #changeStart {
@@ -699,7 +706,18 @@ th {
     }
 
     .dropdown {
-        height: 40px;
+        height: 40px !important;
+    }
+
+    .dropdown-menu {
+        top: 44px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -120px !important;
     }
 
     .grids-container {
@@ -721,7 +739,7 @@ th {
     .bottom-container {
         flex-direction: column;
         justify-content: center;
-        gap: 30px;
+        gap: 18px;
         width: 90%;
     }
 
@@ -744,6 +762,10 @@ th {
         align-items: center;
     }
 
+    .graph-dropdown-container {
+        gap: 38px !important;
+    }
+
     .graph-buttons-container {
         gap: 13px;
     }
@@ -754,24 +776,30 @@ th {
 
     .speed-control-container {
         align-items: center;
-    }
-
-    #primaryGraphTypeDropdown {
-        width: fit-content
-    }
-
-    #secondaryGraphTypeDropdown {
-        width: fit-content
+        gap: 11px;
     }
 
     #changeStart {
         width: auto;
+    }
+
+    #speedDropdownButton,
+    #speedDropdownMenu {
+        margin-left: 15px;
     }
 }
 
 @media screen and (max-width: 900px) {
     .modal-container {
         width: 60%;
+    }
+
+    .graph-dropdown-container {
+        gap: 34px;
+    }
+
+    .speed-control-container {
+        gap: 10px;
     }
 }
 
@@ -787,8 +815,6 @@ th {
     }
 }
 
-
-
 @media screen and (max-width: 640px) {
 
     p,
@@ -799,11 +825,26 @@ th {
     }
 
     .dropdown {
-        height: 38px;
+        height: 37px !important;
     }
 
     button {
         height: auto;
+    }
+
+    .graph-dropdown-container {
+        gap: 35px !important;
+    }
+
+    .dropdown-menu {
+        top: 42px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -114px !important;
     }
 
 
@@ -840,18 +881,40 @@ th {
         width: 75%;
     }
 
+    .weight-controls {
+        gap: 18px;
+    }
+
+    .speed-control-container {
+        gap: 11px;
+    }
+
     .settings-container {
         flex-direction: column;
+    }
+
+    .dropdown-menu {
+        top: 41px;
+    }
+
+    .graph-dropdown-menu,
+    .secondary-graph-dropdown-menu,
+    .weight-dropdown-menu,
+    .speed-dropdown-menu {
+        top: -108px !important;
     }
 
     .grid-cell {
         width: var(--grid-cell-smallest-size);
         height: var(--grid-cell-smallest-size);
     }
+
+    #speedDropdownButton {
+        height: 49px !important;
+    }
 }
 
 @media screen and (max-width: 480px) {
-
     .grid-cell {
         width: calc(var(--cell-size) * 0.6);
         height: calc(var(--cell-size) * 0.6);
