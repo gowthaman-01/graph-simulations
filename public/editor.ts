@@ -1,4 +1,10 @@
-import { DISPLAY_STYLE, EDITOR_MODE, GRAPH_POSITION, STATUS } from '../src/common/constants';
+import {
+    DEFAULT_WEIGHT,
+    DISPLAY_STYLE,
+    EDITOR_MODE,
+    GRAPH_POSITION,
+    STATUS,
+} from '../src/common/constants';
 import { AlgorithmType, GraphDiv, GraphType, NodeState, WeightType } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
@@ -210,10 +216,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const showWeightSlider = (nodeId: number | null) => {
+    const showWeightSlider = (nodeId: number | null = null) => {
         if (nodeId) {
             weightSlider.value = globalVariablesManager.getGraph().nodes[nodeId].toString();
+        } else {
+            weightSlider.value = (DEFAULT_WEIGHT / 2).toString();
         }
+        weightSliderValue.innerHTML = `Weight: ${weightSlider.value}`;
         toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.FLEX);
         toggleElementVisibility([buttonContainer], DISPLAY_STYLE.NONE);
     };
@@ -234,7 +243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleAddWallsButton = () => handleButtonClick(EDITOR_MODE.ADD_WALLS);
 
     const handleSetWeightButton = () => {
-        showWeightSlider(selectedNodeId);
+        selectedNodeId = null;
+        showWeightSlider();
         handleButtonClick(EDITOR_MODE.SET_WEIGHT);
     };
 
