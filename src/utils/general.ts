@@ -278,7 +278,7 @@ export const updateProgressBarAndHideLoadingScreen = async (
 ): Promise<void> => {
     for (let i = 0; i <= 100; i += 10) {
         progressBar.style.width = `${i}%`;
-        await delay(0);
+        await delay(Math.floor(Math.random() * 50));
     }
 
     await delay(200);
