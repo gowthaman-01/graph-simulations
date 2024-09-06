@@ -1,3 +1,9 @@
+declare global {
+    interface Window {
+        handleTutorialPageChange: (pageNumber: number) => void;
+    }
+}
+
 import {
     AVERAGE_SPEED,
     SLOW_SPEED,
@@ -507,6 +513,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
+    const handleTutorialPageChange = (pageNumber: number) => {
+        globalVariablesManager.setTutorialPageNumber(pageNumber);
+        renderTutorialContent(pageNumber, tutorialContentDiv);
+        updateTutorialButtonsAndPageNumber();
+    };
+
     const getRunResults = (algorithmsToRerun = Object.values(AlgorithmType)) => {
         const isEditor = false;
         const graphDivs = globalVariablesManager.getGraphDivs(isEditor);
@@ -574,6 +586,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Setup dropdowns.
     setupDropdowns();
+
+    window.handleTutorialPageChange = handleTutorialPageChange;
 
     if (
         globalVariablesManager.getGraphType() === GraphType.Standard ||

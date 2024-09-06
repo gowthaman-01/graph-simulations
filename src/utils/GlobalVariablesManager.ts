@@ -213,6 +213,12 @@ class GlobalVariablesManager {
             : this.tutorialPageNumber;
     }
 
+    public setTutorialPageNumber(pageNumber: number): void {
+        if (pageNumber >= this.TUTORIAL_PAGE_MIN && pageNumber <= this.TUTORIAL_PAGE_MAX) {
+            this.tutorialPageNumber = pageNumber;
+        }
+    }
+
     public resetTutorialPageNumber(): number {
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         return this.tutorialPageNumber;

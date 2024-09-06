@@ -21,7 +21,7 @@ export const tutorialDataList: TutorialData[] = [
         <ul>
             <li><b>BFS (Breadth-First Search):</b> Ideal for unweighted graphs</li>
             <li><b>Dijkstra:</b> Suitable for graphs with varying edge weights.</li>
-            <li><b>Bellman-Ford:</b> Capable of handling negative weights.</li>
+            <li><b>Bellman-Ford:</b> Capable of handling negative weights and detecting negative cycles.</li>
             <li><b>A* Search:</b> Enhances Dijkstra's algorithm with heuristics to guide the search more efficiently towards the target.</li>
             <li><b>DFS (Depth-First Search):</b> Explores each branch as far as possible before backtracking.</li>
             <li><b>Greedy Best-First Search:</b> Prioritizes nodes that appear to be closest to the goal, using a heuristic to guide the search, but DOES NOT guarantee the shortest path.</li>
@@ -31,19 +31,23 @@ export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 3,
         title: 'Grid Graphs',
-        body: `A grid graph consists of nodes connected to adjacent nodes in the up, down, left, right directions. Each node has a weight representing the cost to move to that node. For example, moving from node A (weight 10) to node B (weight 20) costs 10 while moving from node B to node A costs 0, as moving to a lower-weight node is cost free.
-        <br><br> Nodes with higher weights are indicated by darker backgrounds:`,
+        body: `To simplify our understanding of the grid graph, let's imagine all the cells as elevated areas. Each cell has an elevation representing how high it is. Nodes with higher elevations are indicated by darker backgrounds.
+        <br><br>For example, let's consider Node A with an elevation of 87 and Node B with an elevation of 42. Moving from Node B to Node A (a lower elevation to a higher elevation) costs the difference in elevation, in this case, 87 - 42 = 45
+        <br><br> Moving from Node A to Node B (a higher elevation to a lower elevation) depends on the weight type setting.
+        <br><br><b>Non-negative</b> = max(neighbor - current, 0) = max(42 - 87, 0) = 0
+        <br><b>Negative</b> = -floor(sqrt(abs(neighbor - current))) = -floor(sqrt(abs(42 - 87))) = -6`,
         img: {
-            src: 'weighted',
+            src: 'example-weight',
             width: 60,
-            marginTop: 30,
+            marginTop: 25,
         },
     },
+
     {
         pageNumber: 4,
         title: 'Graph Types',
         body: `<b>1. Standard Graph</b>
-        <br><br>A basic grid graph where each cell represents a node and edges between nodes have varying weights, depending on whether it is weighted or non-weighted.
+        <br><br>A basic grid graph where each cell represents a node and edges between nodes have varying  (elevations), depending on whether it is weighted or non-weighted.
         <br><br>The graph below is a weighted standard graph:`,
         img: {
             src: 'weighted',
@@ -55,7 +59,7 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 5,
         title: 'Graph Types',
         body: `<b>2. Maze Graph</b>
-        <br><br>A graph generated using maze algorithms. In non-weighted maze graphs, paths and walls are not connected by edges, while they are in weighted maze graphs.
+        <br><br>A graph created using various maze generation algorithms, such as recursive division, random walls and DFS.
         <br><br> The graph below is a maze graph generated using recursive division:`,
         img: {
             src: 'recursive-division',
@@ -63,12 +67,7 @@ export const tutorialDataList: TutorialData[] = [
             marginTop: 30,
         },
     },
-    // {
-    //     pageNumber: 6,
-    //     title: 'Graph Types',
-    //     body: `<b>3. Ideal Graph</b>
-    //     <br><br>Ideal graphs are pre-configured graphs showcasing ideal conditions for demonstrating algorithm performance. These graphs are useful for comparing how different algorithms handle similar starting conditions.`,
-    // },
+
     {
         pageNumber: 6,
         title: 'Legend',
@@ -116,13 +115,11 @@ export const tutorialDataList: TutorialData[] = [
         body: `<u><b>Generate New Graph</b></u>
         <br>Generates a new graph based on the selected type and weight settings.<br><br>
         <u><b>Graph Type Selector</b></u>
-        <br>Allows the user to choose between different graph types - Standard, Maze and Ideal.<br><br>
+        <br>Allows the user to choose between different graph types - Standard and Maze.<br><br>
         <u><b>Change Start Node / End Node</b></u>
         <br>Allows you to select a new starting or ending node on the graph.<br><br>
-        <u><b>Weight Toggle</b></u>
-        <br>Toggles between weighted and unweighted edges in the graph. This functionality is not available for ideal graphs.<br><br>
-        <u><b>Weight Slider</b></u>
-        <br>Adjusts the weight distribution of edges in the graph. A higher value increases the proportion of cells with higher weights (darker colors). This functionality is only available for standard graphs.<br><br>
+        <u><b>Weight Selector</b></u>
+        <br>Allows you to select the weight type of the graph between 3 types - Unweighted, Non-negative and Negative<br><br>
         <u><b>Speed Selector</b></u>
         <br>Controls the speed of the algorithm's visualization.<br><br>
         <u><b>Step Slider</b></u>
@@ -132,21 +129,21 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 8,
         title: 'Control Elements',
         body: `<div class="graph-buttons-container" style="justify-content: center;">
+        <button onclick="handleTutorialPageChange(10)">Editor</button>
         <button>Settings</button>
         <button>Run</button>
         </div><br>
+        <u><b>Editor Button</b></u>
+        <br>Opens the Graph Editor for custom graph creation and modification.<br><br>
         <u><b>Settings Button</b></u>
         <br>Access advanced configuration options for enhanced control and customization:<br>
         <ul>
             <li>Weight Visibility Toggle - Opt to show or hide weight values on each cell</li>
             <li>A* Heuristic Selector - Switch between Manhattan and Euclidean distances</li>
-            <li>Grid Size Slider - Adjust the size of the grid graph</li>
         </ul>
-        The settings modal additionally displays run statistics.<br><br>
+        The settings modal additionally displays run statistics (next page).<br><br>
         <u><b>Run Button</b></u>
-        <br>Runs the simulation based on the current settings.<br><br>
-        <u><b>Right Arrow Button</b></u>
-        <br>Allows you to switch between the two graph groups`,
+        <br>Runs the simulation based on the current settings.<br><br>`,
     },
     {
         pageNumber: 9,
@@ -155,7 +152,7 @@ export const tutorialDataList: TutorialData[] = [
         <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.
         <br><u>Weight</u>: Indicates the total weight of the shortest path.
         <br><u>Nodes</u>: Shows the number of nodes in the shortest path.
-        <br><br> The best algorithm is chosen by first comparing path weights; the one with the lowest weight wins. If weights are equal, the algorithm with fewer steps is preferred. Here, A* Search has the same weight as Bellman-Ford and Dijkstra but uses fewer steps, making it the best choice. 
+        <br><br> The best algorithm is chosen by first comparing path weights; the one with the lowest weight wins. If weights are equal, the algorithm with fewer steps is preferred. Here, A* Search has the same weight as Bellman-Ford and Dijkstra but uses fewer steps, making it the best choice.
         <br><br>
         <table>
             <tr>
@@ -191,15 +188,16 @@ export const tutorialDataList: TutorialData[] = [
         </table>`,
     },
     {
-        pageNumber: 11,
+        pageNumber: 10,
         title: 'Graph Editor',
         body: `The Graph Editor enables you to design and customize graphs for algorithm visualization and testing.
-    <br><br><b>Walls</b>: Add wall nodes to create obstacles.
-    <br><b>Weights</b>: Adjust node weights to create varying path costs.
-    <br><b>Clear</b>: Remove walls and reset weights for selected nodes.
-    <br><b>Reset</b>: Restore the graph to its initial unweighted state.
-    <br><b>Start Node</b>: Set a new starting point for the algorithms.
-    <br><b>End Node</b>: Set a new destination point for the algorithms.
+    <br><br><b>Add Walls</b>: Add wall nodes to create obstacles, which act as impassable nodes.
+    <br><b>Set Weight</b>: Adjust node weights (elevations) to create varying path costs.
+    <br><b>Clear Weight</b>: Remove walls and reset weights (elevations) for selected nodes.
+    <br><b>Reset Graph</b>: Restore the graph to its initial unweighted state.
+    <br><b>Change Start</b>: Set a new starting point.
+    <br><b>Change End</b>: Set a new destination.
+    <br><b>Save Graph</b>: Save the current graph and return to the simulation view.
     <br><br>Leverage these tools to create complex challenges and evaluate how algorithms perform in your custom-designed environments.`,
     },
 ];
