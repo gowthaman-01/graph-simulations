@@ -20,6 +20,8 @@ import { CustomDropdown } from '../src/utils/CustomDropdown';
 import { generateNewGraph } from '../src/utils/graph';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
+    const progressBar = document.getElementById('progressBar') as HTMLDivElement;
     const graphEditorElement = document.getElementById('graphEditor') as HTMLDivElement;
     const buttonContainer = document.getElementById('buttonContainer') as HTMLDivElement;
     const addWallsButton = document.getElementById('addWallsButton') as HTMLButtonElement;
@@ -46,6 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLParagraphElement;
 
     if (
+        !loadingScreen ||
+        !progressBar ||
         !graphEditorDescription ||
         !graphEditorElement ||
         !buttonContainer ||
@@ -117,6 +121,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     resetGrid();
     setWeightColor();
+
+    // Hide loading screen after initialization
+    loadingScreen.style.display = 'none';
 
     // Helper functions.
     const updateGraphEditorDescription = (mode: EDITOR_MODE = editorMode) => {

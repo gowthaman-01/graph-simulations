@@ -52,6 +52,8 @@ import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 document.addEventListener('DOMContentLoaded', async () => {
     // Load HTML elements
     const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
+    const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
+    const progressBar = document.getElementById('progressBar') as HTMLDivElement;
     const tutorialContainerDiv = document.getElementById('tutorialContainer') as HTMLDivElement;
     const tutorialContentDiv = document.getElementById('tutorialContent') as HTMLDivElement;
     const tutorialSkipButton = document.getElementById('tutorialSkipButton') as HTMLButtonElement;
@@ -120,6 +122,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Return early if an element is undefined.
     if (
         !mainBodyDiv ||
+        !loadingScreen ||
+        !progressBar ||
         !tutorialContainerDiv ||
         !tutorialContentDiv ||
         !tutorialSkipButton ||
@@ -610,6 +614,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         showWeightControls();
     }
+
+    // Hide loading screen after initialization
+    loadingScreen.style.display = 'none';
 
     // Event listeners for control elements.
     runButton.addEventListener('click', async () => {

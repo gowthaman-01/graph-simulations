@@ -38,6 +38,8 @@ export const displayGrid = (graphDiv: GraphDiv) => {
     const graphDivElement = graphDiv.graphDivElement;
     const graphPosition = graphDiv.position;
 
+    const progressBar = document.getElementById('progressBar');
+
     // Create grid container.
     graphDivElement.innerHTML = '';
     graphDivElement.style.display = 'grid';
@@ -75,6 +77,11 @@ export const displayGrid = (graphDiv: GraphDiv) => {
         }
 
         fragment.appendChild(cell);
+
+        // Update progress bar
+        if (progressBar) {
+            progressBar.style.width = `${((i + 1) / gridSize) * 100}%`;
+        }
     }
 
     graphDivElement.appendChild(fragment);
