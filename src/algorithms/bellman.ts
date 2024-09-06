@@ -1,5 +1,6 @@
-import { AlgorithmType, Node, NodeState, WeightType } from '../common/types';
+import { AlgorithmType, Node, NodeState } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import { getNeighborWeight } from '../utils/graph';
 import RunResults from '../utils/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
@@ -22,7 +23,7 @@ export const bellmanFord = (): RunResults => {
     // Note: Steps involved in adding to runResults and consolidating the shortest path are excluded from this calculation.
     let steps = 0;
 
-    // Initialize distances and predecessors. Each step takes O(1) time.
+    // Initialize weights and predecessors. Each step takes O(1) time.
     const weights: number[] = [];
     const predecessors: Node[] = [];
     predecessors[startNode] = -1;
@@ -52,18 +53,7 @@ export const bellmanFord = (): RunResults => {
             }
 
             for (const neighbor of graph[currentNode]) {
-                let neighborWeight;
-                switch (globalVariablesManager.getWeightType()) {
-                    case WeightType.Unweighted:
-                        neighborWeight = 1;
-                        break;
-                    case WeightType.Negative:
-                        neighborWeight = nodes[neighbor] - nodes[currentNode];
-                        break;
-                    case WeightType.NonNegative:
-                        neighborWeight = Math.max(nodes[neighbor] - nodes[currentNode], 0);
-                        break;
-                }
+                const neighborWeight = getNeighborWeight(nodes[currentNode], nodes[neighbor]);
                 const newWeight = weights[currentNode] + neighborWeight;
                 steps += 8;
 
@@ -85,6 +75,16 @@ export const bellmanFord = (): RunResults => {
         }
 
         if (!distancesUpdated) break; // No change means we can exit early.
+    }
+
+    // Check for negative weight cycles
+    for (const node in graph) {
+        for (const neighbor of graph[node]) {
+            if (weights[neighbor] > weights[node] + nodes[neighbor]) {
+                globalVariablesManager.setContainsNegativeWeightCycle(true);
+                return runResults; // Early exit if a negative cycle is detected
+            }
+        }
     }
 
     let currentNode: Node | null = endNode;

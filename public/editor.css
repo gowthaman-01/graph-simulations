@@ -2,11 +2,8 @@ body {
     margin-top: 10px;
 }
 
-body,
-.grid-cell {
-    user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
+button {
+    min-width: 139px;
 }
 
 .graph-editor-title {
@@ -19,8 +16,52 @@ body,
     margin-top: 25px;
 }
 
-button {
-    min-width: 139px;
+.weight-slider-container input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 10px;
+    border-radius: 4px;
+    background: #d3d3d3;
+    outline: none;
+    cursor: pointer;
+}
+
+.weight-slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 70%;
+    background: rgb(36, 73, 89);
+}
+
+.weight-slider-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 26px;
+    margin-top: 34px;
+}
+
+.weight-slider-subcontainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+#weightSlider {
+    width: 60%;
+}
+
+#weightSliderValue {
+    position: absolute;
+    bottom: 14px;
 }
 
 .button-container {

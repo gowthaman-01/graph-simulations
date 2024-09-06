@@ -26,6 +26,7 @@ class GlobalVariablesManager {
     private weightType: WeightType;
     private stepIncrement: number;
     private endNodeReachable: boolean;
+    private containsNegativeWeightCycle: boolean;
     private heuristicType: HeuristicType;
     private simulationSpeed: SimulationSpeed;
     private tutorialPageNumber: number;
@@ -71,6 +72,7 @@ class GlobalVariablesManager {
         }
         this.runResults = [];
         this.endNodeReachable = false;
+        this.containsNegativeWeightCycle = false;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.rightGraphDiv = null;
         this.leftGraphDiv = null;
@@ -163,6 +165,14 @@ class GlobalVariablesManager {
         return this.endNodeReachable;
     }
 
+    public getContainsNegativeWeightCycle(): boolean {
+        return this.containsNegativeWeightCycle;
+    }
+
+    public setContainsNegativeWeightCycle(containsNegativeWeightCycle: boolean): void {
+        this.containsNegativeWeightCycle = containsNegativeWeightCycle;
+    }
+
     public getHeuristicType(): HeuristicType {
         return this.heuristicType;
     }
@@ -221,6 +231,14 @@ class GlobalVariablesManager {
     public setGraphDivs(leftGraphDiv: GraphDiv, rightGraphDiv: GraphDiv): void {
         this.leftGraphDiv = leftGraphDiv;
         this.rightGraphDiv = rightGraphDiv;
+    }
+
+    public setGraphDiv(graphDiv: GraphDiv, position: GRAPH_POSITION) {
+        if (position === GRAPH_POSITION.LEFT) {
+            this.leftGraphDiv = graphDiv;
+        } else if (position === GRAPH_POSITION.RIGHT) {
+            this.rightGraphDiv = graphDiv;
+        }
     }
 
     public setEditorGraphDiv(editorGraphDiv: GraphDiv): void {

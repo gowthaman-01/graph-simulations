@@ -67,7 +67,9 @@ export const createMark = (
 
         // Create paragraph element to show weight on the grid cell.
         const weightDisplay = document.createElement('div');
+        weightDisplay.id = `${graphPosition}-cell-${node}-weight-display`;
         weightDisplay.className = 'weight-display';
+        weightDisplay.classList.add('noselect');
         weightDisplay.innerHTML = weight === Infinity ? '∞' : weight.toString();
         weightDisplay.style.color = getColorByWeight(weight, true);
         weightDisplay.style.fontSize = `${fontSize}px`;

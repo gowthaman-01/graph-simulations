@@ -522,3 +522,25 @@ const generateStartAndEndNodeForMazeGraph = (gridSize: number): StartEndNodes =>
 
     return { startNode, endNode };
 };
+
+/**
+ * Calculates the weight between a current node and its neighbor based on the weight type setting.
+ *
+ * @param {number} currentNodeWeight - The weight of the current node.
+ * @param {number} neighborNodeWeight - The weight of the neighboring node.
+ * @returns {number} The calculated weight between the current node and its neighbor.
+ */
+export const getNeighborWeight = (
+    currentNodeWeight: number,
+    neighborNodeWeight: number,
+): number => {
+    const globalVariablesManager = getGlobalVariablesManagerInstance();
+    switch (globalVariablesManager.getWeightType()) {
+        case WeightType.Unweighted:
+            return 1;
+        case WeightType.Negative:
+            return -Math.floor(Math.sqrt(Math.abs(neighborNodeWeight - currentNodeWeight)));
+        case WeightType.NonNegative:
+            return Math.max(neighborNodeWeight - currentNodeWeight, 0);
+    }
+};

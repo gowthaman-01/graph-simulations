@@ -1,6 +1,7 @@
 import { SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
-import { AlgorithmType, GraphDiv, Node, NodeState } from '../common/types';
+import { AlgorithmType, GraphDiv, Node, NodeState, WeightType } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getNeighborWeight } from './graph';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
@@ -18,7 +19,6 @@ export default class RunResults {
     private displayComplete: boolean;
     // The HTML div element where the run results will be displayed.
     private graphDiv: GraphDiv | null;
-    private isDisplayed: boolean;
 
     public constructor(algorithmType: AlgorithmType) {
         this.algorithmType = algorithmType;
@@ -28,7 +28,6 @@ export default class RunResults {
         this.algorithmSteps = 0;
         this.displayComplete = false;
         this.graphDiv = null;
-        this.isDisplayed = false;
     }
 
     /**
@@ -148,10 +147,10 @@ export default class RunResults {
     public getTotalWeight = (): number => {
         const nodes = globalVariablesManager.getGraph().nodes;
         return this.shortestPath.reduce((totalWeight, currentNode, i) => {
-            // Skip the start node (i === 0).
-            totalWeight +=
-                i !== 0 ? Math.max(nodes[currentNode] - nodes[this.shortestPath[i - 1]], 0) : 0;
-            return totalWeight;
+            return i === 0
+                ? totalWeight
+                : totalWeight +
+                      getNeighborWeight(nodes[this.shortestPath[i - 1]], nodes[currentNode]);
         }, 0);
     };
 
@@ -159,7 +158,7 @@ export default class RunResults {
         return this.algorithmSteps;
     };
 
-    public setGraphDiv = (graphDiv: GraphDiv): void => {
+    public setGraphDiv = (graphDiv: GraphDiv | null): void => {
         this.graphDiv = graphDiv;
     };
 

@@ -170,16 +170,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Dropdowns setup function.
     const setupDropdowns = () => {
+        const setNewGraphDiv = (newAlgorithmType: AlgorithmType, graphPosition: GRAPH_POSITION) => {
+            const graphDivs = globalVariablesManager.getGraphDivs(false);
+            const currAlgorithmType = graphDivs.find(
+                (graphDiv) => graphDiv.position === graphPosition,
+            )?.algorithmType;
+            if (currAlgorithmType === newAlgorithmType) {
+                return;
+            }
+
+            const newGraphDiv = {
+                algorithmType: newAlgorithmType as AlgorithmType,
+                graphDivElement:
+                    graphPosition === GRAPH_POSITION.LEFT ? leftGraphDiv : rightGraphDiv,
+                position: graphPosition,
+            };
+            globalVariablesManager.setGraphDiv(newGraphDiv, graphPosition);
+
+            resetGridAndRerun();
+        };
+
         const leftGraphDropdown = new CustomDropdown(
             leftGraphDropdownButton,
             leftGraphDropdownMenu,
             getAlgorithmDisplayName(AlgorithmType.BFS),
             (dataValue) => {
-                globalVariablesManager.setGraphDivAlgorithmType(
-                    GRAPH_POSITION.LEFT,
-                    dataValue as AlgorithmType,
-                );
-                resetGridAndRerun();
+                setNewGraphDiv(dataValue as AlgorithmType, GRAPH_POSITION.LEFT);
             },
         );
 
@@ -188,11 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             rightGraphDropdownMenu,
             getAlgorithmDisplayName(AlgorithmType.Dijkstra),
             (dataValue) => {
-                globalVariablesManager.setGraphDivAlgorithmType(
-                    GRAPH_POSITION.RIGHT,
-                    dataValue as AlgorithmType,
-                );
-                resetGridAndRerun();
+                setNewGraphDiv(dataValue as AlgorithmType, GRAPH_POSITION.RIGHT);
             },
         );
 
@@ -496,44 +508,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const getRunResults = (algorithmsToRerun = Object.values(AlgorithmType)) => {
-        const runResultsOfAlgorithmsNotToRerun = globalVariablesManager
+        const isEditor = false;
+        const graphDivs = globalVariablesManager.getGraphDivs(isEditor);
+        const visibleAlgorithms = graphDivs.map((graphDiv) => graphDiv.algorithmType);
+        const hiddenAlgorithms = algorithmsToRerun.filter(
+            (algorithmType) =>
+                !visibleAlgorithms.includes(algorithmType) &&
+                algorithmType !== AlgorithmType.Editor,
+        );
+
+        const runResultsToKeep = globalVariablesManager
             .getRunResults()
             .filter((runResult) => !algorithmsToRerun.includes(runResult.getAlgorithmType()));
 
-        const isEditor = false;
-        const visibleAlgorithmTypes = globalVariablesManager
-            .getGraphDivs(isEditor)
-            .map((graphDiv) => graphDiv.algorithmType);
+        const visibleGraphRunResults = graphDivs.map((graphDiv) =>
+            runAlgorithm(graphDiv, graphDiv.algorithmType),
+        );
 
-        // Obtain run results for visible graphs.
-        const visibleGraphRunResults = globalVariablesManager
-            .getGraphDivs(isEditor)
-            .filter((graphDiv) => algorithmsToRerun.includes(graphDiv.algorithmType))
-            .map((graphDiv) => runAlgorithm(graphDiv, graphDiv.algorithmType));
+        const hiddenGraphRunResults = hiddenAlgorithms.map((algorithmType) =>
+            runAlgorithm(null, algorithmType),
+        );
 
-        // Obtain run results for hidden graphs.
-        const hiddenGraphRunResults = algorithmsToRerun
-            .filter((algorithmType) => !visibleAlgorithmTypes.includes(algorithmType))
-            .map((algorithmType) => runAlgorithm(null, algorithmType));
-
-        // Set the slider's max value to the maximum steps from all algorithms executed.
+        // Set the slider's max value to the maximum steps from all executed algorithms
         stepsSlider.max = Math.max(
             ...visibleGraphRunResults.map((result) => result.getAlgorithmSteps()),
         ).toString();
 
-        // Combine visible and hidden graph run results.
+        // Combine all run results
         const newRunResults = [
             ...visibleGraphRunResults,
             ...hiddenGraphRunResults,
-            ...runResultsOfAlgorithmsNotToRerun,
+            ...runResultsToKeep,
         ];
 
-        globalVariablesManager.setEndNodeReachable(true);
-        newRunResults.forEach((runResult) => {
-            if (runResult.getShortestPath().length <= 1) {
-                globalVariablesManager.setEndNodeReachable(false);
-            }
-        });
+        // Check if the end node is reachable
+        const isEndNodeNotReachable = visibleGraphRunResults.every(
+            (runResult) => runResult.getShortestPath().length <= 1,
+        );
+
+        // Update global variables manager
+        globalVariablesManager.setEndNodeReachable(!isEndNodeNotReachable);
         globalVariablesManager.setRunResults(newRunResults);
     };
 

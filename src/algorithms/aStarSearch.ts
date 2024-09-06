@@ -5,12 +5,12 @@ import {
     Node,
     NodeState,
     VisitedSet,
-    WeightType,
 } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import RunResults from '../utils/RunResults';
 import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
+import { getNeighborWeight } from '../utils/graph';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
@@ -81,18 +81,7 @@ export const aStarSearch = (): RunResults => {
 
         for (const neighbor of graph[currentNode]) {
             if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
-            let neighborWeight;
-            switch (globalVariablesManager.getWeightType()) {
-                case WeightType.Unweighted:
-                    neighborWeight = 1;
-                    break;
-                case WeightType.Negative:
-                    neighborWeight = nodes[neighbor] - nodes[currentNode];
-                    break;
-                case WeightType.NonNegative:
-                    neighborWeight = Math.max(nodes[neighbor] - nodes[currentNode], 0);
-                    break;
-            }
+            const neighborWeight = getNeighborWeight(nodes[currentNode], nodes[neighbor]);
             const newWeight = weights[currentNode] + neighborWeight;
             // Calculating the heuristic takes approximately 13 steps.
             const newWeightWithHeuristic = newWeight + heuristicAlgorithm(neighbor, endNode);

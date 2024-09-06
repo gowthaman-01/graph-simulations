@@ -1,8 +1,12 @@
-import { DEFAULT_WEIGHT, EDITOR_MODE, GRAPH_POSITION, STATUS } from '../src/common/constants';
-import { AlgorithmType, GraphDiv, GraphType, NodeState } from '../src/common/types';
+import { DISPLAY_STYLE, EDITOR_MODE, GRAPH_POSITION, STATUS } from '../src/common/constants';
+import { AlgorithmType, GraphDiv, GraphType, NodeState, WeightType } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
-import { highlightButtonColor, setNewStartEndNode } from '../src/utils/element';
+import {
+    highlightButtonColor,
+    setNewStartEndNode,
+    toggleElementVisibility,
+} from '../src/utils/element';
 import { getNodeIdFromCellElementId, setWeightColor } from '../src/utils/general';
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
@@ -11,11 +15,17 @@ import { generateNewGraph } from '../src/utils/graph';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const graphEditorElement = document.getElementById('graphEditor') as HTMLDivElement;
+    const buttonContainer = document.getElementById('buttonContainer') as HTMLDivElement;
     const addWallsButton = document.getElementById('addWallsButton') as HTMLButtonElement;
-    const editWeightsButton = document.getElementById('editWeightsButton') as HTMLButtonElement;
+    const weightSlider = document.getElementById('weightSlider') as HTMLInputElement;
+    const weightSliderContainer = document.getElementById(
+        'weightSliderContainer',
+    ) as HTMLDivElement;
+    const weightSliderValue = document.getElementById('weightSliderValue') as HTMLParagraphElement;
+    const doneButton = document.getElementById('doneButton') as HTMLButtonElement;
     const changeStartNodeButton = document.getElementById('changeStartButton') as HTMLButtonElement;
     const changeEndNodeButton = document.getElementById('changeEndButton') as HTMLButtonElement;
-    const clearCellButton = document.getElementById('clearCellButton') as HTMLButtonElement;
+    const setWeightButton = document.getElementById('setWeightButton') as HTMLButtonElement;
     const resetGraphButton = document.getElementById('resetGraphButton') as HTMLButtonElement;
     const saveButton = document.getElementById('saveButton') as HTMLButtonElement;
     const gridSizeDropdownButton = document.getElementById(
@@ -32,11 +42,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (
         !graphEditorDescription ||
         !graphEditorElement ||
+        !buttonContainer ||
         !addWallsButton ||
-        !editWeightsButton ||
+        !weightSlider ||
+        !weightSliderContainer ||
+        !weightSliderValue ||
+        !doneButton ||
         !changeStartNodeButton ||
         !changeEndNodeButton ||
-        !clearCellButton ||
+        !setWeightButton ||
         !resetGraphButton ||
         !saveButton ||
         !gridSizeDropdownButton ||
@@ -48,10 +62,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const buttons = [
         addWallsButton,
-        editWeightsButton,
         changeStartNodeButton,
         changeEndNodeButton,
-        clearCellButton,
+        setWeightButton,
         resetGraphButton,
         saveButton,
         gridSizeDropdownButton,
@@ -83,10 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     globalVariablesManager.setEditorGraphDiv(graphEditorDiv);
 
     const isEditor = true;
+    let selectedNodeId: number | null = null;
     let editorMode = EDITOR_MODE.NONE;
 
     const resetGrid = () => {
-        if (editorMode === EDITOR_MODE.ADD_WEIGHT || editorMode === EDITOR_MODE.CLEAR_WEIGHT) {
+        if (editorMode === EDITOR_MODE.SET_WEIGHT) {
             globalVariablesManager.setShowWeights(true);
         } else {
             globalVariablesManager.setShowWeights(false);
@@ -95,7 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     resetGrid();
-
     setWeightColor();
 
     // Helper functions.
@@ -105,13 +118,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 graphEditorDescription.innerHTML =
                     'Click or drag on the grid to place walls that act as obstacles';
                 break;
-            case EDITOR_MODE.ADD_WEIGHT:
+            case EDITOR_MODE.SET_WEIGHT:
                 graphEditorDescription.innerHTML =
-                    'Click or drag on grid cells to increase their weight, making paths harder to traverse';
-                break;
-            case EDITOR_MODE.CLEAR_WEIGHT:
-                graphEditorDescription.innerHTML =
-                    'Click or drag on the grid to remove walls or reset cell weights';
+                    'Adjust the slider to set the desired weight, then click or drag on the grid to apply it';
                 break;
             case EDITOR_MODE.CHANGE_START_NODE:
                 graphEditorDescription.innerHTML =
@@ -126,7 +135,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     'Modify the size of the grid by clicking on the dropdown menu and selecting a new size';
                 break;
             case EDITOR_MODE.RESET:
-                graphEditorDescription.innerHTML = 'Clear the entire grid and start over';
+                graphEditorDescription.innerHTML =
+                    'Clear the entire grid and start over - this action cannot be undone!';
                 break;
             case EDITOR_MODE.BACK:
                 graphEditorDescription.innerHTML =
@@ -148,11 +158,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             case EDITOR_MODE.ADD_WALLS:
                 highlightButtonColor(addWallsButton, STATUS.ACTIVE);
                 break;
-            case EDITOR_MODE.ADD_WEIGHT:
-                highlightButtonColor(editWeightsButton, STATUS.ACTIVE);
-                break;
-            case EDITOR_MODE.CLEAR_WEIGHT:
-                highlightButtonColor(clearCellButton, STATUS.ACTIVE);
+            case EDITOR_MODE.SET_WEIGHT:
+                highlightButtonColor(setWeightButton, STATUS.ACTIVE);
                 break;
             default:
                 break;
@@ -182,46 +189,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const addWall = (nodeId: number) => {
+    const setSelectedNodeId = (nodeId: number) => {
         if (
             nodeId === globalVariablesManager.getStartNode() ||
             nodeId === globalVariablesManager.getEndNode()
         ) {
-            return;
+            selectedNodeId = null;
+        } else {
+            selectedNodeId = nodeId;
         }
-        const nodes = globalVariablesManager.getGraph().nodes;
-        nodes[nodeId] = Infinity;
-        markCell(nodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
-        globalVariablesManager.setNodes(nodes);
     };
 
-    const clearCell = (nodeId: number) => {
-        if (
-            nodeId === globalVariablesManager.getStartNode() ||
-            nodeId === globalVariablesManager.getEndNode()
-        ) {
-            return;
+    const setWeight = (weight: number) => {
+        if (selectedNodeId !== null) {
+            const nodes = globalVariablesManager.getGraph().nodes;
+            nodes[selectedNodeId] = weight;
+            markCell(selectedNodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
+            globalVariablesManager.setNodes(nodes);
         }
-        const nodes = globalVariablesManager.getGraph().nodes;
-        nodes[nodeId] = 0;
-        markCell(nodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
-        globalVariablesManager.setNodes(nodes);
-    };
-
-    const incrementWeight = (nodeId: number) => {
-        const nodes = globalVariablesManager.getGraph().nodes;
-        if (
-            nodeId === globalVariablesManager.getStartNode() ||
-            nodeId === globalVariablesManager.getEndNode() ||
-            nodes[nodeId] === Infinity
-        ) {
-            return;
-        }
-        const currentWeight = nodes[nodeId];
-        const newWeight = currentWeight + Math.floor(Math.random() * 20);
-        nodes[nodeId] = newWeight >= DEFAULT_WEIGHT ? currentWeight : newWeight;
-        markCell(nodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
-        globalVariablesManager.setNodes(nodes);
     };
 
     // Event handlers
@@ -234,9 +219,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const handleAddWallsButton = () => handleButtonClick(EDITOR_MODE.ADD_WALLS);
 
-    const handleEditWeightsButton = () => handleButtonClick(EDITOR_MODE.ADD_WEIGHT);
-
-    const handleClearCellButton = () => handleButtonClick(EDITOR_MODE.CLEAR_WEIGHT);
+    const handleSetWeightButton = () => {
+        showWeightSlider(selectedNodeId);
+        handleButtonClick(EDITOR_MODE.SET_WEIGHT);
+    };
 
     const handleResetGraphButton = () => {
         const newNodes = Array(globalVariablesManager.getGridSize()).fill(0);
@@ -257,6 +243,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleBackButton = () => {
         globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
         globalVariablesManager.setGraphType(GraphType.Custom);
+        if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+            globalVariablesManager.setWeightType(WeightType.NonNegative);
+        }
         globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };
@@ -265,14 +254,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const buttonEventHandlers = [
         { button: addWallsButton, mode: EDITOR_MODE.ADD_WALLS, clickHandler: handleAddWallsButton },
         {
-            button: editWeightsButton,
-            mode: EDITOR_MODE.ADD_WEIGHT,
-            clickHandler: handleEditWeightsButton,
-        },
-        {
-            button: clearCellButton,
-            mode: EDITOR_MODE.CLEAR_WEIGHT,
-            clickHandler: handleClearCellButton,
+            button: setWeightButton,
+            mode: EDITOR_MODE.SET_WEIGHT,
+            clickHandler: handleSetWeightButton,
         },
         { button: resetGraphButton, mode: EDITOR_MODE.RESET, clickHandler: handleResetGraphButton },
         {
@@ -298,19 +282,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.addEventListener('mouseleave', () => updateGraphEditorDescription());
     });
 
+    const showWeightSlider = (nodeId: number | null) => {
+        if (nodeId) {
+            weightSlider.value = globalVariablesManager.getGraph().nodes[nodeId].toString();
+        }
+        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.FLEX);
+        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.NONE);
+    };
+
+    const hideWeightSlider = () => {
+        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.NONE);
+        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.FLEX);
+    };
+
+    doneButton.addEventListener('click', () => {
+        hideWeightSlider();
+        editorMode = EDITOR_MODE.NONE;
+        updateButtons();
+        updateGraphEditorDescription();
+    });
+
+    weightSlider.addEventListener('input', () => {
+        setWeight(parseInt(weightSlider.value));
+        weightSliderValue.innerHTML = `Weight: ${weightSlider.value}`;
+    });
+
     graphEditorElement.addEventListener('mousedown', (event) => {
         const target = event.target as HTMLElement;
         if (target.classList.contains('grid-cell') || target.classList.contains('weight-display')) {
             const nodeId = getNodeIdFromCellElementId(target.id);
+            setSelectedNodeId(nodeId);
             switch (editorMode) {
                 case EDITOR_MODE.ADD_WALLS:
-                    addWall(nodeId);
+                    setWeight(Infinity);
                     break;
-                case EDITOR_MODE.ADD_WEIGHT:
-                    incrementWeight(nodeId);
-                    break;
-                case EDITOR_MODE.CLEAR_WEIGHT:
-                    clearCell(nodeId);
+                case EDITOR_MODE.SET_WEIGHT:
+                    setWeight(parseInt(weightSlider.value));
                     break;
             }
         }
@@ -325,16 +332,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 target.classList.contains('weight-display')
             ) {
                 const nodeId = getNodeIdFromCellElementId(target.id);
-
+                setSelectedNodeId(nodeId);
                 switch (editorMode) {
                     case EDITOR_MODE.ADD_WALLS:
-                        addWall(nodeId);
+                        setWeight(Infinity);
                         break;
-                    case EDITOR_MODE.ADD_WEIGHT:
-                        incrementWeight(nodeId);
-                        break;
-                    case EDITOR_MODE.CLEAR_WEIGHT:
-                        clearCell(nodeId);
+                    case EDITOR_MODE.SET_WEIGHT:
+                        setWeight(parseInt(weightSlider.value));
                         break;
                 }
             }

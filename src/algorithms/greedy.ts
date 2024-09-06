@@ -29,7 +29,6 @@ export const greedy = (): RunResults => {
             : calculateEuclideanDistance;
     const runResults = new RunResults(AlgorithmType.Greedy);
     const gridSize = globalVariablesManager.getGridSize();
-
     // This will estimate the number of machine operations performed.
     // For more details, please refer to /docs/step_counting_stadards.md.
     // Note: Steps involved in adding to runResults and consolidating the shortest path are excluded from this calculation.

@@ -1,6 +1,7 @@
-import { AlgorithmType, HeapNode, Node, NodeState, VisitedSet, WeightType } from '../common/types';
+import { AlgorithmType, HeapNode, Node, NodeState, VisitedSet } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import { getNeighborWeight } from '../utils/graph';
 import RunResults from '../utils/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
@@ -68,18 +69,7 @@ export const dijkstra = (): RunResults => {
 
         for (const neighbor of graph[currentNode]) {
             if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
-            let neighborWeight;
-            switch (globalVariablesManager.getWeightType()) {
-                case WeightType.Unweighted:
-                    neighborWeight = 1;
-                    break;
-                case WeightType.Negative:
-                    neighborWeight = nodes[neighbor] - nodes[currentNode];
-                    break;
-                case WeightType.NonNegative:
-                    neighborWeight = Math.max(nodes[neighbor] - nodes[currentNode], 0);
-                    break;
-            }
+            const neighborWeight = getNeighborWeight(nodes[currentNode], nodes[neighbor]);
             const newWeight = weights[currentNode] + neighborWeight;
             steps += 10;
 

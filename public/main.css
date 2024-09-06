@@ -21,13 +21,6 @@ body {
     font-size: var(--font-size-base);
 }
 
-body,
-.grid-cell {
-    user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
 h1 {
     color: #333;
 }
@@ -81,6 +74,15 @@ th {
     text-align: center;
     padding: 10px;
     width: 70px;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .dropdown-wrapper {
@@ -551,10 +553,6 @@ th {
 
 #openEditor {
     min-width: 100px;
-}
-
-#gridSizeSlider:disabled::-webkit-slider-thumb {
-    pointer-events: none;
 }
 
 #changeStart {

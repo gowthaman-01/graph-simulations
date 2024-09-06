@@ -52,6 +52,7 @@ export const displayGrid = (graphDiv: GraphDiv) => {
 
         cell.id = `${graphDiv.position}-cell-${i}`;
         cell.className = 'grid-cell';
+        cell.classList.add('noselect');
         cell.style.border = 'solid 1px #0C3547';
 
         // Calculate and set the cell's width and height based on the number of rows.
@@ -157,9 +158,19 @@ export const resetStatisticTable = () => {
     const bestAlgorithmParagraphElement = document.getElementById(
         'bestAlgorithm',
     ) as HTMLParagraphElement;
-    bestAlgorithmParagraphElement.textContent = isEndNodeReachable
-        ? `Best algorithm: ${getAlgorithmDisplayName(getBestAlgorithm())}`
-        : 'End node not reachable from start node! Please generate a new graph.';
+
+    if (isEndNodeReachable) {
+        if (globalVariablesManager.getContainsNegativeWeightCycle()) {
+            bestAlgorithmParagraphElement.textContent = `Graph contains a negative weight cycle!`;
+        } else {
+            bestAlgorithmParagraphElement.textContent = `Best algorithm: ${getAlgorithmDisplayName(
+                getBestAlgorithm(),
+            )}`;
+        }
+    } else {
+        bestAlgorithmParagraphElement.textContent =
+            'End node not reachable from start node! Please generate a new graph.';
+    }
 };
 
 /**
@@ -173,9 +184,16 @@ export const displayAllRunResults = async (
     stepsSlider: HTMLInputElement,
     stepsCount: HTMLParagraphElement,
 ): Promise<void> => {
-    const runResults = globalVariablesManager
-        .getRunResults()
-        .filter((runResult) => runResult.getIsDisplayed());
+    const isEditor = false;
+    const visibleAlgorithms = globalVariablesManager
+        .getGraphDivs(isEditor)
+        .map((graphDiv) => graphDiv.algorithmType);
+
+    const runResults = visibleAlgorithms.flatMap((algorithmType) =>
+        globalVariablesManager
+            .getRunResults()
+            .filter((runResult) => runResult.getAlgorithmType() === algorithmType),
+    );
 
     const maxTotalSteps = Math.max(
         ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
