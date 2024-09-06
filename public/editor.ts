@@ -1,4 +1,10 @@
-import { DISPLAY_STYLE, EDITOR_MODE, GRAPH_POSITION, STATUS } from '../src/common/constants';
+import {
+    DEFAULT_WEIGHT,
+    DISPLAY_STYLE,
+    EDITOR_MODE,
+    GRAPH_POSITION,
+    STATUS,
+} from '../src/common/constants';
 import { AlgorithmType, GraphDiv, GraphType, NodeState } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
@@ -209,9 +215,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         ) {
             return;
         }
-        let weight = nodes[nodeId];
-        weight += Math.floor(Math.random() * 20);
-        nodes[nodeId] = weight >= MAX_WEIGHT ? Infinity : weight;
+        const currentWeight = nodes[nodeId];
+        const newWeight = currentWeight + Math.floor(Math.random() * 20);
+        nodes[nodeId] = newWeight >= DEFAULT_WEIGHT ? currentWeight : newWeight;
         markCell(nodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
         globalVariablesManager.setNodes(nodes);
     };

@@ -10,7 +10,7 @@ export const DARK_BLUE: Color = { r: 12, g: 53, b: 71 };
 // Graph control properties.
 export const MAX_WEIGHT: number = 100;
 export const DEFAULT_DELAY: number = 1;
-export const DEFAULT_WEIGHT: number = 90;
+export const DEFAULT_WEIGHT: number = 80;
 export const AVERAGE_SPEED: number = 100;
 export const FAST_SPEED: number = 200;
 export const SLOW_SPEED: number = 50;

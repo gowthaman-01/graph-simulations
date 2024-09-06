@@ -209,7 +209,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         enableSecondaryGraphTypeDropdown();
                         break;
                     case PrimaryGraphType.Standard:
+                        disableSecondaryGraphTypeDropdown();
+                        break;
                     case PrimaryGraphType.Custom:
+                        graphType = GraphType.Custom;
                         disableSecondaryGraphTypeDropdown();
                         break;
                 }
@@ -652,7 +655,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     generateNewGraphButton.addEventListener('click', () => {
-        generateNewGraphWithReachableEndNode(resetGridAndRerun);
+        if (globalVariablesManager.getGraphType() === GraphType.Custom) {
+            globalVariablesManager.setGraphType(GraphType.Standard);
+            generateNewGraphWithReachableEndNode(() => {
+                showWeightControls();
+                primaryGraphTypeDropdownButton.textContent = getPrimaryGraphTypeDisplayName(
+                    GraphType.Standard,
+                );
+                resetGridAndRerun();
+            });
+        } else {
+            generateNewGraphWithReachableEndNode(resetGridAndRerun);
+        }
     });
 
     Array.from(openGraphEditorButtons).forEach((button) => {
