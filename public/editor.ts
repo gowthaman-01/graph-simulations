@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         changeEndNodeButton,
         setWeightButton,
         resetGraphButton,
+        doneButton,
         saveButton,
         gridSizeDropdownButton,
     ];
@@ -209,12 +210,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const showWeightSlider = (nodeId: number | null) => {
+        if (nodeId) {
+            weightSlider.value = globalVariablesManager.getGraph().nodes[nodeId].toString();
+        }
+        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.FLEX);
+        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.NONE);
+    };
+
+    const hideWeightSlider = () => {
+        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.NONE);
+        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.FLEX);
+    };
+
     // Event handlers
     const handleButtonClick = (mode: EDITOR_MODE) => {
         editorMode = mode;
-        resetGrid();
         updateButtons();
         updateGraphEditorDescription();
+        resetGrid();
     };
 
     const handleAddWallsButton = () => handleButtonClick(EDITOR_MODE.ADD_WALLS);
@@ -238,6 +252,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         setNewStartEndNode(nodeState, isEditor, toggleButtonsDuringStartEndNodeChange, resetGrid);
         updateButtons();
         updateGraphEditorDescription();
+    };
+
+    const handleDoneButton = () => {
+        handleButtonClick(EDITOR_MODE.NONE);
+        hideWeightSlider();
     };
 
     const handleBackButton = () => {
@@ -271,6 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
         { button: gridSizeDropdownButton, mode: EDITOR_MODE.CHANGE_GRID_SIZE },
         { button: gridSizeDropdownMenu, mode: EDITOR_MODE.CHANGE_GRID_SIZE },
+        { button: doneButton, mode: EDITOR_MODE.NONE, clickHandler: handleDoneButton },
         { button: saveButton, mode: EDITOR_MODE.BACK, clickHandler: handleBackButton },
     ];
 
@@ -280,26 +300,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         button.addEventListener('mouseover', () => updateGraphEditorDescription(mode));
         button.addEventListener('mouseleave', () => updateGraphEditorDescription());
-    });
-
-    const showWeightSlider = (nodeId: number | null) => {
-        if (nodeId) {
-            weightSlider.value = globalVariablesManager.getGraph().nodes[nodeId].toString();
-        }
-        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.FLEX);
-        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.NONE);
-    };
-
-    const hideWeightSlider = () => {
-        toggleElementVisibility([weightSliderContainer], DISPLAY_STYLE.NONE);
-        toggleElementVisibility([buttonContainer], DISPLAY_STYLE.FLEX);
-    };
-
-    doneButton.addEventListener('click', () => {
-        hideWeightSlider();
-        editorMode = EDITOR_MODE.NONE;
-        updateButtons();
-        updateGraphEditorDescription();
     });
 
     weightSlider.addEventListener('input', () => {
