@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Display simulation.
-            await displayAllRunResults(stepsSlider, stepsCount);
+            await displayAllRunResults(stepsSlider);
 
             // Enable control elements once simulations are completed.
             toggleSimulationControls(STATUS.ENABLE);
@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // When slider reaches the maximum value.
-        if (stepsSlider.value === stepsSlider.max) {
+        if (stepsSlider.value === stepsSlider.max && globalVariablesManager.isEndNodeReachable()) {
             const maxStepsOfAllAlgorithms = Math.max(
                 ...runResults.map((result) => result.getLatestTotalSteps()),
             );

@@ -180,10 +180,7 @@ export const resetStatisticTable = () => {
  * @param {HTMLParagraphElement} stepsCount - The paragraph element displaying the current steps count.
  * @returns {Promise<void>} A promise that resolves when all steps have been displayed.
  */
-export const displayAllRunResults = async (
-    stepsSlider: HTMLInputElement,
-    stepsCount: HTMLParagraphElement,
-): Promise<void> => {
+export const displayAllRunResults = async (stepsSlider: HTMLInputElement): Promise<void> => {
     const isEditor = false;
     const visibleAlgorithms = globalVariablesManager
         .getGraphDivs(isEditor)
@@ -199,10 +196,16 @@ export const displayAllRunResults = async (
         ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
     );
 
-    // Determine the maximum algorithm steps, excluding those for the shortest path display.
-    const maxAlgorithmSteps = Math.max(
+    // Determine the maximum algorithm steps, excluding those for the shortest path display.;
+    let maxAlgorithmSteps = Math.max(
         ...runResults.map((runResult) => runResult.getAlgorithmSteps()),
     );
+
+    if (maxAlgorithmSteps === 0) {
+        maxAlgorithmSteps = Math.max(
+            ...runResults.map((runResult) => runResult.getLatestTotalSteps()),
+        );
+    }
 
     // Set the maximum value of the steps slider to the maximum algorithm steps.
     stepsSlider.max = maxAlgorithmSteps.toString();
@@ -220,13 +223,11 @@ export const displayAllRunResults = async (
                 displayStep(step, runResult);
             }
         }
-
         // Increment the step counter by the defined step increment.
         step += globalVariablesManager.getStepIncrement();
 
         // Update the steps count in the UI to reflect the current step.
         stepsSlider.value = step.toString();
-        stepsCount.innerHTML = `Steps: ${parseInt(stepsSlider.value).toString()}`;
 
         // Pause for a predefined delay before displaying the next step.
         await delay(DEFAULT_DELAY);
