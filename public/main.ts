@@ -46,7 +46,7 @@ import { runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
 import { tutorialDataList } from '../src/tutorial/data';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
-import { setNewStartEndNode, toggleElement, toggleElementVisibility } from '../src/utils/element';
+import { toggleElement, toggleElementVisibility } from '../src/utils/element';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 
 // Script that runs when DOM is loaded.
@@ -239,7 +239,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 globalVariablesManager.setGraphType(graphType);
 
                 if (primaryGraphType === PrimaryGraphType.Custom) {
-                    hideWeightControls();
                     const customGraph = globalVariablesManager.getCustomGraph();
                     if (customGraph) {
                         globalVariablesManager.setGraph(customGraph);
@@ -248,7 +247,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         window.location.href = 'editor.html';
                     }
                 } else {
-                    showWeightControls();
                     generateNewGraphWithReachableEndNode(resetGridAndRerun);
                 }
             },
@@ -588,13 +586,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Generate the graphs and run results.
     resetGridAndRerun();
-
-    // Hide weight controls if the graph is custom made graph.
-    if (globalVariablesManager.getGraphType() === GraphType.Custom) {
-        hideWeightControls();
-    } else {
-        showWeightControls();
-    }
 
     await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
 

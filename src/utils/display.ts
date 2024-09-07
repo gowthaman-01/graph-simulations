@@ -1,5 +1,5 @@
 import { DEFAULT_DELAY, GRID_WIDTH } from '../common/constants';
-import { AlgorithmType, Node, NodeState, GraphDiv } from '../common/types';
+import { AlgorithmType, Node, NodeState, GraphDiv, ShortestPathNode } from '../common/types';
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { createMark, markCell } from './mark';
@@ -286,7 +286,7 @@ const findNearestStep = (stepList: number[], currentStep: number): number => {
  * @param {GraphDiv} graphDiv - The metadata of the graph div where the shortest path should be displayed.
  */
 export const displayShortestPath = async (
-    shortestPath: Node[],
+    shortestPath: ShortestPathNode[],
     graphDiv: GraphDiv,
 ): Promise<void> => {
     // Reset the grid to clear previous visualizations before displaying the shortest path.
@@ -297,7 +297,7 @@ export const displayShortestPath = async (
         const node = shortestPath[i];
         // Skip marking the start and end nodes; only mark intermediate nodes.
         if (i !== 0 && i !== shortestPath.length - 1) {
-            markCell(node, NodeState.ShortestPath, graphDiv.position);
+            markCell(node.nodeId, node.direction, graphDiv.position);
 
             // Introduce a delay between marking nodes to slow down the visualization.
             await delay(1);

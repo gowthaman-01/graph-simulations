@@ -2,6 +2,11 @@ import { GRAPH_POSITION } from './constants';
 
 export type Node = number;
 
+export type ShortestPathNode = {
+    nodeId: Node;
+    direction: NodeState;
+};
+
 export type Nodes = Node[];
 
 export enum NodeState {
@@ -9,7 +14,10 @@ export enum NodeState {
     Visiting = 'visiting',
     Exploring = 'exploring',
     Visited = 'visited',
-    ShortestPath = 'shortest-path',
+    ShortestPathUp = 'shortest-path-up',
+    ShortestPathDown = 'shortest-path-down',
+    ShortestPathLeft = 'shortest-path-left',
+    ShortestPathRight = 'shortest-path-right',
     StartNode = 'start',
     EndNode = 'end',
 }

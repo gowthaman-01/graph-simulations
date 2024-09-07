@@ -1,5 +1,5 @@
-import { SHORTEST_PATH_DELAY_MULTIPLIER } from '../common/constants';
-import { AlgorithmType, GraphDiv, Node, NodeState, WeightType } from '../common/types';
+import { AlgorithmType, GraphDiv, Node, NodeState, ShortestPathNode } from '../common/types';
+import { getRowAndColumnFromCellId } from './general';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { getNeighborWeight } from './graph';
 
@@ -13,7 +13,7 @@ export default class RunResults {
     private readonly stepList: number[];
     private readonly nodeStateList: NodeState[][];
 
-    private shortestPath: Node[];
+    private shortestPath: ShortestPathNode[];
     // Steps taken to run the algorithm, excluding the steps taken to display of the shortest path.
     private algorithmSteps: number;
     private displayComplete: boolean;
@@ -67,6 +67,27 @@ export default class RunResults {
     };
 
     /**
+     * Determines the shortest path node state from the current node to the next node.
+     * @param {Node} currentNode - The current node.
+     * @param {Node} nextNode - The next node.
+     * @returns {NodeState} - The direction to the next node.
+     */
+    private getShortestPathNodeState = (currentNode: Node, nextNode: Node): NodeState => {
+        const { row: currentRow, col: currentCol } = getRowAndColumnFromCellId(currentNode);
+        const { row: nextRow, col: nextCol } = getRowAndColumnFromCellId(nextNode);
+
+        if (nextRow > currentRow) {
+            return NodeState.ShortestPathDown;
+        } else if (nextRow < currentRow) {
+            return NodeState.ShortestPathUp;
+        } else if (nextCol < currentCol) {
+            return NodeState.ShortestPathLeft;
+        } else {
+            return NodeState.ShortestPathRight;
+        }
+    };
+
+    /**
      * Adds a step to the run results.
      * @param {number} steps - The number of steps.
      * @param {Node} node - The node id.
@@ -90,22 +111,28 @@ export default class RunResults {
     public setShortestPath = (shortestPath: Node[]): void => {
         // Store the number of steps the algorithm took, excluding those for displaying the shortest path.
         this.algorithmSteps = this.getLatestTotalSteps();
-        this.shortestPath = shortestPath;
 
         // Push an empty state step to briefly clear the grid before displaying the shortest path.
         this.stepList.push(this.getLatestTotalSteps() + 10);
         this.nodeStateList.push(this.createNodeStateList());
 
-        shortestPath.forEach((node) => {
+        const shortestPathNodes: ShortestPathNode[] = [];
+
+        shortestPath.forEach((node, i) => {
             // Create a sliced copy of the latest node state list to prevent modifications to the original array.
             const newNodeStateList = this.getLatestNodeStateList().slice();
+
+            // Get the direction to the next node.
+            const nextNode = shortestPath[i + 1];
+            const shortestPathNodeState = this.getShortestPathNodeState(node, nextNode);
+            shortestPathNodes.push({ nodeId: node, direction: shortestPathNodeState });
 
             // Apply the shortest path state only to nodes that are neither the start nor the end node.
             if (
                 newNodeStateList[node] !== NodeState.StartNode &&
                 newNodeStateList[node] !== NodeState.EndNode
             ) {
-                newNodeStateList[node] = NodeState.ShortestPath;
+                newNodeStateList[node] = shortestPathNodeState;
             }
 
             // Push the updated state with a delay to slow down the visualization of the shortest path.
@@ -114,9 +141,11 @@ export default class RunResults {
             );
             this.nodeStateList.push(newNodeStateList);
         });
+
+        this.shortestPath = shortestPathNodes;
     };
 
-    public getShortestPath = (): Node[] => {
+    public getShortestPath = (): ShortestPathNode[] => {
         return this.shortestPath;
     };
 
@@ -150,7 +179,10 @@ export default class RunResults {
             return i === 0
                 ? totalWeight
                 : totalWeight +
-                      getNeighborWeight(nodes[this.shortestPath[i - 1]], nodes[currentNode]);
+                      getNeighborWeight(
+                          nodes[this.shortestPath[i - 1].nodeId],
+                          nodes[currentNode.nodeId],
+                      );
         }, 0);
     };
 

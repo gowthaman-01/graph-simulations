@@ -104,7 +104,7 @@ export const tutorialDataList: TutorialData[] = [
         </div>
         <div class="legend">
             <div class="legend-image-container-small" style="opacity: 0.8;">
-                <img src="./assets/shortest-path.svg" alt="Shortest Path" class="icon-filter"/>
+                <img src="./assets/shortest-path.png" alt="Shortest Path" class="icon-filter"/>
             </div>
             <p>Shortest path: The node is part of the final optimal path from start to end.</p>
         </div>`,

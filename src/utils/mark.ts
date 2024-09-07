@@ -79,7 +79,6 @@ export const createMark = (
         // Else create an image element to represent the node state visually.
         const mark = document.createElement('img');
         mark.id = `${graphPosition}-cell-${node}-${nodeState}`;
-        mark.classList.add('mark');
 
         switch (nodeState) {
             case NodeState.StartNode:
@@ -88,14 +87,28 @@ export const createMark = (
                 mark.classList.add('mark-large');
                 break;
             case NodeState.Exploring:
-            case NodeState.ShortestPath:
             case NodeState.Visited:
             case NodeState.Visiting:
                 mark.src = `./assets/${nodeState}.svg`;
                 mark.classList.add('mark-small');
                 break;
+            case NodeState.ShortestPathUp:
+            case NodeState.ShortestPathDown:
+            case NodeState.ShortestPathLeft:
+            case NodeState.ShortestPathRight:
+                mark.src = `./assets/shortest-path.png`;
+                mark.classList.add('mark-small');
+                break;
             default:
                 break;
+        }
+
+        if (nodeState === NodeState.ShortestPathDown) {
+            mark.style.transform = 'rotate(180deg)';
+        } else if (nodeState === NodeState.ShortestPathLeft) {
+            mark.style.transform = 'rotate(270deg)';
+        } else if (nodeState === NodeState.ShortestPathRight) {
+            mark.style.transform = 'rotate(90deg)';
         }
 
         return mark;

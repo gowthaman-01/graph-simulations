@@ -539,7 +539,9 @@ export const getNeighborWeight = (
         case WeightType.Unweighted:
             return 1;
         case WeightType.Negative:
-            return -Math.floor(Math.sqrt(Math.abs(neighborNodeWeight - currentNodeWeight)));
+            return neighborNodeWeight - currentNodeWeight >= 0
+                ? neighborNodeWeight - currentNodeWeight
+                : -Math.floor(Math.sqrt(Math.abs(neighborNodeWeight - currentNodeWeight)));
         case WeightType.NonNegative:
             return Math.max(neighborNodeWeight - currentNodeWeight, 0);
     }

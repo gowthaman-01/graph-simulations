@@ -12,8 +12,8 @@ export const MAX_WEIGHT: number = 125;
 export const DEFAULT_DELAY: number = 1;
 export const DEFAULT_WEIGHT: number = 100;
 export const AVERAGE_SPEED: number = 100;
-export const FAST_SPEED: number = 200;
-export const SLOW_SPEED: number = 50;
+export const FAST_SPEED: number = 300;
+export const SLOW_SPEED: number = 30;
 export const SHORTEST_PATH_DELAY_MULTIPLIER = DEFAULT_DELAY;
 export const DEBOUNCE_DELAY: number = 100;
 

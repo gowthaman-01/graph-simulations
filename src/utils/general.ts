@@ -81,7 +81,7 @@ export const calculateManhattanDistance = (startNode: Node, endNode: Node): numb
  * @param {Node} cellId - The ID of the cell.
  * @returns {object} An object containing the row and column of the cell.
  */
-const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } => {
+export const getRowAndColumnFromCellId = (cellId: Node): { row: number; col: number } => {
     const COLS = Math.sqrt(getGlobalVariablesManagerInstance().getGridSize());
     const row = Math.floor(cellId / COLS);
     const col = cellId % COLS;
