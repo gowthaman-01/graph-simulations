@@ -235,6 +235,7 @@ th {
 
 .main-body-blur {
     filter: blur(4px);
+    pointer-events: none;
 }
 
 .modal-container {
