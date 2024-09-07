@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ) {
                     if (globalVariablesManager.getGraphType() === GraphType.Custom) {
                         globalVariablesManager.setGraphType(GraphType.Standard);
-                        globalVariablesManager.setWeightType(WeightType.NonNegative);
+                        globalVariablesManager.setWeightType(WeightType.Unweighted);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
                             const primaryGraphTypeDropdown = dropdowns.primaryGraphTypeDropdown;
