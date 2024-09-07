@@ -9,11 +9,9 @@ Try the application out at [pathium.gowthaman.app](https://pathium.gowthaman.app
 ## Key Features
 
 -   **Multi-Algorithm Simulation**: Run multiple shortest path algorithms simultaneously and compare their performance in real-time.
--   **Graph Variety**: Experiment with different graph types, including standard, maze, and custom-generated graphs.
+-   **Graph Variety**: Experiment with different graph types, including mazes and custom-generated graphs.
 -   **Detailed Statistics**: Analyze the performance of each algorithm through comprehensive statistics, including steps, weights, and path comparisons.
--   **User-Friendly Interface**: Designed with simplicity and ease of use in mind, Pathium provides a seamless experience for both beginners and experts.
 -   **Interactive Graph Editor**: Customize and create your own graphs using the built-in editor.
--   **Tutorial and Help**: Step-by-step tutorial to guide you through the features and functionalities of Pathium.
 
 ## Contact
 
