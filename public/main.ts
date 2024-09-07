@@ -18,12 +18,12 @@ import {
     AlgorithmType,
     GraphType,
     MazeType,
-    NodeState,
     PrimaryGraphType,
     SecondaryGraphType,
     SimulationSpeed,
     WeightType,
     Dropdowns,
+    GraphStorage,
 } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import {
@@ -49,6 +49,7 @@ import { tutorialDataList } from '../src/tutorial/data';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
 import { toggleElement, toggleElementVisibility } from '../src/utils/element';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
+import negativeGraphExamples from '../src/scripts/negativeGraphExamples.json';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -319,13 +320,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             getWeightTypeDisplayName(globalVariablesManager.getWeightType()),
             (dataValue) => {
                 const weightType = dataValue as WeightType;
-                const currentWeightType = globalVariablesManager.getWeightType();
                 globalVariablesManager.setWeightType(weightType);
-                if (
-                    weightType === WeightType.Unweighted ||
-                    currentWeightType === WeightType.Unweighted
-                ) {
-                    if (globalVariablesManager.getGraphType() === GraphType.Custom) {
+
+                if (globalVariablesManager.getGraphType() === GraphType.Custom) {
+                    if (weightType === WeightType.Unweighted) {
                         globalVariablesManager.setGraphType(GraphType.Standard);
                         globalVariablesManager.setWeightType(WeightType.Unweighted);
                         const dropdowns = globalVariablesManager.getDropdowns();
@@ -335,10 +333,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 getPrimaryGraphTypeDisplayName(GraphType.Standard),
                             );
                         }
+                        generateNewGraphWithReachableEndNode(resetGridAndRerun);
+                    } else {
+                        resetGridAndRerun();
                     }
-                    generateNewGraphWithReachableEndNode(resetGridAndRerun);
                 } else {
-                    resetGridAndRerun();
+                    if (weightType === WeightType.Negative) {
+                        getNegativeGraphExample();
+                        resetGridAndRerun();
+                    } else {
+                        generateNewGraphWithReachableEndNode(resetGridAndRerun);
+                    }
                 }
             },
         );
@@ -571,10 +576,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetStepsSlider();
     };
 
+    const getNegativeGraphExample = () => {
+        console.log(negativeGraphExamples.length);
+        const negativeGraphExample = negativeGraphExamples[
+            Math.floor(Math.random() * negativeGraphExamples.length)
+        ] as GraphStorage;
+        globalVariablesManager.setGraph({
+            graph: negativeGraphExample.graph,
+            nodes: negativeGraphExample.nodes,
+        });
+        globalVariablesManager.setStartNode(negativeGraphExample.startNode);
+        globalVariablesManager.setEndNode(negativeGraphExample.endNode);
+    };
+
     // Render tutorial upon page load.
     if (globalVariablesManager.getShowTutorial()) {
         handleTutorialOpen();
         globalVariablesManager.setShowTutorial(false);
+        globalVariablesManager.saveToLocalStorage();
     } else {
         handleTutorialClose();
     }
@@ -668,11 +687,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     getPrimaryGraphTypeDisplayName(GraphType.Standard),
                 );
             }
-            generateNewGraphWithReachableEndNode(() => {
-                showWeightControls();
-                resetGridAndRerun();
-                resetGridAndRerun();
-            });
+        }
+
+        if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+            getNegativeGraphExample();
+            resetGridAndRerun();
         } else {
             generateNewGraphWithReachableEndNode(resetGridAndRerun);
         }

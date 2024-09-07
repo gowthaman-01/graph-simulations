@@ -12,6 +12,10 @@ import {
 } from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNode } from './graph';
+import { LocalStorage } from 'node-localstorage';
+
+// const localStorage =
+//     typeof window !== 'undefined' ? window.localStorage : new LocalStorage('./scratch');
 
 /**
  * Singleton class to manage global variables used in the application.
