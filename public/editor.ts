@@ -123,6 +123,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         displayGrid(graphEditorDiv);
     };
 
+    if (globalVariablesManager.getWeightType() === WeightType.Unweighted) {
+        const newNodes = Array(globalVariablesManager.getGridSize()).fill(1);
+        globalVariablesManager.setNodes(newNodes);
+    }
+
     resetGrid();
     setWeightColor();
     await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
@@ -257,7 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handleResetGraphButton = () => {
-        const newNodes = Array(globalVariablesManager.getGridSize()).fill(0);
+        const newNodes = Array(globalVariablesManager.getGridSize()).fill(1);
         globalVariablesManager.setNodes(newNodes);
         handleButtonClick(EDITOR_MODE.RESET);
     };
