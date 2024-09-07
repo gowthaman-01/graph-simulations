@@ -8,7 +8,7 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
 globalVariablesManager.setWeightType(WeightType.Negative);
 
 const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
-    while (graphList.length < 2) {
+    while (graphList.length < 100) {
         globalVariablesManager.setGraphType(graphType);
         generateNewGraph();
         const [dijkstraRunResult, bellmanFordRunResult, aStarRunResult] = [
