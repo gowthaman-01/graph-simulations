@@ -31,11 +31,11 @@ export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 3,
         title: 'Grid Graphs',
-        body: `To simplify our understanding of the grid graph, let's imagine all the cells as elevated areas. Each cell has an elevation representing how high it is. Nodes with higher elevations are indicated by darker backgrounds.
-        <br><br>For example, let's consider Node A with an elevation of 87 and Node B with an elevation of 42. Moving from Node B to Node A (a lower elevation to a higher elevation) costs the difference in elevation, in this case, 87 - 42 = 45
-        <br><br> Moving from Node A to Node B (a higher elevation to a lower elevation) depends on the weight type setting.
-        <br><br><b>Non-negative</b> = max(neighbor - current, 0) = max(42 - 87, 0) = 0
-        <br><b>Negative</b> = -floor(sqrt(abs(neighbor - current))) = -floor(sqrt(abs(42 - 87))) = -6`,
+        body: `Each node (cell) in the grid graph has a weight associated with it. Nodes with higher weights are indicated by darker backgrounds. 
+        <br><br>Let's consider Node A with an weight of 87 and Node B with an weight of 42. The cost of moving between these nodes is determined by the weight type setting.
+        <br><br><b>Non-negative:</b> The cost of moving from A to B is 42, and from B to A is 87.
+        <br><br><b>Negative:</b> The cost of moving to a higher weighted node (B to A) is the same as the non-negative case (ie: 87). However, moving to a lower weighted node is different:
+        <br><div style="text-align: center;">A to B = -floor(sqrt(abs(neighbor - current))) = -floor(sqrt(abs(42 - 87))) = -6</div>`,
         img: {
             src: 'example-weight',
             width: 60,
@@ -129,7 +129,7 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 8,
         title: 'Control Elements',
         body: `<div class="graph-buttons-container" style="justify-content: center;">
-        <button onclick="handleTutorialPageChange(10)">Editor</button>
+        <button onclick="openTutorialPage(10)">Editor</button>
         <button>Settings</button>
         <button>Run</button>
         </div><br>

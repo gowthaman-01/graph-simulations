@@ -488,6 +488,19 @@ th {
     top: -120px;
 }
 
+.info-button {
+    width: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+    margin-top: 2px;
+    transition: opacity 0.3s;
+}
+
+.info-button:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
 .bottom-middle-container {
     display: flex;
     flex-direction: column;

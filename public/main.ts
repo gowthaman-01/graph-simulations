@@ -1,6 +1,6 @@
 declare global {
     interface Window {
-        handleTutorialPageChange: (pageNumber: number) => void;
+        openTutorialPage: (pageNumber: number) => void;
     }
 }
 
@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const speedDropdownButton = document.getElementById('speedDropdownButton') as HTMLButtonElement;
     const speedDropdownMenu = document.getElementById('speedDropdownMenu') as HTMLDivElement;
     const showWeightCheckbox = document.getElementById('showWeightCheckbox') as HTMLInputElement;
+    const infoButton = document.getElementById('infoButton') as HTMLImageElement;
 
     // Return early if an element is undefined.
     if (
@@ -156,7 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         !weightDropdownMenu ||
         !speedDropdownButton ||
         !speedDropdownMenu ||
-        !showWeightCheckbox
+        !showWeightCheckbox ||
+        !infoButton
     ) {
         return;
     }
@@ -485,19 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handleTutorialOpen = () => {
-        // Blur background.
-        mainBodyDiv.classList.add('main-body-blur');
-
-        // Reset tutorialPageNumber to 1.
-        const currentPageNumber = globalVariablesManager.resetTutorialPageNumber();
-
-        // Close Settings modal.
-        toggleElementVisibility([settingsModalDiv], DISPLAY_STYLE.NONE);
-
-        // Show Tutorial modal.
-        toggleElementVisibility([tutorialContainerDiv], DISPLAY_STYLE.FLEX);
-        renderTutorialContent(currentPageNumber, tutorialContentDiv);
-        updateTutorialButtonsAndPageNumber();
+        openTutorialPage(globalVariablesManager.getTutorialPageMin());
     };
 
     const handleTutorialClose = () => {
@@ -515,7 +505,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
-    const handleTutorialPageChange = (pageNumber: number) => {
+    const openTutorialPage = (pageNumber: number) => {
+        // Blur background.
+        mainBodyDiv.classList.add('main-body-blur');
+
+        // Close Settings modal.
+        toggleElementVisibility([settingsModalDiv], DISPLAY_STYLE.NONE);
+
+        // Show Tutorial modal.
+        toggleElementVisibility([tutorialContainerDiv], DISPLAY_STYLE.FLEX);
+
         globalVariablesManager.setTutorialPageNumber(pageNumber);
         renderTutorialContent(pageNumber, tutorialContentDiv);
         updateTutorialButtonsAndPageNumber();
@@ -590,7 +589,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dropdowns = setupDropdowns();
     globalVariablesManager.setDropdowns(dropdowns);
 
-    window.handleTutorialPageChange = handleTutorialPageChange;
+    window.openTutorialPage = openTutorialPage;
 
     if (
         globalVariablesManager.getGraphType() === GraphType.Standard ||
@@ -718,5 +717,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     showWeightCheckbox.addEventListener('change', () => {
         globalVariablesManager.setShowWeights(showWeightCheckbox.checked);
         resetGrid();
+    });
+
+    infoButton.addEventListener('click', () => {
+        handleTutorialOpen();
+        openTutorialPage(3);
     });
 });
