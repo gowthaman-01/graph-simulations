@@ -8,6 +8,7 @@ import {
     SimulationSpeed,
     Node,
     WeightType,
+    Dropdowns,
 } from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNode } from './graph';
@@ -38,6 +39,7 @@ class GlobalVariablesManager {
     private isSimulationRunning: boolean;
     private isChangingStartEndNode: boolean;
     private customGraph: GraphStructure | null;
+    private dropdowns: Dropdowns | null;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 10;
@@ -80,6 +82,7 @@ class GlobalVariablesManager {
         this.showWeights = false;
         this.isSimulationRunning = false;
         this.isChangingStartEndNode = false;
+        this.dropdowns = null;
     }
 
     public static getInstance(): GlobalVariablesManager {
@@ -307,6 +310,14 @@ class GlobalVariablesManager {
 
     public getCustomGraph(): GraphStructure | null {
         return this.customGraph;
+    }
+
+    public setDropdowns(dropdowns: Dropdowns): void {
+        this.dropdowns = dropdowns;
+    }
+
+    public getDropdowns(): Dropdowns | null {
+        return this.dropdowns;
     }
 
     public saveToLocalStorage(): void {

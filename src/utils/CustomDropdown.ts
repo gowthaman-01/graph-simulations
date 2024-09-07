@@ -2,7 +2,8 @@ export class CustomDropdown {
     private dropdownButton: HTMLButtonElement;
     private dropdownMenu: HTMLElement;
     private dropdownItems: HTMLCollectionOf<Element>;
-    private dropdownArrow: HTMLImageElement | null;
+    private dropdownArrow: HTMLImageElement;
+    private dropdownText: HTMLSpanElement;
     private onSelect: (dataValue: string) => void;
     private _isOpen: boolean;
 
@@ -16,14 +17,17 @@ export class CustomDropdown {
         onSelect: (dataValue: string) => void,
     ) {
         this.dropdownButton = dropdownButton;
-        this.dropdownButton.textContent = defaultText;
+        this.dropdownText = document.createElement('span');
+        this.dropdownText.textContent = defaultText;
+        this.dropdownText.style.pointerEvents = 'none'; // Make span non-interactive
+        this.dropdownButton.appendChild(this.dropdownText);
         this.dropdownMenu = dropdownMenu;
         this.dropdownItems = this.dropdownMenu.getElementsByClassName(
             `${this.dropdownMenu.id}-item`,
         );
+        this.dropdownArrow = this.createArrowImage();
         this.onSelect = onSelect;
         this._isOpen = false;
-        this.dropdownArrow = null;
         this.init();
     }
 
@@ -37,9 +41,29 @@ export class CustomDropdown {
     }
 
     init() {
-        this.updateArrowImage();
-        this.handleItemSelection();
+        this.addButtonEventListeners();
 
+        Array.from(this.dropdownItems).forEach((item: Element) => {
+            this.addItemEventListener(item);
+        });
+    }
+
+    createArrowImage() {
+        const arrowImage = document.createElement('img');
+        arrowImage.classList.add('dropdown-arrow');
+        arrowImage.id = `${this.dropdownButton.id}-arrow`;
+        arrowImage.src = CustomDropdown.DOWN_ARROW;
+        this.dropdownArrow = arrowImage;
+        this.dropdownButton.appendChild(this.dropdownArrow);
+
+        return this.dropdownArrow;
+    }
+
+    updateArrowImage() {
+        this.dropdownArrow.src = this.isOpen ? CustomDropdown.UP_ARROW : CustomDropdown.DOWN_ARROW;
+    }
+
+    addButtonEventListeners() {
         // Toggle dropdown visibility when button is clicked.
         this.dropdownButton.addEventListener('click', () => {
             this.dropdownMenu.classList.toggle('show');
@@ -63,28 +87,43 @@ export class CustomDropdown {
         });
     }
 
-    updateArrowImage() {
-        if (!this.dropdownArrow) {
-            const arrowImage = document.createElement('img');
-            arrowImage.classList.add('dropdown-arrow');
-            arrowImage.id = `${this.dropdownButton.id}-arrow`;
-            this.dropdownArrow = arrowImage;
-        }
-        this.dropdownArrow.src = this.isOpen ? CustomDropdown.UP_ARROW : CustomDropdown.DOWN_ARROW;
-        this.dropdownButton.appendChild(this.dropdownArrow);
+    addItemEventListener(item: Element) {
+        item.addEventListener('click', () => {
+            const dataValue = item.getAttribute('data-value');
+            if (dataValue) {
+                this.dropdownText.textContent = item.textContent;
+                this.onSelect(dataValue);
+            }
+            this.dropdownMenu.classList.remove('show');
+            this.isOpen = false;
+        });
     }
 
-    handleItemSelection() {
-        Array.from(this.dropdownItems).forEach((item: Element) => {
-            item.addEventListener('click', () => {
-                const dataValue = item.getAttribute('data-value');
-                if (dataValue) {
-                    this.dropdownButton.textContent = item.textContent;
-                    this.onSelect(dataValue);
-                }
-                this.dropdownMenu.classList.remove('show');
-                this.isOpen = false;
-            });
-        });
+    addItem(dataValue: string) {
+        // Check if item already exis
+        const items = Array.from(this.dropdownItems);
+        const itemExists = items.some((item) => item.getAttribute('data-value') === dataValue);
+        if (itemExists) {
+            return;
+        }
+
+        const newItem = document.createElement('div');
+        newItem.classList.add(`${this.dropdownMenu.id}-item`, 'dropdown-item');
+        newItem.setAttribute('data-value', dataValue);
+        newItem.textContent = dataValue;
+        this.dropdownMenu.appendChild(newItem);
+        this.addItemEventListener(newItem);
+    }
+
+    removeItem(dataValue: string) {
+        const items = Array.from(this.dropdownItems);
+        const itemToRemove = items.find((item) => item.getAttribute('data-value') === dataValue);
+        if (itemToRemove) {
+            this.dropdownMenu.removeChild(itemToRemove);
+        }
+    }
+
+    public updateTextContent(dataValue: string) {
+        this.dropdownText.textContent = dataValue;
     }
 }

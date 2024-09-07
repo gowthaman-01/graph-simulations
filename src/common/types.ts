@@ -1,3 +1,4 @@
+import { CustomDropdown } from '../utils/CustomDropdown';
 import { GRAPH_POSITION } from './constants';
 
 export type Node = number;
@@ -118,4 +119,14 @@ export interface Color {
     r: number;
     g: number;
     b: number;
+}
+
+export interface Dropdowns {
+    leftGraphDropdown: CustomDropdown;
+    rightGraphDropdown: CustomDropdown;
+    secondaryGraphTypeDropdown: CustomDropdown;
+    primaryGraphTypeDropdown: CustomDropdown;
+    speedDropdown: CustomDropdown;
+    heuristicTypeDropdown: CustomDropdown;
+    weightDropdown: CustomDropdown;
 }

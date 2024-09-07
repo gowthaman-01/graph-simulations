@@ -23,6 +23,7 @@ import {
     SecondaryGraphType,
     SimulationSpeed,
     WeightType,
+    Dropdowns,
 } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import {
@@ -176,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
     // Dropdowns setup function.
-    const setupDropdowns = () => {
+    const setupDropdowns = (): Dropdowns => {
         const setNewGraphDiv = (newAlgorithmType: AlgorithmType, graphPosition: GRAPH_POSITION) => {
             const graphDivs = globalVariablesManager.getGraphDivs(false);
             const currAlgorithmType = graphDivs.find(
@@ -221,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             getPrimaryGraphTypeDisplayName(globalVariablesManager.getGraphType()),
             (dataValue) => {
                 const primaryGraphType = dataValue as PrimaryGraphType;
-                let graphType = GraphType.Standard;
+                let graphType: GraphType;
                 switch (primaryGraphType) {
                     case PrimaryGraphType.Maze:
                         graphType = GraphType.RecursiveDivision;
@@ -229,6 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         break;
                     case PrimaryGraphType.Standard:
                         disableSecondaryGraphTypeDropdown();
+                        graphType = GraphType.Standard;
                         break;
                     case PrimaryGraphType.Custom:
                         graphType = GraphType.Custom;
@@ -242,6 +244,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const customGraph = globalVariablesManager.getCustomGraph();
                     if (customGraph) {
                         globalVariablesManager.setGraph(customGraph);
+                        globalVariablesManager.setWeightType(WeightType.NonNegative);
+                        const dropdowns = globalVariablesManager.getDropdowns();
+                        if (dropdowns) {
+                            const weightDropdown = dropdowns.weightDropdown;
+                            weightDropdown.updateTextContent(
+                                getWeightTypeDisplayName(WeightType.NonNegative),
+                            );
+                        }
                         resetGridAndRerun();
                     } else {
                         window.location.href = 'editor.html';
@@ -308,15 +318,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             (dataValue) => {
                 const weightType = dataValue as WeightType;
                 const currentWeightType = globalVariablesManager.getWeightType();
-
+                globalVariablesManager.setWeightType(weightType);
                 if (
                     weightType === WeightType.Unweighted ||
                     currentWeightType === WeightType.Unweighted
                 ) {
-                    globalVariablesManager.setWeightType(weightType);
+                    if (globalVariablesManager.getGraphType() === GraphType.Custom) {
+                        globalVariablesManager.setGraphType(GraphType.Standard);
+                        globalVariablesManager.setWeightType(WeightType.NonNegative);
+                        const dropdowns = globalVariablesManager.getDropdowns();
+                        if (dropdowns) {
+                            const primaryGraphTypeDropdown = dropdowns.primaryGraphTypeDropdown;
+                            primaryGraphTypeDropdown.updateTextContent(
+                                getPrimaryGraphTypeDisplayName(GraphType.Standard),
+                            );
+                        }
+                    }
                     generateNewGraphWithReachableEndNode(resetGridAndRerun);
                 } else {
-                    globalVariablesManager.setWeightType(weightType);
                     resetGridAndRerun();
                 }
             },
@@ -568,7 +587,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     enableGraphControls();
 
     // Setup dropdowns.
-    setupDropdowns();
+    const dropdowns = setupDropdowns();
+    globalVariablesManager.setDropdowns(dropdowns);
 
     window.handleTutorialPageChange = handleTutorialPageChange;
 
@@ -642,11 +662,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateNewGraphButton.addEventListener('click', () => {
         if (globalVariablesManager.getGraphType() === GraphType.Custom) {
             globalVariablesManager.setGraphType(GraphType.Standard);
+            const dropdowns = globalVariablesManager.getDropdowns();
+            if (dropdowns) {
+                const primaryGraphTypeDropdown = dropdowns.primaryGraphTypeDropdown;
+                primaryGraphTypeDropdown.updateTextContent(
+                    getPrimaryGraphTypeDisplayName(GraphType.Standard),
+                );
+            }
             generateNewGraphWithReachableEndNode(() => {
                 showWeightControls();
-                primaryGraphTypeDropdownButton.textContent = getPrimaryGraphTypeDisplayName(
-                    GraphType.Standard,
-                );
+                resetGridAndRerun();
                 resetGridAndRerun();
             });
         } else {

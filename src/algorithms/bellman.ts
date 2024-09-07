@@ -80,9 +80,12 @@ export const bellmanFord = (): RunResults => {
     // Check for negative weight cycles
     for (const node in graph) {
         for (const neighbor of graph[node]) {
-            if (weights[neighbor] > weights[node] + nodes[neighbor]) {
+            if (
+                weights[neighbor] >
+                weights[node] + getNeighborWeight(nodes[node], nodes[neighbor])
+            ) {
                 globalVariablesManager.setContainsNegativeWeightCycle(true);
-                return runResults; // Early exit if a negative cycle is detected
+                return runResults;
             }
         }
     }
