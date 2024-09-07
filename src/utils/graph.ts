@@ -533,16 +533,21 @@ const generateStartAndEndNodeForMazeGraph = (gridSize: number): StartEndNodes =>
 export const getNeighborWeight = (
     currentNodeWeight: number,
     neighborNodeWeight: number,
+    calculatingTotalWeight: boolean = false,
 ): number => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     switch (globalVariablesManager.getWeightType()) {
         case WeightType.Unweighted:
-            return 1;
+            return calculatingTotalWeight ? 0 : 1;
         case WeightType.Negative:
             return neighborNodeWeight - currentNodeWeight >= 0
-                ? Math.max(neighborNodeWeight, 1)
+                ? calculatingTotalWeight
+                    ? Math.max(neighborNodeWeight, 0)
+                    : Math.max(neighborNodeWeight, 1)
                 : -Math.floor(Math.sqrt(Math.abs(neighborNodeWeight - currentNodeWeight)));
         case WeightType.NonNegative:
-            return neighborNodeWeight;
+            return calculatingTotalWeight
+                ? Math.max(neighborNodeWeight, 0)
+                : Math.max(neighborNodeWeight, 1);
     }
 };

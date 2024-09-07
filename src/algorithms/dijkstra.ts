@@ -31,7 +31,7 @@ export const dijkstra = (): RunResults => {
     predecessors[startNode] = -1;
     steps += 4;
 
-    // Set all weights to infinity except the startNode, which is set to 0.
+    // Set all weights to Infinity except the startNode, which is set to 0.
     for (let node = 0; node < gridSize; node++) {
         weights[node] = node === startNode ? 0 : Infinity;
         steps += 3;

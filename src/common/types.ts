@@ -51,8 +51,8 @@ export type VisitedSet = boolean[];
 export enum GraphType {
     Standard = 'Standard',
     DFS = 'DFS',
-    RandomWalls = 'Random-Walls',
-    RecursiveDivision = 'Recursive-Division',
+    RandomWalls = 'RandomWalls',
+    RecursiveDivision = 'RecursiveDivision',
     Custom = 'Custom',
 }
 
@@ -75,9 +75,9 @@ export enum AlgorithmType {
 }
 
 export enum MazeType {
-    RecursiveDivision = 'Recursive-Division',
+    RecursiveDivision = 'RecursiveDivision',
     DFS = 'DFS',
-    RandomWalls = 'Random-Walls',
+    RandomWalls = 'RandomWalls',
 }
 
 export enum HeuristicType {

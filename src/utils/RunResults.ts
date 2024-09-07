@@ -182,6 +182,7 @@ export default class RunResults {
                       getNeighborWeight(
                           nodes[this.shortestPath[i - 1].nodeId],
                           nodes[currentNode.nodeId],
+                          true,
                       );
         }, 0);
     };

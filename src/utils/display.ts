@@ -160,13 +160,9 @@ export const resetStatisticTable = () => {
     ) as HTMLParagraphElement;
 
     if (isEndNodeReachable) {
-        if (globalVariablesManager.getContainsNegativeWeightCycle()) {
-            bestAlgorithmParagraphElement.textContent = `Graph contains a negative weight cycle!`;
-        } else {
-            bestAlgorithmParagraphElement.textContent = `Best algorithm: ${getAlgorithmDisplayName(
-                getBestAlgorithm(),
-            )}`;
-        }
+        bestAlgorithmParagraphElement.textContent = `Best algorithm: ${getAlgorithmDisplayName(
+            getBestAlgorithm(),
+        )}`;
     } else {
         bestAlgorithmParagraphElement.textContent =
             'End node not reachable from start node! Please generate a new graph.';

@@ -49,7 +49,11 @@ import { tutorialDataList } from '../src/tutorial/data';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
 import { toggleElement, toggleElementVisibility } from '../src/utils/element';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
-import negativeGraphExamples from '../src/scripts/negativeGraphExamples.json';
+
+import negativeStandardGraphExamples from '../src/scripts/negativeStandardGraphExamples.json';
+import negativeRecursiveDivisionGraphExamples from '../src/scripts/negativeRecursiveDivisionGraphExamples.json';
+import negativeDfsGraphExamples from '../src/scripts/negativeDfsGraphExamples.json';
+import negativeRandomWallsGraphExamples from '../src/scripts/negativeRandomWallsGraphExamples.json';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -260,7 +264,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         window.location.href = 'editor.html';
                     }
                 } else {
-                    generateNewGraphWithReachableEndNode(resetGridAndRerun);
+                    if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+                        getNegativeGraphExample(graphType);
+                        resetGridAndRerun();
+                    } else {
+                        generateNewGraphWithReachableEndNode(resetGridAndRerun);
+                    }
                 }
             },
         );
@@ -285,7 +294,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 globalVariablesManager.setGraphType(graphType);
-                generateNewGraphWithReachableEndNode(resetGridAndRerun);
+
+                if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+                    getNegativeGraphExample(graphType);
+                    resetGridAndRerun();
+                } else {
+                    generateNewGraphWithReachableEndNode(resetGridAndRerun);
+                }
             },
         );
 
@@ -339,7 +354,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } else {
                     if (weightType === WeightType.Negative) {
-                        getNegativeGraphExample();
+                        getNegativeGraphExample(globalVariablesManager.getGraphType());
                         resetGridAndRerun();
                     } else {
                         generateNewGraphWithReachableEndNode(resetGridAndRerun);
@@ -576,14 +591,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetStepsSlider();
     };
 
-    const getNegativeGraphExample = () => {
-        console.log(negativeGraphExamples.length);
+    const getNegativeGraphExample = (graphType: GraphType) => {
+        let negativeGraphExamples: GraphStorage[];
+        switch (graphType) {
+            case GraphType.Standard:
+                negativeGraphExamples = negativeStandardGraphExamples as GraphStorage[];
+                break;
+            case GraphType.RecursiveDivision:
+                negativeGraphExamples = negativeRecursiveDivisionGraphExamples as GraphStorage[];
+                break;
+            case GraphType.RandomWalls:
+                negativeGraphExamples = negativeRandomWallsGraphExamples as GraphStorage[];
+                break;
+            case GraphType.DFS:
+                negativeGraphExamples = negativeDfsGraphExamples as GraphStorage[];
+                break;
+            default:
+                negativeGraphExamples = negativeStandardGraphExamples as GraphStorage[];
+                break;
+        }
+
         const negativeGraphExample = negativeGraphExamples[
             Math.floor(Math.random() * negativeGraphExamples.length)
         ] as GraphStorage;
         globalVariablesManager.setGraph({
             graph: negativeGraphExample.graph,
-            nodes: negativeGraphExample.nodes,
+            nodes: negativeGraphExample.nodes.map((node) => (node === -1 ? Infinity : node)),
         });
         globalVariablesManager.setStartNode(negativeGraphExample.startNode);
         globalVariablesManager.setEndNode(negativeGraphExample.endNode);
@@ -690,7 +723,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (globalVariablesManager.getWeightType() === WeightType.Negative) {
-            getNegativeGraphExample();
+            getNegativeGraphExample(globalVariablesManager.getGraphType());
             resetGridAndRerun();
         } else {
             generateNewGraphWithReachableEndNode(resetGridAndRerun);

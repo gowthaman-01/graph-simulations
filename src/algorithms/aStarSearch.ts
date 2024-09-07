@@ -43,7 +43,7 @@ export const aStarSearch = (): RunResults => {
     predecessors[startNode] = -1;
     steps += 4;
 
-    // Set all weights to infinity except the startNode, which is set to 0. This takes O(gridSize) time.
+    // Set all weights to Infinity except the startNode, which is set to 0. This takes O(gridSize) time.
     for (let node = 0; node < gridSize; node++) {
         weights[node] = node === startNode ? 0 : Infinity;
         steps += 3;

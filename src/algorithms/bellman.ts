@@ -77,19 +77,6 @@ export const bellmanFord = (): RunResults => {
         if (!distancesUpdated) break; // No change means we can exit early.
     }
 
-    // Check for negative weight cycles
-    for (const node in graph) {
-        for (const neighbor of graph[node]) {
-            if (
-                weights[neighbor] >
-                weights[node] + getNeighborWeight(nodes[node], nodes[neighbor])
-            ) {
-                globalVariablesManager.setContainsNegativeWeightCycle(true);
-                return runResults;
-            }
-        }
-    }
-
     let currentNode: Node | null = endNode;
     const shortestPath: Node[] = [];
 
