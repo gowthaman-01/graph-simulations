@@ -52,7 +52,7 @@ import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 
 import negativeStandardGraphExamples from '../src/scripts/negativeStandardGraphExamples.json';
 import negativeRecursiveDivisionGraphExamples from '../src/scripts/negativeRecursiveDivisionGraphExamples.json';
-import negativeDfsGraphExamples from '../src/scripts/negativeDfsGraphExamples.json';
+import negativeDfsGraphExamples from '../src/scripts/negativeDFSGraphExamples.json';
 import negativeRandomWallsGraphExamples from '../src/scripts/negativeRandomWallsGraphExamples.json';
 
 // Script that runs when DOM is loaded.
