@@ -2,6 +2,7 @@
     --font-size-base: 16px;
     --font-size-small: 14px;
     --font-size-smaller: 12px;
+    --font-size-smallest: 10px;
     --grid-cell-base-size: var(--cell-size);
     --grid-cell-small-size: calc(var(--cell-size) * 0.9);
     --grid-cell-smaller-size: calc(var(--cell-size) * 0.8);
@@ -445,6 +446,7 @@ th {
     flex-direction: column;
     margin-top: 7px;
     gap: 21px;
+    margin-bottom: 3px;
 }
 
 .graph-dropdown-container {
@@ -527,10 +529,6 @@ th {
     gap: 16px;
     align-items: end;
     width: 30%;
-}
-
-.bottom-right-container button {
-    min-width: 140px;
 }
 
 .speed-control-container {
@@ -634,11 +632,20 @@ th {
         top: 41px;
     }
 
+    .weight-dropdown,
+    .weight-dropdown-menu {
+        min-width: 130px;
+    }
+
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
     .weight-dropdown-menu,
     .speed-dropdown-menu {
         top: -113px !important;
+    }
+
+    .heuristic-dropdown {
+        height: 40px !important;
     }
 
     .bottom-right-container {
@@ -702,6 +709,10 @@ th {
         top: -112px !important;
     }
 
+    .heuristic-dropdown {
+        height: 40px !important;
+    }
+
     #changeStart {
         width: 144px;
     }
@@ -730,17 +741,20 @@ th {
         align-items: end;
     }
 
-    .right-tutorial-buttons {
-        display: grid;
-        gap: 7px;
-    }
 
     .dropdown {
         height: 40px !important;
+        min-width: 140px !important;
     }
 
     .dropdown-menu {
         top: 44px;
+        min-width: 140px;
+    }
+
+    .heuristic-dropdown,
+    .heuristic-dropdown-menu {
+        min-width: 200px !important;
     }
 
     .graph-dropdown-menu,
@@ -748,6 +762,16 @@ th {
     .weight-dropdown-menu,
     .speed-dropdown-menu {
         top: -120px !important;
+    }
+
+    .secondary-graph-dropdown,
+    .secondary-graph-dropdown-menu {
+        min-width: 180px !important;
+    }
+
+    .weight-dropdown,
+    .weight-dropdown-menu {
+        margin-right: 10px;
     }
 
     .grids-container {
@@ -784,64 +808,49 @@ th {
         gap: 20px;
     }
 
+    .graph-dropdown-container {
+        justify-content: center;
+        margin-right: 0px;
+    }
+
+    .weight-controls {
+        justify-content: center;
+    }
+
     .bottom-right-container {
         width: 100%;
         order: 3;
         display: flex;
-        flex-direction: row;
         align-items: center;
     }
 
-    .graph-dropdown-container {
-        gap: 38px !important;
+    .graph-controls-container {
+        margin-top: 10px;
+        gap: 28px;
     }
 
-    .graph-buttons-container {
-        gap: 13px;
-    }
-
-    .bottom-right-container button {
-        min-width: auto;
-    }
-
-    .speed-control-container {
-        align-items: center;
-        gap: 11px;
-    }
-
-    #changeStart {
-        width: auto;
-    }
-
-    #speedDropdownButton,
-    #speedDropdownMenu {
-        margin-left: 15px;
+    #graphTypeDropdownText,
+    #weightControlsText,
+    #speedDropdownText {
+        display: none;
     }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1000px) {
     .modal-container {
         width: 60%;
     }
+}
 
-    .graph-dropdown-container {
-        gap: 34px;
-    }
-
-    .speed-control-container {
-        gap: 10px;
+@media screen and (max-width: 1000px) {
+    .modal-container {
+        width: 65%;
     }
 }
 
-@media screen and (max-width: 810px) {
+@media screen and (max-width: 840px) {
     .modal-container {
         width: 70%;
-    }
-}
-
-@media screen and (max-width: 700px) {
-    .modal-container {
-        width: 80%;
     }
 }
 
@@ -862,12 +871,23 @@ th {
         height: auto;
     }
 
-    .graph-dropdown-container {
-        gap: 35px !important;
+    .dropdown-menu {
+        top: 42px;
+    }
+
+    .dropdown {
+        height: 37px !important;
+        min-width: 130px !important;
     }
 
     .dropdown-menu {
-        top: 42px;
+        top: 44px;
+        min-width: 130px;
+    }
+
+    .secondary-graph-dropdown,
+    .secondary-graph-dropdown-menu {
+        min-width: 181px !important;
     }
 
     .graph-dropdown-menu,
@@ -877,6 +897,10 @@ th {
         top: -114px !important;
     }
 
+    .heuristic-dropdown,
+    .heuristic-dropdown-menu {
+        min-width: 200px !important;
+    }
 
     .grid-cell {
         width: var(--grid-cell-small-size);
@@ -903,20 +927,8 @@ th {
         font-size: var(--font-size-small);
     }
 
-    .dropdown {
-        height: 36px;
-    }
-
     .modal-container {
         width: 75%;
-    }
-
-    .weight-controls {
-        gap: 18px;
-    }
-
-    .speed-control-container {
-        gap: 11px;
     }
 
     .settings-container {
@@ -925,6 +937,16 @@ th {
 
     .dropdown-menu {
         top: 41px;
+        min-width: 120px;
+    }
+
+    .dropdown {
+        height: 35px !important;
+        min-width: 120px !important;
+    }
+
+    .weight-display {
+        font-size: var(--font-size-smaller) !important;
     }
 
     .graph-dropdown-menu,
@@ -934,13 +956,39 @@ th {
         top: -108px !important;
     }
 
+    .secondary-graph-dropdown,
+    .secondary-graph-dropdown-menu {
+        min-width: 182px !important;
+    }
+
+    .heuristic-dropdown,
+    .heuristic-dropdown-menu {
+        min-width: 180px !important;
+    }
+
+    .settings-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
     .grid-cell {
         width: var(--grid-cell-smallest-size);
         height: var(--grid-cell-smallest-size);
     }
 
-    #speedDropdownButton {
-        height: 49px !important;
+    #graphTypeDropdownText {
+        margin-right: 24px;
+    }
+
+    #speedDropdownText {
+        margin-right: 15px;
+    }
+
+    .right-tutorial-buttons {
+        display: grid;
+        gap: 7px;
     }
 }
 
@@ -948,11 +996,6 @@ th {
     .grid-cell {
         width: calc(var(--cell-size) * 0.6);
         height: calc(var(--cell-size) * 0.6);
-    }
-
-    .bottom-right-container {
-        flex-direction: column;
-        align-items: center;
     }
 }
 
@@ -964,5 +1007,9 @@ th {
     .grid-cell {
         width: var(--grid-cell-tiny-size);
         height: var(--grid-cell-tiny-size);
+    }
+
+    .weight-display {
+        font-size: var(--font-size-smallest) !important;
     }
 }

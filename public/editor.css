@@ -85,7 +85,6 @@ button {
     gap: 20px;
 }
 
-
 .grid-size-dropdown-menu {
     min-width: 135px;
     top: -197px;
@@ -93,6 +92,11 @@ button {
 
 .gridSizeDropdownMenu-item {
     text-align: center;
+}
+
+.grid-size-dropdown {
+    height: 40px !important;
+    min-width: 135px;
 }
 
 @media screen and (max-width: 1360px) {
@@ -145,6 +149,16 @@ button {
         gap: 0px;
     }
 
+    .grid-size-dropdown-menu {
+        min-width: 135px;
+        top: -197px;
+    }
+
+    .grid-size-dropdown {
+        height: 40px !important;
+        min-width: 135px !important;
+    }
+
     .grid-cell {
         width: var(--cell-size);
         height: var(--cell-size);
@@ -170,6 +184,15 @@ button {
 
     .dropdown-menu {
         top: 42px;
+    }
+
+    .grid-size-dropdown-menu {
+        min-width: 140px;
+        top: -185px;
+    }
+
+    .grid-size-dropdown {
+        min-width: 140px !important;
     }
 
     .grid-cell {
@@ -207,6 +230,10 @@ button {
         top: 41px;
     }
 
+    .grid-size-dropdown-menu {
+        top: -175px;
+    }
+
     .grid-cell {
         width: var(--grid-cell-smallest-size);
         height: var(--grid-cell-smallest-size);
@@ -228,5 +255,14 @@ button {
     .grid-cell {
         width: var(--grid-cell-tiny-size);
         height: var(--grid-cell-tiny-size);
+    }
+
+    button {
+        min-width: 115px !important;
+    }
+
+    .grid-size-dropdown-menu,
+    .grid-size-dropdown {
+        min-width: 115px !important;
     }
 }

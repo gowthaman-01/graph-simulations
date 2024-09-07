@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case EDITOR_MODE.SET_WEIGHT:
                 graphEditorDescription.innerHTML =
-                    'Adjust the slider to set the desired weight, then click or drag on the grid to apply it';
+                    'Adjust the slider, then drag on the grid to apply the weight';
                 break;
             case EDITOR_MODE.CHANGE_START_NODE:
                 graphEditorDescription.innerHTML =
@@ -148,11 +148,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case EDITOR_MODE.CHANGE_GRID_SIZE:
                 graphEditorDescription.innerHTML =
-                    'Modify the size of the grid by clicking on the dropdown menu and selecting a new size';
+                    'Click on the dropdown menu and select a new grid size';
                 break;
             case EDITOR_MODE.RESET:
-                graphEditorDescription.innerHTML =
-                    'Clear the entire grid and start over - this action cannot be undone!';
+                graphEditorDescription.innerHTML = 'Clear the entire grid and start over';
                 break;
             case EDITOR_MODE.BACK:
                 graphEditorDescription.innerHTML =
@@ -326,41 +325,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         weightSliderValue.innerHTML = `Weight: ${weightSlider.value}`;
     });
 
-    graphEditorElement.addEventListener('mousedown', (event) => {
-        const target = event.target as HTMLElement;
+    const handleNodeInteraction = (nodeId: number) => {
+        setSelectedNodeId(nodeId);
+        switch (editorMode) {
+            case EDITOR_MODE.ADD_WALLS:
+                setWeight(Infinity);
+                break;
+            case EDITOR_MODE.SET_WEIGHT:
+                setWeight(parseInt(weightSlider.value));
+                break;
+        }
+    };
+
+    const handleEvent = (target: HTMLElement) => {
         if (target.classList.contains('grid-cell') || target.classList.contains('weight-display')) {
             const nodeId = getNodeIdFromCellElementId(target.id);
-            setSelectedNodeId(nodeId);
-            switch (editorMode) {
-                case EDITOR_MODE.ADD_WALLS:
-                    setWeight(Infinity);
-                    break;
-                case EDITOR_MODE.SET_WEIGHT:
-                    setWeight(parseInt(weightSlider.value));
-                    break;
-            }
+            handleNodeInteraction(nodeId);
+        }
+    };
+
+    const handleTouchEvent = (event: TouchEvent) => {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+        handleEvent(target);
+    };
+
+    graphEditorElement.addEventListener('mousedown', (event) =>
+        handleEvent(event.target as HTMLElement),
+    );
+    graphEditorElement.addEventListener('touchstart', handleTouchEvent);
+
+    graphEditorElement.addEventListener('mouseover', (event) => {
+        if ((event as MouseEvent).buttons === 1) {
+            handleEvent(event.target as HTMLElement);
         }
     });
 
-    graphEditorElement.addEventListener('mouseover', (event) => {
-        // When the user is dragging the mouse, we want to handle the mouseover event
-        if (event.buttons === 1) {
-            const target = event.target as HTMLElement;
-            if (
-                target.classList.contains('grid-cell') ||
-                target.classList.contains('weight-display')
-            ) {
-                const nodeId = getNodeIdFromCellElementId(target.id);
-                setSelectedNodeId(nodeId);
-                switch (editorMode) {
-                    case EDITOR_MODE.ADD_WALLS:
-                        setWeight(Infinity);
-                        break;
-                    case EDITOR_MODE.SET_WEIGHT:
-                        setWeight(parseInt(weightSlider.value));
-                        break;
-                }
-            }
-        }
-    });
+    graphEditorElement.addEventListener('touchmove', handleTouchEvent);
 });

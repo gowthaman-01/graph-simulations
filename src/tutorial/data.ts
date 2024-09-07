@@ -20,11 +20,11 @@ export const tutorialDataList: TutorialData[] = [
         <br>
         <ul>
             <li><b>BFS (Breadth-First Search):</b> Ideal for unweighted graphs</li>
-            <li><b>Dijkstra:</b> Suitable for graphs with varying edge weights.</li>
+            <li><b>Dijkstra:</b> Ideal for graphs with non-negative weights.</li>
             <li><b>Bellman-Ford:</b> Capable of handling negative weights and detecting negative cycles.</li>
-            <li><b>A* Search:</b> Enhances Dijkstra's algorithm with heuristics to guide the search more efficiently towards the target.</li>
+            <li><b>A* Search:</b> Enhances Dijkstra's algorithm with heuristics to guide the search towards the target.</li>
             <li><b>DFS (Depth-First Search):</b> Explores each branch as far as possible before backtracking.</li>
-            <li><b>Greedy Best-First Search:</b> Prioritizes nodes that appear to be closest to the goal, using a heuristic to guide the search, but DOES NOT guarantee the shortest path.</li>
+            <li><b>Greedy Best-First Search:</b> Prioritizes nodes that appear to be closest to the goal, but DOES NOT guarantee the shortest path.</li>
         </ul>   
         Note: The A* Star search heuristics available in this simulation are the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">euclidean distance</a> and the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">manhattan distance</a>.`,
     },

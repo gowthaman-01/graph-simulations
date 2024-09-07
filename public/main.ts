@@ -91,8 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rightGraphDropdownMenu = document.getElementById(
         'rightGraphDropdownMenu',
     ) as HTMLDivElement;
-    const changeEndNodeButton = document.getElementById('changeEnd') as HTMLButtonElement;
-    const changeStartNodeButton = document.getElementById('changeStart') as HTMLButtonElement;
     const generateNewGraphButton = document.getElementById('newGraph') as HTMLButtonElement;
     const primaryGraphTypeDropdownButton = document.getElementById(
         'primaryGraphTypeDropdownButton',
@@ -142,8 +140,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         !leftGraphDropdownMenu ||
         !rightGraphDropdownButton ||
         !rightGraphDropdownMenu ||
-        !changeEndNodeButton ||
-        !changeStartNodeButton ||
         !generateNewGraphButton ||
         !primaryGraphTypeDropdownButton ||
         !primaryGraphTypeDropdownMenu ||
@@ -366,8 +362,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         secondaryGraphTypeDropdownButton,
         heuristicTypeDropdownButton,
         generateNewGraphButton,
-        changeStartNodeButton,
-        changeEndNodeButton,
         ...Array.from(openGraphEditorButtons),
     ];
 
@@ -432,20 +426,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             enableWeightControls();
             enableStepsSlider();
             enableSpeedControls();
-        }
-    };
-
-    const toggleButtonsDuringStartEndNodeChange = (
-        nodeState: NodeState,
-        toggle: STATUS.DISABLE | STATUS.ENABLE,
-    ) => {
-        toggleSimulationControls(toggle);
-
-        if (toggle === STATUS.DISABLE) {
-            toggleElement(
-                [nodeState === NodeState.StartNode ? changeStartNodeButton : changeEndNodeButton],
-                STATUS.ENABLE,
-            );
         }
     };
 
@@ -667,27 +647,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     viewSettingsButton.addEventListener('click', handleSettingsOpen);
 
     closeSettingsButton.addEventListener('click', handleSettingsClose);
-
-    changeStartNodeButton.addEventListener('click', () => {
-        const isEditor = false;
-        setNewStartEndNode(
-            NodeState.StartNode,
-            isEditor,
-            toggleButtonsDuringStartEndNodeChange,
-            resetGridAndRerun,
-        );
-    });
-
-    changeEndNodeButton.addEventListener('click', () => {
-        const isEditor = false;
-        setNewStartEndNode(
-            NodeState.EndNode,
-
-            isEditor,
-            toggleButtonsDuringStartEndNodeChange,
-            resetGridAndRerun,
-        );
-    });
 
     generateNewGraphButton.addEventListener('click', () => {
         if (globalVariablesManager.getGraphType() === GraphType.Custom) {
