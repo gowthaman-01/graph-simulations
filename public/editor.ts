@@ -280,9 +280,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleBackButton = () => {
         globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
         globalVariablesManager.setGraphType(GraphType.Custom);
-        if (globalVariablesManager.getWeightType() === WeightType.Negative) {
-            globalVariablesManager.setWeightType(WeightType.NonNegative);
-        }
+        globalVariablesManager.setWeightType(WeightType.NonNegative);
         globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };
