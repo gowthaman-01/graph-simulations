@@ -59,3 +59,5 @@ export enum EDITOR_MODE {
     BACK = 'BACK',
     NONE = 'NONE',
 }
+
+export const COOKIE_KEY = 'pathium-global-variables';
