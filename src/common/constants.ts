@@ -60,4 +60,4 @@ export enum EDITOR_MODE {
     NONE = 'NONE',
 }
 
-export const COOKIE_KEY = 'pathium-global-variables';
+export const LOCAL_STORAGE_KEY = 'pathium-global-variables';

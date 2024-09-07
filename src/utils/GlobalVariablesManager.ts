@@ -1,4 +1,4 @@
-import { AVERAGE_SPEED, COOKIE_KEY, GRAPH_POSITION } from '../common/constants';
+import { AVERAGE_SPEED, LOCAL_STORAGE_KEY, GRAPH_POSITION } from '../common/constants';
 import {
     AlgorithmType,
     HeuristicType,
@@ -348,7 +348,7 @@ class GlobalVariablesManager {
             customGraph: serializedCustomGraph,
         };
 
-        localStorage.setItem(COOKIE_KEY, JSON.stringify(data));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
     }
 
     private loadFromLocalStorage(): {
@@ -364,7 +364,8 @@ class GlobalVariablesManager {
         simulationSpeed: SimulationSpeed;
         customGraph: GraphStructure | null;
     } | null {
-        const data = localStorage.getItem(COOKIE_KEY);
+        const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+
         if (!data) {
             return null;
         }
