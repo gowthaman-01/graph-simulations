@@ -1,5 +1,4 @@
-import { GRAPH_POSITION } from '../common/constants';
-import { Node, NodeState } from '../common/types';
+import { Node, NodeState, GRAPH_POSITION } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { getColorByWeight } from './color';
 

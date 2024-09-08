@@ -1,5 +1,4 @@
 import { CustomDropdown } from '../utils/CustomDropdown';
-import { GRAPH_POSITION } from './constants';
 
 export type Node = number;
 
@@ -129,4 +128,41 @@ export interface Dropdowns {
     speedDropdown: CustomDropdown;
     heuristicTypeDropdown: CustomDropdown;
     weightDropdown: CustomDropdown;
+}
+
+export enum GRAPH_POSITION {
+    LEFT = 'left',
+    RIGHT = 'right',
+    EDITOR = 'editor',
+}
+
+export enum DISPLAY_STYLE {
+    FLEX = 'flex',
+    NONE = 'none',
+    BLOCK = 'block',
+}
+
+export enum CURSOR_STYLE {
+    POINTER = 'pointer',
+    NOT_ALLOWED = 'not-allowed',
+}
+
+export enum STATUS {
+    ENABLE = 'ENABLE',
+    DISABLE = 'DISABLE',
+    SHOW = 'SHOW',
+    HIDE = 'HIDE',
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+}
+
+export enum EDITOR_MODE {
+    ADD_WALLS = 'ADD_WALLS',
+    SET_WEIGHT = 'SET_WEIGHT',
+    CHANGE_START_NODE = 'CHANGE_START_NODE',
+    CHANGE_END_NODE = 'CHANGE_END_NODE',
+    CHANGE_GRID_SIZE = 'CHANGE_GRID_SIZE',
+    RESET = 'RESET',
+    BACK = 'BACK',
+    NONE = 'NONE',
 }

@@ -1,5 +1,5 @@
-import { CURSOR_STYLE, DISPLAY_STYLE, MAX_WEIGHT, STATUS } from '../common/constants';
-import { AlgorithmType, NodeState } from '../common/types';
+import { MAX_WEIGHT } from '../common/constants';
+import { AlgorithmType, CURSOR_STYLE, DISPLAY_STYLE, NodeState, STATUS } from '../common/types';
 import { getColorByWeight } from './color';
 import { resetGrid } from './display';
 import { getNodeIdFromCellElementId } from './general';

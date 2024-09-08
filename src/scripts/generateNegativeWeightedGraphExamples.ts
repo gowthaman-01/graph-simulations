@@ -37,29 +37,29 @@ const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
 
 const saveGraphsToFile = (graphType: GraphType, graphList: GraphStorage[]) => {
     fs.writeFileSync(
-        `./src/scripts/negative${graphType}GraphExamples.json`,
+        `./src/scripts/negativeWeighted${graphType}GraphExamples.json`,
         JSON.stringify(graphList),
     );
 };
 
-const negativeStandardGraphExamples: GraphStorage[] = [];
-generateGraphs(GraphType.Standard, negativeStandardGraphExamples);
+const negativeWeightedStandardGraphExamples: GraphStorage[] = [];
+generateGraphs(GraphType.Standard, negativeWeightedStandardGraphExamples);
 
-const negativeRecursiveDivisionGraphExamples: GraphStorage[] = [];
-generateGraphs(GraphType.RecursiveDivision, negativeRecursiveDivisionGraphExamples);
+const negativeWeightedRecursiveDivisionGraphExamples: GraphStorage[] = [];
+generateGraphs(GraphType.RecursiveDivision, negativeWeightedRecursiveDivisionGraphExamples);
 
-const negativeDfsGraphExamples: GraphStorage[] = [];
-generateGraphs(GraphType.DFS, negativeDfsGraphExamples);
+const negativeWeightedDfsGraphExamples: GraphStorage[] = [];
+generateGraphs(GraphType.DFS, negativeWeightedDfsGraphExamples);
 
-const negativeRandomWallGraphExamples: GraphStorage[] = [];
-generateGraphs(GraphType.RandomWalls, negativeRandomWallGraphExamples);
+const negativeWeightedRandomWallGraphExamples: GraphStorage[] = [];
+generateGraphs(GraphType.RandomWalls, negativeWeightedRandomWallGraphExamples);
 
 try {
     // Write the generated graphs to a JSON file
-    saveGraphsToFile(GraphType.Standard, negativeStandardGraphExamples);
-    saveGraphsToFile(GraphType.RecursiveDivision, negativeRecursiveDivisionGraphExamples);
-    saveGraphsToFile(GraphType.DFS, negativeDfsGraphExamples);
-    saveGraphsToFile(GraphType.RandomWalls, negativeRandomWallGraphExamples);
+    saveGraphsToFile(GraphType.Standard, negativeWeightedStandardGraphExamples);
+    saveGraphsToFile(GraphType.RecursiveDivision, negativeWeightedRecursiveDivisionGraphExamples);
+    saveGraphsToFile(GraphType.DFS, negativeWeightedDfsGraphExamples);
+    saveGraphsToFile(GraphType.RandomWalls, negativeWeightedRandomWallGraphExamples);
 } catch (err) {
     console.error(err);
 }

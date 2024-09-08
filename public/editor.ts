@@ -1,11 +1,3 @@
-import {
-    DEFAULT_WEIGHT,
-    DISPLAY_STYLE,
-    EDITOR_MODE,
-    GRAPH_POSITION,
-    STATUS,
-} from '../src/common/constants';
-import { AlgorithmType, GraphDiv, GraphType, NodeState, WeightType } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
 import {
@@ -22,6 +14,18 @@ import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
 import { generateNewGraph } from '../src/utils/graph';
+import {
+    AlgorithmType,
+    DISPLAY_STYLE,
+    EDITOR_MODE,
+    GRAPH_POSITION,
+    GraphDiv,
+    GraphType,
+    NodeState,
+    STATUS,
+    WeightType,
+} from '../src/common/types';
+import { DEFAULT_WEIGHT } from '../src/common/constants';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;

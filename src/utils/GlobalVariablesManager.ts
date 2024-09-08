@@ -1,4 +1,4 @@
-import { AVERAGE_SPEED, LOCAL_STORAGE_KEY, GRAPH_POSITION } from '../common/constants';
+import { AVERAGE_SPEED, LOCAL_STORAGE_KEY } from '../common/constants';
 import {
     AlgorithmType,
     HeuristicType,
@@ -9,6 +9,7 @@ import {
     Node,
     WeightType,
     Dropdowns,
+    GRAPH_POSITION,
 } from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNode } from './graph';
@@ -227,6 +228,7 @@ class GlobalVariablesManager {
     }
 
     public getTutorialPageMin(): number {
+        this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         return this.TUTORIAL_PAGE_MIN;
     }
 

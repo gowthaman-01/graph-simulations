@@ -9,9 +9,6 @@ import {
     SLOW_SPEED,
     FAST_SPEED,
     TOTAL_TUTORIAL_PAGES,
-    STATUS,
-    DISPLAY_STYLE,
-    GRAPH_POSITION,
 } from '../src/common/constants';
 import {
     HeuristicType,
@@ -24,6 +21,9 @@ import {
     WeightType,
     Dropdowns,
     GraphStorage,
+    STATUS,
+    DISPLAY_STYLE,
+    GRAPH_POSITION,
 } from '../src/common/types';
 import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
 import {
@@ -50,10 +50,10 @@ import { CustomDropdown } from '../src/utils/CustomDropdown';
 import { toggleElement, toggleElementVisibility } from '../src/utils/element';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 
-import negativeStandardGraphExamples from '../src/scripts/negativeStandardGraphExamples.json';
-import negativeRecursiveDivisionGraphExamples from '../src/scripts/negativeRecursiveDivisionGraphExamples.json';
-import negativeDfsGraphExamples from '../src/scripts/negativeDFSGraphExamples.json';
-import negativeRandomWallsGraphExamples from '../src/scripts/negativeRandomWallsGraphExamples.json';
+import negativeWeightedStandardGraphExamples from '../src/scripts/negativeWeightedStandardGraphExamples.json';
+import negativeWeightedRecursiveDivisionGraphExamples from '../src/scripts/negativeWeightedRecursiveDivisionGraphExamples.json';
+import negativeWeightedDfsGraphExamples from '../src/scripts/negativeWeightedDFSGraphExamples.json';
+import negativeWeightedRandomWallsGraphExamples from '../src/scripts/negativeWeightedRandomWallsGraphExamples.json';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -168,7 +168,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialising the Global Variables Manager and setting the default graph.
+    const graphControlElements = [
+        heuristicTypeDropdownButton,
+        leftGraphDropdownButton,
+        rightGraphDropdownButton,
+        primaryGraphTypeDropdownButton,
+        secondaryGraphTypeDropdownButton,
+        heuristicTypeDropdownButton,
+        generateNewGraphButton,
+        ...Array.from(openGraphEditorButtons),
+    ];
+
+    // Initialising the Global Variables Manager and setting the default algorithm types.
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     globalVariablesManager.setGraphDivs(
         {
@@ -183,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
     );
 
-    // Dropdowns setup function.
+    /* Initialises the dropdown buttons and sets up their functionality. */
     const setupDropdowns = (): Dropdowns => {
         const setNewGraphDiv = (newAlgorithmType: AlgorithmType, graphPosition: GRAPH_POSITION) => {
             const graphDivs = globalVariablesManager.getGraphDivs(false);
@@ -265,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } else {
                     if (globalVariablesManager.getWeightType() === WeightType.Negative) {
-                        getNegativeGraphExample(graphType);
+                        getNegativeWeightedGraphExample(graphType);
                         resetGridAndRerun();
                     } else {
                         generateNewGraphWithReachableEndNode(resetGridAndRerun);
@@ -296,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 globalVariablesManager.setGraphType(graphType);
 
                 if (globalVariablesManager.getWeightType() === WeightType.Negative) {
-                    getNegativeGraphExample(graphType);
+                    getNegativeWeightedGraphExample(graphType);
                     resetGridAndRerun();
                 } else {
                     generateNewGraphWithReachableEndNode(resetGridAndRerun);
@@ -354,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } else {
                     if (weightType === WeightType.Negative) {
-                        getNegativeGraphExample(globalVariablesManager.getGraphType());
+                        getNegativeWeightedGraphExample(globalVariablesManager.getGraphType());
                         resetGridAndRerun();
                     } else {
                         generateNewGraphWithReachableEndNode(resetGridAndRerun);
@@ -385,6 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     };
 
+    /* Helper functions to disable and enable controls. */
     const disableWeightControls = () => {
         toggleElement([weightDropdownButton], STATUS.DISABLE);
     };
@@ -392,17 +404,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const enableWeightControls = () => {
         toggleElement([weightDropdownButton], STATUS.ENABLE);
     };
-
-    const graphControlElements = [
-        heuristicTypeDropdownButton,
-        leftGraphDropdownButton,
-        rightGraphDropdownButton,
-        primaryGraphTypeDropdownButton,
-        secondaryGraphTypeDropdownButton,
-        heuristicTypeDropdownButton,
-        generateNewGraphButton,
-        ...Array.from(openGraphEditorButtons),
-    ];
 
     const disableGraphControls = () => {
         toggleElement(graphControlElements, STATUS.DISABLE);
@@ -444,16 +445,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleElement([speedDropdownButton], STATUS.ENABLE);
     };
 
-    const hideWeightControls = () => {
-        toggleElementVisibility([weightControls], DISPLAY_STYLE.NONE);
-        weightDropdownButton.style.cursor = 'default';
-    };
-
-    const showWeightControls = () => {
-        toggleElementVisibility([weightControls], DISPLAY_STYLE.FLEX);
-        weightDropdownButton.style.cursor = 'pointer';
-    };
-
     const toggleSimulationControls = (status: STATUS.ENABLE | STATUS.DISABLE) => {
         if (status === STATUS.DISABLE) {
             disableGraphControls();
@@ -484,6 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         button.style.display = show === STATUS.SHOW ? 'inline' : 'none';
     };
 
+    /* Tutorial and settings modal helper functions. */
     const updateTutorialButtonsAndPageNumber = () => {
         const currentPageNumber = globalVariablesManager.getTutorialPageNumber();
 
@@ -529,7 +521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Blur background.
         mainBodyDiv.classList.add('main-body-blur');
 
-        // Close Settings modal.
+        // Hide Settings modal.
         toggleElementVisibility([settingsModalDiv], DISPLAY_STYLE.NONE);
 
         // Show Tutorial modal.
@@ -540,6 +532,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateTutorialButtonsAndPageNumber();
     };
 
+    // Expose openTutorialPage to window object for tutorial page navigation directly from HTML.
+    window.openTutorialPage = openTutorialPage;
+
+    /* Retrieves the run results for the specified algorithms to rerun. Defaults to all algorithms. */
     const getRunResults = (algorithmsToRerun = Object.values(AlgorithmType)) => {
         const isEditor = false;
         const graphDivs = globalVariablesManager.getGraphDivs(isEditor);
@@ -584,6 +580,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         globalVariablesManager.setRunResults(newRunResults);
     };
 
+    /* Resets the grid, statistics table, steps slider and reruns the algorithms. */
     const resetGridAndRerun = (algorithmsToRerun = Object.values(AlgorithmType)) => {
         getRunResults(algorithmsToRerun);
         resetGrid();
@@ -591,84 +588,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetStepsSlider();
     };
 
-    const getNegativeGraphExample = (graphType: GraphType) => {
-        let negativeGraphExamples: GraphStorage[];
+    /* Generates a negative weighted graph example where Bellman-Ford is the fastest algorithm. */
+    const getNegativeWeightedGraphExample = (graphType: GraphType) => {
+        let negativeWeightedGraphExamples: GraphStorage[];
         switch (graphType) {
             case GraphType.Standard:
-                negativeGraphExamples = negativeStandardGraphExamples as GraphStorage[];
+                negativeWeightedGraphExamples =
+                    negativeWeightedStandardGraphExamples as GraphStorage[];
                 break;
             case GraphType.RecursiveDivision:
-                negativeGraphExamples = negativeRecursiveDivisionGraphExamples as GraphStorage[];
+                negativeWeightedGraphExamples =
+                    negativeWeightedRecursiveDivisionGraphExamples as GraphStorage[];
                 break;
             case GraphType.RandomWalls:
-                negativeGraphExamples = negativeRandomWallsGraphExamples as GraphStorage[];
+                negativeWeightedGraphExamples =
+                    negativeWeightedRandomWallsGraphExamples as GraphStorage[];
                 break;
             case GraphType.DFS:
-                negativeGraphExamples = negativeDfsGraphExamples as GraphStorage[];
+                negativeWeightedGraphExamples = negativeWeightedDfsGraphExamples as GraphStorage[];
                 break;
             default:
-                negativeGraphExamples = negativeStandardGraphExamples as GraphStorage[];
+                negativeWeightedGraphExamples =
+                    negativeWeightedStandardGraphExamples as GraphStorage[];
                 break;
         }
 
-        const negativeGraphExample = negativeGraphExamples[
-            Math.floor(Math.random() * negativeGraphExamples.length)
+        const negativeWeightedGraphExample = negativeWeightedGraphExamples[
+            Math.floor(Math.random() * negativeWeightedGraphExamples.length)
         ] as GraphStorage;
         globalVariablesManager.setGraph({
-            graph: negativeGraphExample.graph,
-            nodes: negativeGraphExample.nodes.map((node) => (node === -1 ? Infinity : node)),
+            graph: negativeWeightedGraphExample.graph,
+            nodes: negativeWeightedGraphExample.nodes.map((node) =>
+                node === -1 ? Infinity : node,
+            ),
         });
-        globalVariablesManager.setStartNode(negativeGraphExample.startNode);
-        globalVariablesManager.setEndNode(negativeGraphExample.endNode);
+        globalVariablesManager.setStartNode(negativeWeightedGraphExample.startNode);
+        globalVariablesManager.setEndNode(negativeWeightedGraphExample.endNode);
     };
 
-    // Render tutorial upon page load.
-    if (globalVariablesManager.getShowTutorial()) {
-        handleTutorialOpen();
-        globalVariablesManager.setShowTutorial(false);
-        globalVariablesManager.saveToLocalStorage();
-    } else {
-        handleTutorialClose();
-    }
-    // Setup of controls on initial page load.
-    setWeightColor();
-    resetStepsSlider();
-    enableStepsSlider();
-    enableSpeedControls();
-    enableGraphControls();
-
-    // Setup dropdowns.
-    const dropdowns = setupDropdowns();
-    globalVariablesManager.setDropdowns(dropdowns);
-
-    window.openTutorialPage = openTutorialPage;
-
-    if (
-        globalVariablesManager.getGraphType() === GraphType.Standard ||
-        globalVariablesManager.getGraphType() === GraphType.Custom
-    ) {
-        disableSecondaryGraphTypeDropdown();
-    } else {
-        enableSecondaryGraphTypeDropdown();
-    }
-
-    //There is no previous button on the first page of the tutorial.
-    toggleTutorialButton('P', STATUS.HIDE);
-
-    // Generate the graphs and run results.
-    resetGridAndRerun();
-
-    await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
-
-    // Event listeners for control elements.
+    /* Add event listeners for control elements. */
     runButton.addEventListener('click', async () => {
         if (globalVariablesManager.getIsSimulationRunning()) {
+            // If button is clicked while simulation is running, stop simulation.
             globalVariablesManager.stopSimulation();
             runButton.innerHTML = 'Run';
         } else {
             globalVariablesManager.setIsSimulationRunning();
             runButton.innerHTML = 'Stop';
 
+            // Disable control elements while simulation is running.
             toggleSimulationControls(STATUS.DISABLE);
 
             // Reset grid before running the simulation on subsequent renders.
@@ -691,15 +659,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     viewTutorialButton.addEventListener('click', handleTutorialOpen);
 
     tutorialNextButton.addEventListener('click', () => {
-        const currentPageNumber = globalVariablesManager.incrementTutorialPageNumber();
-        renderTutorialContent(currentPageNumber, tutorialContentDiv);
-        updateTutorialButtonsAndPageNumber();
+        openTutorialPage(globalVariablesManager.incrementTutorialPageNumber());
     });
 
     tutorialPreviousButton.addEventListener('click', () => {
-        const currentPageNumber = globalVariablesManager.decrementTutorialPageNumber();
-        renderTutorialContent(currentPageNumber, tutorialContentDiv);
-        updateTutorialButtonsAndPageNumber();
+        openTutorialPage(globalVariablesManager.decrementTutorialPageNumber());
     });
 
     tutorialSkipButton.addEventListener('click', handleTutorialClose);
@@ -711,6 +675,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeSettingsButton.addEventListener('click', handleSettingsClose);
 
     generateNewGraphButton.addEventListener('click', () => {
+        // If the graph type is custom, reset to standard graph type and update dropdown.
         if (globalVariablesManager.getGraphType() === GraphType.Custom) {
             globalVariablesManager.setGraphType(GraphType.Standard);
             const dropdowns = globalVariablesManager.getDropdowns();
@@ -722,8 +687,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Generate a negative weighted graph example if the weight type is negative.
         if (globalVariablesManager.getWeightType() === WeightType.Negative) {
-            getNegativeGraphExample(globalVariablesManager.getGraphType());
+            getNegativeWeightedGraphExample(globalVariablesManager.getGraphType());
             resetGridAndRerun();
         } else {
             generateNewGraphWithReachableEndNode(resetGridAndRerun);
@@ -772,7 +738,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     infoButton.addEventListener('click', () => {
-        handleTutorialOpen();
         openTutorialPage(3);
     });
+
+    // Render tutorial upon page load.
+    if (globalVariablesManager.getShowTutorial()) {
+        handleTutorialOpen();
+
+        // Prevent tutorial from showing again by saving user settings to local storage.
+        globalVariablesManager.setShowTutorial(false);
+        globalVariablesManager.saveToLocalStorage();
+    } else {
+        handleTutorialClose();
+    }
+
+    /* Initialization during page load. */
+    const initializePage = async () => {
+        setWeightColor();
+        resetStepsSlider();
+        enableStepsSlider();
+        enableSpeedControls();
+        enableGraphControls();
+
+        // Store dropdowns.
+        const dropdowns = setupDropdowns();
+        globalVariablesManager.setDropdowns(dropdowns);
+
+        // Secondary dropdown is disabled for standard and custom graph types.
+        if (
+            globalVariablesManager.getGraphType() === GraphType.Standard ||
+            globalVariablesManager.getGraphType() === GraphType.Custom
+        ) {
+            disableSecondaryGraphTypeDropdown();
+        } else {
+            enableSecondaryGraphTypeDropdown();
+        }
+
+        // Hide the previous button on the first page of the tutorial.
+        if (globalVariablesManager.getTutorialPageNumber() === 1) {
+            toggleTutorialButton('P', STATUS.HIDE);
+        }
+
+        // Generate the graphs and run results.
+        resetGridAndRerun();
+
+        await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
+    };
+
+    initializePage();
 });
