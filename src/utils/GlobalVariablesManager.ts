@@ -12,7 +12,7 @@ import {
     GRAPH_POSITION,
 } from '../common/types';
 import RunResults from './RunResults';
-import { createBasicGridGraph, generateAndStoreStartAndEndNodeForStandardGraph } from './graph';
+import { createBasicGridGraph, generateStartAndEndNodeForStandardGraph } from './graph';
 import { LocalStorage } from 'node-localstorage';
 
 // const localStorage =
@@ -66,8 +66,9 @@ class GlobalVariablesManager {
         } else {
             this.gridSize = 400;
             this.graph = createBasicGridGraph(true, this.gridSize);
-            const { startNode, endNode } = generateAndStoreStartAndEndNodeForStandardGraph(
+            const { startNode, endNode } = generateStartAndEndNodeForStandardGraph(
                 this.graph.nodes,
+                this.gridSize,
             );
             this.startNode = startNode;
             this.endNode = endNode;

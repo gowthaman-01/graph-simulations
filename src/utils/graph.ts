@@ -1,6 +1,7 @@
 import { getCellIdFromRowAndColumn, randomWeight, shuffleArray } from './general';
 import {
     Graph,
+    GraphStorage,
     GraphStructure,
     GraphType,
     Nodes,
@@ -48,9 +49,10 @@ const generateAndStoreNewGraph = () => {
     globalVariablesManager.setGraph(newGraph);
 };
 
-export const generateAndStoreStartAndEndNodeForStandardGraph = (nodes: Nodes): StartEndNodes => {
-    const globalVariablesManager = getGlobalVariablesManagerInstance();
-    const gridSize = globalVariablesManager.getGridSize();
+export const generateStartAndEndNodeForStandardGraph = (
+    nodes: Nodes,
+    gridSize: number,
+): StartEndNodes => {
     let startNode;
     do {
         startNode = Math.floor(Math.random() * gridSize);
@@ -60,9 +62,6 @@ export const generateAndStoreStartAndEndNodeForStandardGraph = (nodes: Nodes): S
     do {
         endNode = Math.floor(Math.random() * gridSize);
     } while (startNode === endNode || nodes[endNode] > 10 || endNode >= gridSize);
-
-    globalVariablesManager.setStartNode(startNode);
-    globalVariablesManager.setEndNode(endNode);
 
     return { startNode, endNode };
 };
@@ -132,11 +131,15 @@ const createBasicGridGraphDuringSubsequentRenders = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
     const gridSize = globalVariablesManager.getGridSize();
+    const graphStorage = createBasicGridGraph(isWeighted, gridSize);
 
-    return createBasicGridGraph(isWeighted, gridSize);
+    globalVariablesManager.setStartNode(graphStorage.startNode);
+    globalVariablesManager.setEndNode(graphStorage.endNode);
+
+    return { graph: graphStorage.graph, nodes: graphStorage.nodes };
 };
 
-export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): GraphStructure => {
+export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): GraphStorage => {
     const graph: Graph = {};
     const nodes: Nodes = [];
 
@@ -146,8 +149,8 @@ export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): Gra
     }
 
     createGraphConnections(graph, gridSize);
-    generateAndStoreStartAndEndNodeForStandardGraph(nodes);
-    return { graph, nodes };
+    const { startNode, endNode } = generateStartAndEndNodeForStandardGraph(nodes, gridSize);
+    return { graph, nodes, startNode, endNode };
 };
 
 /**
