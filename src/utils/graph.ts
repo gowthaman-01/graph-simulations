@@ -48,7 +48,7 @@ const generateAndStoreNewGraph = () => {
     globalVariablesManager.setGraph(newGraph);
 };
 
-const generateAndStoreStartAndEndNodeForStandardGraph = (nodes: Nodes): StartEndNodes => {
+export const generateAndStoreStartAndEndNodeForStandardGraph = (nodes: Nodes): StartEndNodes => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const gridSize = globalVariablesManager.getGridSize();
     let startNode;
