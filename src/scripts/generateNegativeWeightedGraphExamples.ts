@@ -1,6 +1,6 @@
 import { AlgorithmType, GraphStorage, GraphType, WeightType } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
-import { generateNewGraph } from '../utils/graph';
+import { generateNewGraphWithReachableEndNode } from '../utils/graph';
 import { runAlgorithm } from '../utils/run';
 import * as fs from 'fs';
 
@@ -10,7 +10,7 @@ globalVariablesManager.setWeightType(WeightType.Negative);
 const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
     while (graphList.length < 100) {
         globalVariablesManager.setGraphType(graphType);
-        generateNewGraph();
+        generateNewGraphWithReachableEndNode(() => {});
         const [dijkstraRunResult, bellmanFordRunResult, aStarRunResult] = [
             AlgorithmType.Dijkstra,
             AlgorithmType.BellmanFord,

@@ -13,7 +13,7 @@ import {
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
 import { CustomDropdown } from '../src/utils/CustomDropdown';
-import { generateNewGraph } from '../src/utils/graph';
+import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 import {
     AlgorithmType,
     DISPLAY_STYLE,
@@ -101,8 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         getGridSizeDisplayName(globalVariablesManager.getGridSize()),
         (dataValue) => {
             globalVariablesManager.setGridSize(parseInt(dataValue));
-            generateNewGraph();
-            resetGrid();
+            generateNewGraphWithReachableEndNode(resetGrid);
         },
     );
 
