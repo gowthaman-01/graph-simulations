@@ -1,4 +1,4 @@
-import { AVERAGE_SPEED, LOCAL_STORAGE_KEY } from '../common/constants';
+import { AVERAGE_SPEED, DEFAULT_GRID_SIZE, LOCAL_STORAGE_KEY } from '../common/constants';
 import {
     AlgorithmType,
     HeuristicType,
@@ -64,7 +64,7 @@ class GlobalVariablesManager {
             this.simulationSpeed = savedData.simulationSpeed;
             this.customGraph = savedData.customGraph;
         } else {
-            this.gridSize = 400;
+            this.gridSize = DEFAULT_GRID_SIZE;
             this.graph = createBasicGridGraph(true, this.gridSize);
             const { startNode, endNode } = generateStartAndEndNodeForStandardGraph(
                 this.graph.nodes,

@@ -9,6 +9,7 @@ import {
     SLOW_SPEED,
     FAST_SPEED,
     TOTAL_TUTORIAL_PAGES,
+    DEFAULT_GRID_SIZE,
 } from '../src/common/constants';
 import {
     HeuristicType,
@@ -591,6 +592,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     /* Generates a negative weighted graph example where Bellman-Ford is the fastest algorithm. */
     const getNegativeWeightedGraphExample = (graphType: GraphType) => {
         let negativeWeightedGraphExamples: GraphStorage[];
+        globalVariablesManager.setGridSize(DEFAULT_GRID_SIZE);
         switch (graphType) {
             case GraphType.Standard:
                 negativeWeightedGraphExamples =
@@ -725,8 +727,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const graphDiv = runResult.getGraphDiv();
                 // Show the shortest path for the slowest algorithm.
                 // Shortest paths for other algorithms are displayed as part of the run results.
-                if (graphDiv && runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
-                    displayShortestPath(runResult.getShortestPath(), graphDiv);
+                if (graphDiv) {
+                    if (runResult.getLatestTotalSteps() === maxStepsOfAllAlgorithms) {
+                        displayShortestPath(runResult.getShortestPath(), graphDiv);
+                    } else {
+                        displayStep(runResult.getLatestTotalSteps(), runResult);
+                    }
                 }
             });
         }
