@@ -54,16 +54,12 @@ export const generateAndStoreStartAndEndNodeForStandardGraph = (nodes: Nodes): S
     let startNode;
     do {
         startNode = Math.floor(Math.random() * gridSize);
-    } while (nodes[startNode] > 10 || globalVariablesManager.getStartNode() >= gridSize);
+    } while (nodes[startNode] > 10 || startNode >= gridSize);
 
     let endNode;
     do {
         endNode = Math.floor(Math.random() * gridSize);
-    } while (
-        startNode === endNode ||
-        nodes[endNode] > 10 ||
-        globalVariablesManager.getEndNode() >= gridSize
-    );
+    } while (startNode === endNode || nodes[endNode] > 10 || endNode >= gridSize);
 
     globalVariablesManager.setStartNode(startNode);
     globalVariablesManager.setEndNode(endNode);
@@ -151,7 +147,6 @@ export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): Gra
 
     createGraphConnections(graph, gridSize);
     generateAndStoreStartAndEndNodeForStandardGraph(nodes);
-
     return { graph, nodes };
 };
 

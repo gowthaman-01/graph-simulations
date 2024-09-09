@@ -80,7 +80,7 @@ class GlobalVariablesManager {
             this.customGraph = null;
         }
         this.runResults = [];
-        this.endNodeReachable = false;
+        this.endNodeReachable = true;
         this.containsNegativeWeightCycle = false;
         this.tutorialPageNumber = this.TUTORIAL_PAGE_MIN;
         this.rightGraphDiv = null;
