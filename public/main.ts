@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     infoButton.addEventListener('click', () => {
-        openTutorialPage(3);
+        openTutorialPage(4);
     });
 
     // Render tutorial upon page load.
