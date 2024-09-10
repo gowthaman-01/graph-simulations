@@ -5,7 +5,7 @@ import {
     HeuristicType,
     Node,
     SimulationSpeed,
-    WeightType,
+    EnvironmentType,
 } from '../common/types';
 import { getColorByWeight } from './color';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
@@ -186,16 +186,16 @@ export const getHeuristicTypeDisplayName = (heuristicType: HeuristicType): strin
     }
 };
 
-export const getWeightTypeDisplayName = (weightType: WeightType): string => {
-    switch (weightType) {
-        case WeightType.Unweighted:
-            return 'Unweighted';
-        case WeightType.Negative:
-            return 'Negative';
-        case WeightType.NonNegative:
-            return 'Non-Negative';
+export const getWeightTypeDisplayName = (environmentType: EnvironmentType): string => {
+    switch (environmentType) {
+        case EnvironmentType.FlatTerrain:
+            return 'Flat Terrain';
+        case EnvironmentType.ElevatedTerrain:
+            return 'Elevated Terrain';
+        case EnvironmentType.RoadNetwork:
+            return 'Road Network';
         default:
-            return 'Unweighted';
+            return 'Flat Terrain';
     }
 };
 

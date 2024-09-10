@@ -128,7 +128,7 @@ export const resetStatisticTable = () => {
     <tr>
         <th>Algorithm</th>
         <th>Steps</th>
-        <th>Weight</th>
+        <th>Cost</th>
         <th>Nodes</th>
     </tr>`;
 

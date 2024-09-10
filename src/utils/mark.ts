@@ -1,4 +1,4 @@
-import { Node, NodeState, GRAPH_POSITION } from '../common/types';
+import { Node, NodeState, GRAPH_POSITION, EnvironmentType } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { getColorByWeight } from './color';
 
@@ -54,6 +54,7 @@ export const createMark = (
     graphPosition: GRAPH_POSITION,
 ): HTMLImageElement | HTMLParagraphElement => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
+    const environmentType = globalVariablesManager.getEnvironmentType();
 
     // If the node is unvisited and weights should be displayed, create a paragraph element to show the weight.
     if (nodeState === NodeState.Unvisited && globalVariablesManager.shouldShowWeights()) {
@@ -82,8 +83,22 @@ export const createMark = (
         switch (nodeState) {
             case NodeState.StartNode:
             case NodeState.EndNode:
-                mark.src = `./assets/${nodeState}.png`;
-                mark.classList.add('mark-large');
+                if (environmentType === EnvironmentType.RoadNetwork) {
+                    if (nodeState === NodeState.StartNode) {
+                        mark.src = './assets/car.png';
+                        mark.style.width = '150%';
+                    } else {
+                        mark.src = './assets/pin.png';
+                        mark.style.width = '80%';
+                        mark.style.opacity = '0.9';
+                    }
+                } else {
+                    mark.src =
+                        nodeState === NodeState.StartNode
+                            ? './assets/golf.png'
+                            : './assets/flag.png';
+                    mark.classList.add('mark-large');
+                }
                 break;
             case NodeState.Exploring:
             case NodeState.Visited:

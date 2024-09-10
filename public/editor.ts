@@ -23,7 +23,7 @@ import {
     GraphType,
     NodeState,
     STATUS,
-    WeightType,
+    EnvironmentType,
 } from '../src/common/types';
 import { DEFAULT_WEIGHT } from '../src/common/constants';
 
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         displayGrid(graphEditorDiv);
     };
 
-    if (globalVariablesManager.getWeightType() === WeightType.Unweighted) {
+    if (globalVariablesManager.getEnvironmentType() === EnvironmentType.FlatTerrain) {
         const newNodes = Array(globalVariablesManager.getGridSize()).fill(1);
         globalVariablesManager.setNodes(newNodes);
     }
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleBackButton = () => {
         globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
         globalVariablesManager.setGraphType(GraphType.Custom);
-        globalVariablesManager.setWeightType(WeightType.NonNegative);
+        globalVariablesManager.setWeightType(EnvironmentType.RoadNetwork);
         globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };

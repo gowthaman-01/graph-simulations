@@ -31,79 +31,66 @@ export const tutorialDataList: TutorialData[] = [
     {
         pageNumber: 3,
         title: 'Grid Graphs',
-        body: `Each node (cell) in the grid graph has a weight associated with it. Nodes with higher weights are indicated by darker backgrounds. 
-        <br><br>Let's consider Node A with an weight of 87 and Node B with an weight of 42. The cost of moving between these nodes is determined by the weight type setting.
-        <br><br><b>Non-negative:</b> The cost of moving from A to B is 42, and from B to A is 87.
-        <br><br><b>Negative:</b> The cost of moving to a higher weighted node (B to A) is the same as the non-negative case (ie: 87). However, moving to a lower weighted node is different:
-        <br><div style="text-align: center;">A to B = -floor(sqrt(abs(neighbor - current))) = -floor(sqrt(abs(42 - 87))) = -6</div>`,
+        body: `Each node in the grid graph has a weight associated with it. Nodes with higher weights are indicated by darker backgrounds (refer to image below).
+        <br><br>There are 2 types of grid graphs - <b>Standard</b> and <b>Maze</b>. Standard graphs are basic grid graphs with no walls. Maze graphs are generated using maze generation algorithms such as Recursive Division, Random Walls and DFS, and contain impassable walls.`,
         img: {
             src: 'example-weight',
             width: 60,
-            marginTop: 25,
+            marginTop: 40,
         },
     },
-
     {
         pageNumber: 4,
-        title: 'Graph Types',
-        body: `<b>1. Standard Graph</b>
-        <br><br>A basic grid graph where each cell represents a node and edges between nodes have varying  (elevations), depending on whether it is weighted or non-weighted.
-        <br><br>The graph below is a weighted standard graph:`,
+        title: 'Environment Types [1]',
+        body: `
+        <b>Flat Terrain:</b>
+        Imagine a golf ball rolling smoothly across a flat course. In this environment, every cell on the grid is equally easy for the ball to travel through regardless of direction.
+        <br><br><b>Elevated Terrain:</b>
+        Here, the golf ball must navigate a course with hills and slopes. Moving uphill requires more effort, and is equal to the difference between their elevations. However, when the ball moves downhill, the slope makes it easier for the ball to roll.
+        Suppose we have 2 points A and B, where A is at elevation 10 and B is at elevation 20. The ball will take 10 units of effort to move from A to B (20 - 10), but will take -&#8730;10 units of effort to move from B to A -&#8730;(20 - 10). The square root function simulates how gravity helps the ball roll faster on a slope.
+        <br><br><u>Note:</u> Since there are instances where moving between points can result in negative values, Bellman-Ford is better suited for finding optimal paths in these cases, while other algorithms, such as Dijkstra's, might struggle.`,
         img: {
-            src: 'weighted',
-            width: 60,
-            marginTop: 30,
+            src: 'elevated',
+            width: 40,
+            marginTop: 40,
         },
     },
     {
         pageNumber: 5,
-        title: 'Graph Types',
-        body: `<b>2. Maze Graph</b>
-        <br><br>A graph created using various maze generation algorithms, such as recursive division, random walls and DFS.
-        <br><br> The graph below is a maze graph generated using recursive division:`,
+        title: 'Environment Types [2]',
+        body: `
+        <b>Road Network:</b> In this environment, you're driving a car through a network of roads, with each road segment having its own level of traffic congestion. Roads with heavier traffic slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
+        <br><br>Suppose we have 2 roads A and B, where the congestion at A is 10 and the congestion at B is 20. The car will take 20 units of effort to move from A to B, and 10 units of effort to move from B to A.`,
         img: {
-            src: 'recursive-division',
-            width: 60,
-            marginTop: 30,
+            src: 'road',
+            width: 40,
+            marginTop: 40,
         },
     },
-
     {
         pageNumber: 6,
         title: 'Legend',
         body: `
         <div class="legend">
-            <div class="legend-image-container-large">
-                <img src="./assets/start.png" alt="Start Node"/>
-            </div>
-            <p>Start node</p>
-        </div>
-        <div class="legend">
-            <div class="legend-image-container-large">
-                <img src="./assets/end.png" alt="End Node"/>
-            </div>
-            <p>End node</p>
-        </div>
-        <div class="legend">
-            <div class="legend-image-container-small" style="opacity: 0.8;">
+            <div class="legend-image-container-small" style="opacity: 0.7;">
                 <img src="./assets/visited.svg" alt="Visited" class="icon-filter" />
             </div>
             <p>Visited: The node has been fully processed.</p>
         </div>
         <div class="legend">
-            <div class="legend-image-container-small" style="opacity: 0.8;">
+            <div class="legend-image-container-small" style="opacity: 0.7;">
                 <img src="./assets/visiting.svg" alt="Visiting" class="icon-filter"/>
             </div>
             <p>Exploring: Nodes that the algorithm will process next.</p>
         </div>
         <div class="legend">
-            <div class="legend-image-container-small" style="opacity: 0.8;">
-                <img src="./assets/legend-grid.png" alt="Visiting" class="icon-filter"/>
+            <div class="legend-image-container-small">
+                <img src="./assets/legend-grid.png"  alt="Visiting" class="icon-filter"/>
             </div>
             <p>Visiting: The node is currently being processed to update its neighbors.</p>
         </div>
         <div class="legend">
-            <div class="legend-image-container-small" style="opacity: 0.8;">
+            <div class="legend-image-container-small" style="opacity: 0.7;">
                 <img src="./assets/shortest-path.png" alt="Shortest Path" class="icon-filter"/>
             </div>
             <p>Shortest path: The node is part of the final optimal path from start to end.</p>
@@ -118,8 +105,8 @@ export const tutorialDataList: TutorialData[] = [
         <br>Allows the user to choose between different graph types - Standard and Maze.<br><br>
         <u><b>Change Start Node / End Node</b></u>
         <br>Allows you to select a new starting or ending node on the graph.<br><br>
-        <u><b>Weight Selector</b></u>
-        <br>Allows you to select the weight type of the graph between 3 types - Unweighted, Non-negative and Negative<br><br>
+        <u><b>Environment Type Selector</b></u>
+        <br>Allows you to select the environment type of the simulation between 3 types - Flat Terrain, Elevated Terrain and Road Network<br><br>
         <u><b>Speed Selector</b></u>
         <br>Controls the speed of the algorithm's visualization.<br><br>
         <u><b>Step Slider</b></u>
@@ -150,7 +137,7 @@ export const tutorialDataList: TutorialData[] = [
         title: 'Run Statistics',
         body: `The run statistics table compares the performance of different algorithms (BFS, Bellman-Ford, Dijkstra, and A* Search). 
         <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.
-        <br><u>Weight</u>: Indicates the total weight of the shortest path.
+        <br><u>Cost</u>: Indicates the total cost of the shortest path.
         <br><u>Nodes</u>: Shows the number of nodes in the shortest path.
         <br><br> The best algorithm is chosen by first comparing path weights; the one with the lowest weight wins. If weights are equal, the algorithm with fewer steps is preferred. Here, A* Search has the same weight as Bellman-Ford and Dijkstra but uses fewer steps, making it the best choice.
         <br><br>
@@ -158,7 +145,7 @@ export const tutorialDataList: TutorialData[] = [
             <tr>
                 <th>Algorithm</th>
                 <th>Steps</th>
-                <th>Weight</th>
+                <th>Cost</th>
                 <th>Nodes</th>
             </tr>
             <tr id="bfsStatistic">
@@ -192,8 +179,8 @@ export const tutorialDataList: TutorialData[] = [
         title: 'Graph Editor',
         body: `The Graph Editor enables you to design and customize graphs for algorithm visualization and testing.
     <br><br><b>Add Walls</b>: Add wall nodes to create obstacles, which act as impassable nodes.
-    <br><b>Set Weight</b>: Adjust node weights (elevations) to create varying path costs.
-    <br><b>Clear Weight</b>: Remove walls and reset weights (elevations) for selected nodes.
+    <br><b>Set Weight</b>: Adjust node weights to create varying path costs.
+    <br><b>Clear Weight</b>: Remove walls and reset weights for selected nodes.
     <br><b>Reset Graph</b>: Restore the graph to its initial unweighted state.
     <br><b>Change Start</b>: Set a new starting point.
     <br><b>Change End</b>: Set a new destination.

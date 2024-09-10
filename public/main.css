@@ -315,6 +315,8 @@ th {
 
 .legend-image-container-large {
     max-width: 35px;
+    display: flex;
+    gap: 3px;
 }
 
 .settings-subcontainer {
@@ -475,17 +477,17 @@ th {
     display: flex;
     justify-content: left;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .weight-dropdown {
-    min-width: 140px;
+    min-width: 155px;
     text-align: left;
     justify-content: space-between;
 }
 
 .weight-dropdown-menu {
-    min-width: 140px;
+    min-width: 155px;
     top: -120px;
 }
 
@@ -593,11 +595,6 @@ th {
 
 #changeStart {
     width: 160px;
-}
-
-.graph-dropdown,
-.graph-dropdown-menu {
-    margin-left: 27px;
 }
 
 @media screen and (max-width: 1360px) {

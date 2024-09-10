@@ -7,7 +7,7 @@ import {
     GraphType,
     SimulationSpeed,
     Node,
-    WeightType,
+    EnvironmentType,
     Dropdowns,
     GRAPH_POSITION,
 } from '../common/types';
@@ -29,7 +29,7 @@ class GlobalVariablesManager {
     private startNode: number;
     private endNode: number;
     private graphType: GraphType;
-    private weightType: WeightType;
+    private environmentType: EnvironmentType;
     private stepIncrement: number;
     private endNodeReachable: boolean;
     private containsNegativeWeightCycle: boolean;
@@ -57,7 +57,7 @@ class GlobalVariablesManager {
             this.startNode = savedData.startNode;
             this.endNode = savedData.endNode;
             this.showTutorial = savedData.showTutorial;
-            this.weightType = savedData.weightType;
+            this.environmentType = savedData.environmentType;
             this.graphType = savedData.graphType;
             this.stepIncrement = savedData.stepIncrement;
             this.heuristicType = savedData.heuristicType;
@@ -73,7 +73,7 @@ class GlobalVariablesManager {
             this.startNode = startNode;
             this.endNode = endNode;
             this.showTutorial = true;
-            this.weightType = WeightType.NonNegative;
+            this.environmentType = EnvironmentType.RoadNetwork;
             this.graphType = GraphType.Standard;
             this.stepIncrement = AVERAGE_SPEED;
             this.heuristicType = HeuristicType.Euclidean;
@@ -152,12 +152,12 @@ class GlobalVariablesManager {
         return this.graphType;
     }
 
-    public setWeightType(weightType: WeightType) {
-        this.weightType = weightType;
+    public setWeightType(environmentType: EnvironmentType) {
+        this.environmentType = environmentType;
     }
 
-    public getWeightType(): WeightType {
-        return this.weightType;
+    public getEnvironmentType(): EnvironmentType {
+        return this.environmentType;
     }
 
     public setStepIncrement(stepIncrement: number): void {
@@ -349,7 +349,7 @@ class GlobalVariablesManager {
             startNode: this.startNode,
             endNode: this.endNode,
             showTutorial: this.showTutorial,
-            weightType: this.weightType,
+            environmentType: this.environmentType,
             graphType: this.graphType,
             stepIncrement: this.stepIncrement,
             heuristicType: this.heuristicType,
@@ -366,7 +366,7 @@ class GlobalVariablesManager {
         startNode: number;
         endNode: number;
         showTutorial: boolean;
-        weightType: WeightType;
+        environmentType: EnvironmentType;
         graphType: GraphType;
         stepIncrement: number;
         heuristicType: HeuristicType;
@@ -400,7 +400,7 @@ class GlobalVariablesManager {
             startNode: parsedData.startNode,
             endNode: parsedData.endNode,
             showTutorial: parsedData.showTutorial,
-            weightType: parsedData.weightType,
+            environmentType: parsedData.environmentType,
             graphType: parsedData.graphType,
             stepIncrement: parsedData.stepIncrement,
             heuristicType: parsedData.heuristicType,

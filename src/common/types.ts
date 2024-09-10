@@ -90,10 +90,10 @@ export enum SimulationSpeed {
     Slow = 'Slow',
 }
 
-export enum WeightType {
-    Unweighted = 'Unweighted',
-    NonNegative = 'Non-Negative',
-    Negative = 'Negative',
+export enum EnvironmentType {
+    FlatTerrain = 'FlatTerrain',
+    RoadNetwork = 'Road-Network',
+    ElevatedTerrain = 'ElevatedTerrain',
 }
 
 export interface TutorialData {

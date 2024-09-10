@@ -19,7 +19,7 @@ import {
     PrimaryGraphType,
     SecondaryGraphType,
     SimulationSpeed,
-    WeightType,
+    EnvironmentType,
     Dropdowns,
     GraphStorage,
     STATUS,
@@ -263,12 +263,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const customGraph = globalVariablesManager.getCustomGraph();
                     if (customGraph) {
                         globalVariablesManager.setGraph(customGraph);
-                        globalVariablesManager.setWeightType(WeightType.NonNegative);
+                        globalVariablesManager.setWeightType(EnvironmentType.RoadNetwork);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
                             const weightDropdown = dropdowns.weightDropdown;
                             weightDropdown.updateTextContent(
-                                getWeightTypeDisplayName(WeightType.NonNegative),
+                                getWeightTypeDisplayName(EnvironmentType.RoadNetwork),
                             );
                         }
                         resetGridAndRerun();
@@ -276,7 +276,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         window.location.href = 'editor.html';
                     }
                 } else {
-                    if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+                    if (
+                        globalVariablesManager.getEnvironmentType() ===
+                        EnvironmentType.ElevatedTerrain
+                    ) {
                         getNegativeWeightedGraphExample(graphType);
                         resetGridAndRerun();
                     } else {
@@ -307,7 +310,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 globalVariablesManager.setGraphType(graphType);
 
-                if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+                if (
+                    globalVariablesManager.getEnvironmentType() === EnvironmentType.ElevatedTerrain
+                ) {
                     getNegativeWeightedGraphExample(graphType);
                     resetGridAndRerun();
                 } else {
@@ -344,15 +349,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const weightDropdown = new CustomDropdown(
             weightDropdownButton,
             weightDropdownMenu,
-            getWeightTypeDisplayName(globalVariablesManager.getWeightType()),
+            getWeightTypeDisplayName(globalVariablesManager.getEnvironmentType()),
             (dataValue) => {
-                const weightType = dataValue as WeightType;
-                globalVariablesManager.setWeightType(weightType);
+                const environmentType = dataValue as EnvironmentType;
+                globalVariablesManager.setWeightType(environmentType);
 
                 if (globalVariablesManager.getGraphType() === GraphType.Custom) {
-                    if (weightType === WeightType.Unweighted) {
+                    if (environmentType === EnvironmentType.FlatTerrain) {
                         globalVariablesManager.setGraphType(GraphType.Standard);
-                        globalVariablesManager.setWeightType(WeightType.Unweighted);
+                        globalVariablesManager.setWeightType(EnvironmentType.FlatTerrain);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
                             const primaryGraphTypeDropdown = dropdowns.primaryGraphTypeDropdown;
@@ -365,7 +370,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         resetGridAndRerun();
                     }
                 } else {
-                    if (weightType === WeightType.Negative) {
+                    if (environmentType === EnvironmentType.ElevatedTerrain) {
                         getNegativeWeightedGraphExample(globalVariablesManager.getGraphType());
                         resetGridAndRerun();
                     } else {
@@ -690,7 +695,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Generate a negative weighted graph example if the weight type is negative.
-        if (globalVariablesManager.getWeightType() === WeightType.Negative) {
+        if (globalVariablesManager.getEnvironmentType() === EnvironmentType.ElevatedTerrain) {
             getNegativeWeightedGraphExample(globalVariablesManager.getGraphType());
             resetGridAndRerun();
         } else {

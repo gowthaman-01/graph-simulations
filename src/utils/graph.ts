@@ -6,7 +6,7 @@ import {
     GraphType,
     Nodes,
     StartEndNodes,
-    WeightType,
+    EnvironmentType,
 } from '../common/types';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
 import { DEFAULT_WEIGHT, MAX_WEIGHT } from '../common/constants';
@@ -129,7 +129,7 @@ const createGraphConnections = (graph: Graph, gridSize: number): void => {
 
 const createBasicGridGraphDuringSubsequentRenders = (): GraphStructure => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
-    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+    const isWeighted = globalVariablesManager.getEnvironmentType() !== EnvironmentType.FlatTerrain;
     const gridSize = globalVariablesManager.getGridSize();
     const graphStorage = createBasicGridGraph(isWeighted, gridSize);
 
@@ -200,7 +200,7 @@ const createMazeGraphUsingDfs = (): GraphStructure => {
     // Start DFS from the start node to generate the maze.
     dfs(startNode, [], new Set());
 
-    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+    const isWeighted = globalVariablesManager.getEnvironmentType() !== EnvironmentType.FlatTerrain;
 
     // Assign maximum weight to nodes not in the final path, marking them as walls.
     for (let i = 0; i < gridSize; i++) {
@@ -245,7 +245,7 @@ const createMazeGraphWithRandomWalls = (): GraphStructure => {
         }
     }
 
-    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+    const isWeighted = globalVariablesManager.getEnvironmentType() !== EnvironmentType.FlatTerrain;
 
     // Assign maximum weight to wall nodes, minimal weight to path nodes
     for (let i = 0; i < gridSize; i++) {
@@ -285,7 +285,7 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
     // Start the recursive division process to create walls and passages.
     recrusiveDivide(0, rows - 1, 0, cols - 1, walls, passageMap);
 
-    const isWeighted = globalVariablesManager.getWeightType() !== WeightType.Unweighted;
+    const isWeighted = globalVariablesManager.getEnvironmentType() !== EnvironmentType.FlatTerrain;
 
     // Assign maximum weight to wall nodes, minimal weight to path nodes
     for (let i = 0; i < gridSize; i++) {
@@ -418,16 +418,16 @@ export const getNeighborWeight = (
     calculatingTotalWeight: boolean = false,
 ): number => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
-    switch (globalVariablesManager.getWeightType()) {
-        case WeightType.Unweighted:
+    switch (globalVariablesManager.getEnvironmentType()) {
+        case EnvironmentType.FlatTerrain:
             return calculatingTotalWeight ? 0 : 1;
-        case WeightType.Negative:
+        case EnvironmentType.ElevatedTerrain:
             return neighborNodeWeight - currentNodeWeight >= 0
                 ? calculatingTotalWeight
                     ? Math.max(neighborNodeWeight, 0)
                     : Math.max(neighborNodeWeight, 1)
                 : -Math.floor(Math.sqrt(Math.abs(neighborNodeWeight - currentNodeWeight)));
-        case WeightType.NonNegative:
+        case EnvironmentType.RoadNetwork:
             return calculatingTotalWeight
                 ? Math.max(neighborNodeWeight, 0)
                 : Math.max(neighborNodeWeight, 1);

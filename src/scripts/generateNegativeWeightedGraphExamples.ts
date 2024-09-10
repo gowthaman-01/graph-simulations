@@ -1,11 +1,11 @@
-import { AlgorithmType, GraphStorage, GraphType, WeightType } from '../common/types';
+import { AlgorithmType, GraphStorage, GraphType, EnvironmentType } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
 import { generateNewGraphWithReachableEndNode } from '../utils/graph';
 import { runAlgorithm } from '../utils/run';
 import * as fs from 'fs';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
-globalVariablesManager.setWeightType(WeightType.Negative);
+globalVariablesManager.setWeightType(EnvironmentType.ElevatedTerrain);
 
 const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
     while (graphList.length < 100) {
