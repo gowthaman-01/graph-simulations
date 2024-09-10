@@ -3,8 +3,8 @@ import { dijkstra } from '../algorithms/dijkstra';
 import { aStarSearch } from '../algorithms/aStarSearch';
 import { bellmanFord } from '../algorithms/bellman';
 import { AlgorithmType, GraphDiv } from '../common/types';
-import RunResults from './RunResults';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import RunResults from '../classes/RunResults';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { greedy } from '../algorithms/greedy';
 import { dfs } from '../algorithms/dfs';
 

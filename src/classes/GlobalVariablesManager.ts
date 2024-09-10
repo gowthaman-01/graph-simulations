@@ -12,7 +12,7 @@ import {
     GRAPH_POSITION,
 } from '../common/types';
 import RunResults from './RunResults';
-import { createBasicGridGraph, generateStartAndEndNodeForStandardGraph } from './graph';
+import { createBasicGridGraph, generateStartAndEndNodeForStandardGraph } from '../utils/graph';
 import { LocalStorage } from 'node-localstorage';
 
 // const localStorage =

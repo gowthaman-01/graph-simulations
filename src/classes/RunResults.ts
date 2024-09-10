@@ -1,7 +1,7 @@
 import { AlgorithmType, GraphDiv, Node, NodeState, ShortestPathNode } from '../common/types';
-import { getRowAndColumnFromCellId } from './general';
+import { getRowAndColumnFromCellId } from '../utils/general';
 import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
-import { getNeighborWeight } from './graph';
+import { getNeighborWeight } from '../utils/graph';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

@@ -1,7 +1,7 @@
 import { AlgorithmType, Node, NodeState } from '../common/types';
-import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { getNeighborWeight } from '../utils/graph';
-import RunResults from '../utils/RunResults';
+import RunResults from '../classes/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

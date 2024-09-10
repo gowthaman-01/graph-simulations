@@ -3,8 +3,8 @@ import { AlgorithmType, Node, NodeState, GraphDiv, ShortestPathNode } from '../c
 import { getColorByWeight } from './color';
 import { delay, getAlgorithmDisplayName } from './general';
 import { createMark, markCell } from './mark';
-import RunResults from './RunResults';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import RunResults from '../classes/RunResults';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { getBestAlgorithm } from './run';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();

@@ -1,8 +1,8 @@
 import { AlgorithmType, Node, NodeState, VisitedSet } from '../common/types';
 import { Queue } from '../data-structures/Queue';
 import { shuffleArray } from '../utils/general';
-import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
-import RunResults from '../utils/RunResults';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
+import RunResults from '../classes/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

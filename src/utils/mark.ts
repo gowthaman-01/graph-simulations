@@ -1,5 +1,5 @@
 import { Node, NodeState, GRAPH_POSITION, EnvironmentType } from '../common/types';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { getColorByWeight } from './color';
 
 /**
@@ -79,6 +79,7 @@ export const createMark = (
         // Else create an image element to represent the node state visually.
         const mark = document.createElement('img');
         mark.id = `${graphPosition}-cell-${node}-${nodeState}`;
+        mark.classList.add('mark');
 
         switch (nodeState) {
             case NodeState.StartNode:

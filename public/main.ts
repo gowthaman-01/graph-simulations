@@ -26,7 +26,7 @@ import {
     DISPLAY_STYLE,
     GRAPH_POSITION,
 } from '../src/common/types';
-import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../src/classes/GlobalVariablesManager';
 import {
     displayAllRunResults,
     displayStep,
@@ -47,14 +47,14 @@ import {
 import { runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
 import { tutorialDataList } from '../src/tutorial/data';
-import { CustomDropdown } from '../src/utils/CustomDropdown';
+import { CustomDropdown } from '../src/classes/CustomDropdown';
 import { toggleElement, toggleElementVisibility } from '../src/utils/element';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 
-import negativeWeightedStandardGraphExamples from '../src/scripts/negativeWeightedStandardGraphExamples.json';
-import negativeWeightedRecursiveDivisionGraphExamples from '../src/scripts/negativeWeightedRecursiveDivisionGraphExamples.json';
-import negativeWeightedDfsGraphExamples from '../src/scripts/negativeWeightedDFSGraphExamples.json';
-import negativeWeightedRandomWallsGraphExamples from '../src/scripts/negativeWeightedRandomWallsGraphExamples.json';
+import negativeWeightedStandardGraphExamples from '../src/generation-scripts/negativeWeightedStandardGraphExamples.json';
+import negativeWeightedRecursiveDivisionGraphExamples from '../src/generation-scripts/negativeWeightedRecursiveDivisionGraphExamples.json';
+import negativeWeightedDfsGraphExamples from '../src/generation-scripts/negativeWeightedDFSGraphExamples.json';
+import negativeWeightedRandomWallsGraphExamples from '../src/generation-scripts/negativeWeightedRandomWallsGraphExamples.json';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
@@ -246,6 +246,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     case PrimaryGraphType.Maze:
                         graphType = GraphType.RecursiveDivision;
                         enableSecondaryGraphTypeDropdown();
+                        globalVariablesManager
+                            .getDropdowns()
+                            ?.secondaryGraphTypeDropdown.updateTextContent(
+                                getSecondaryGraphTypeDisplayName(graphType),
+                            );
                         break;
                     case PrimaryGraphType.Standard:
                         disableSecondaryGraphTypeDropdown();

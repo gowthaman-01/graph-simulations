@@ -1,8 +1,8 @@
 import { AlgorithmType, HeapNode, Node, NodeState, VisitedSet } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
-import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { getNeighborWeight } from '../utils/graph';
-import RunResults from '../utils/RunResults';
+import RunResults from '../classes/RunResults';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 

@@ -8,7 +8,7 @@ import {
     StartEndNodes,
     EnvironmentType,
 } from '../common/types';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { DEFAULT_WEIGHT, MAX_WEIGHT } from '../common/constants';
 
 /**
@@ -53,15 +53,17 @@ export const generateStartAndEndNodeForStandardGraph = (
     nodes: Nodes,
     gridSize: number,
 ): StartEndNodes => {
+    const isValidNode = (node: number) => nodes[node] <= 10 && node < gridSize;
+
     let startNode;
     do {
         startNode = Math.floor(Math.random() * gridSize);
-    } while (nodes[startNode] > 10 || startNode >= gridSize);
+    } while (!isValidNode(startNode));
 
     let endNode;
     do {
         endNode = Math.floor(Math.random() * gridSize);
-    } while (startNode === endNode || nodes[endNode] > 10 || endNode >= gridSize);
+    } while (startNode === endNode || !isValidNode(endNode));
 
     return { startNode, endNode };
 };
@@ -102,28 +104,22 @@ const generateAndStoreStartAndEndNodeForMazeGraph = (): StartEndNodes => {
  * @param {number} gridSize - The size of the grid.
  */
 const createGraphConnections = (graph: Graph, gridSize: number): void => {
-    const cols = Math.sqrt(gridSize);
+    const numCols = Math.sqrt(gridSize);
 
     for (let i = 0; i < gridSize; i++) {
         // Initialize each node with an empty array of neighbors
         graph[i] = [];
 
-        const up = i - cols;
-        const down = i + cols;
-        const left = i % cols !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
-        const right = (i + 1) % cols !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
-
-        // Collate valid neighbors.
-        const neighbors = [];
-        if (up >= 0) neighbors.push(up);
-        if (down < gridSize) neighbors.push(down);
-        if (left !== -1) neighbors.push(left);
-        if (right !== -1) neighbors.push(right);
+        const up = i - numCols;
+        const down = i + numCols;
+        const left = i % numCols !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
+        const right = (i + 1) % numCols !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
 
         // Add valid neighbors to the graph.
-        neighbors.forEach((neighbor) => {
-            graph[i].push(neighbor);
-        });
+        if (up >= 0) graph[i].push(up);
+        if (down < gridSize) graph[i].push(down);
+        if (left !== -1) graph[i].push(left);
+        if (right !== -1) graph[i].push(right);
     }
 };
 
@@ -296,35 +292,13 @@ const createMazeGraphUsingRecursiveDivision = (): GraphStructure => {
         }
     }
 
-    for (let i = 0; i < gridSize; i++) {
-        graph[i] = [];
-
-        const up = i - cols;
-        const down = i + cols;
-        const left = i % cols !== 0 ? i - 1 : -1; // Check if node is the leftmost node in grid.
-        const right = (i + 1) % cols !== 0 ? i + 1 : -1; // Check if node is the rightmost node in grid.
-
-        // Collate valid neighbors.
-        const neighbors = [];
-        if (up >= 0) neighbors.push(up);
-        if (down < gridSize) neighbors.push(down);
-        if (left !== -1) neighbors.push(left);
-        if (right !== -1 && !walls.has(right)) neighbors.push(right);
-
-        // Add valid neighbors to the graph.
-        neighbors.forEach((neighbor) => {
-            graph[i].push(neighbor);
-        });
-    }
+    createGraphConnections(graph, gridSize);
 
     // Generate start and end nodes, ensuring they are placed in non-wall locations.
-    let { startNode, endNode } = generateAndStoreStartAndEndNodeForMazeGraph();
-    while (walls.has(startNode)) {
-        startNode = generateAndStoreStartAndEndNodeForMazeGraph().startNode;
-    }
-    while (walls.has(endNode)) {
-        endNode = generateAndStoreStartAndEndNodeForMazeGraph().endNode;
-    }
+    let startNode, endNode;
+    do {
+        ({ startNode, endNode } = generateAndStoreStartAndEndNodeForMazeGraph());
+    } while (walls.has(startNode) || walls.has(endNode));
 
     return { graph, nodes };
 };

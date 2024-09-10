@@ -1,5 +1,5 @@
 import { AlgorithmType, GraphStorage, GraphType, EnvironmentType } from '../common/types';
-import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { generateNewGraphWithReachableEndNode } from '../utils/graph';
 import { runAlgorithm } from '../utils/run';
 import * as fs from 'fs';

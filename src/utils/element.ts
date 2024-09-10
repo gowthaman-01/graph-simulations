@@ -3,7 +3,7 @@ import { AlgorithmType, CURSOR_STYLE, DISPLAY_STYLE, NodeState, STATUS } from '.
 import { getColorByWeight } from './color';
 import { resetGrid } from './display';
 import { getNodeIdFromCellElementId } from './general';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 import { createMark } from './mark';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();

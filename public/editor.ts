@@ -1,4 +1,4 @@
-import { getGlobalVariablesManagerInstance } from '../src/utils/GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../src/classes/GlobalVariablesManager';
 import { displayGrid } from '../src/utils/display';
 import {
     highlightButtonColor,
@@ -12,7 +12,7 @@ import {
 } from '../src/utils/general';
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
-import { CustomDropdown } from '../src/utils/CustomDropdown';
+import { CustomDropdown } from '../src/classes/CustomDropdown';
 import { generateNewGraphWithReachableEndNode } from '../src/utils/graph';
 import {
     AlgorithmType,
@@ -212,24 +212,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const setSelectedNodeId = (nodeId: number) => {
-        if (
-            nodeId === globalVariablesManager.getStartNode() ||
-            nodeId === globalVariablesManager.getEndNode()
-        ) {
-            selectedNodeId = null;
-        } else {
-            selectedNodeId = nodeId;
-        }
-    };
-
     const setWeight = (weight: number) => {
-        if (selectedNodeId !== null) {
-            const nodes = globalVariablesManager.getGraph().nodes;
-            nodes[selectedNodeId] = weight;
-            markCell(selectedNodeId, NodeState.Unvisited, GRAPH_POSITION.EDITOR);
-            globalVariablesManager.setNodes(nodes);
+        if (selectedNodeId === null) return;
+        let nodeState;
+        switch (selectedNodeId) {
+            case globalVariablesManager.getStartNode():
+                nodeState = NodeState.StartNode;
+                break;
+            case globalVariablesManager.getEndNode():
+                nodeState = NodeState.EndNode;
+                break;
+            default:
+                nodeState = NodeState.Unvisited;
+                break;
         }
+        if (
+            editorMode === EDITOR_MODE.ADD_WALLS &&
+            (nodeState === NodeState.StartNode || nodeState === NodeState.EndNode)
+        ) {
+            return;
+        }
+        const nodes = globalVariablesManager.getGraph().nodes;
+        nodes[selectedNodeId] = weight;
+        markCell(selectedNodeId, nodeState, GRAPH_POSITION.EDITOR);
+        globalVariablesManager.setNodes(nodes);
     };
 
     const showWeightSlider = (nodeId: number | null = null) => {
@@ -327,12 +333,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     weightSlider.addEventListener('input', () => {
-        setWeight(parseInt(weightSlider.value));
         weightSliderValue.innerHTML = `Weight: ${weightSlider.value}`;
     });
 
     const handleNodeInteraction = (nodeId: number) => {
-        setSelectedNodeId(nodeId);
+        selectedNodeId = nodeId;
         switch (editorMode) {
             case EDITOR_MODE.ADD_WALLS:
                 setWeight(Infinity);
@@ -344,7 +349,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handleEvent = (target: HTMLElement) => {
-        if (target.classList.contains('grid-cell') || target.classList.contains('weight-display')) {
+        if (
+            target.classList.contains('grid-cell') ||
+            target.classList.contains('weight-display') ||
+            target.classList.contains('mark')
+        ) {
             const nodeId = getNodeIdFromCellElementId(target.id);
             handleNodeInteraction(nodeId);
         }

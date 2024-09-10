@@ -8,7 +8,7 @@ import {
     EnvironmentType,
 } from '../common/types';
 import { getColorByWeight } from './color';
-import { getGlobalVariablesManagerInstance } from './GlobalVariablesManager';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
 
 /**
  * Delays execution for a specified duration.

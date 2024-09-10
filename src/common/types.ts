@@ -1,4 +1,4 @@
-import { CustomDropdown } from '../utils/CustomDropdown';
+import { CustomDropdown } from '../classes/CustomDropdown';
 
 export type Node = number;
 

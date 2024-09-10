@@ -7,8 +7,8 @@ import {
     VisitedSet,
 } from '../common/types';
 import { MinHeap, heapNodeComparator } from '../data-structures/MinHeap';
-import { getGlobalVariablesManagerInstance } from '../utils/GlobalVariablesManager';
-import RunResults from '../utils/RunResults';
+import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
+import RunResults from '../classes/RunResults';
 import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 import { getNeighborWeight } from '../utils/graph';
 
