@@ -23,5 +23,6 @@ export const TOTAL_TUTORIAL_PAGES: number = 10;
 // Grid properities
 export const GRID_WIDTH: number = 580;
 export const DEFAULT_GRID_SIZE: number = 400;
-
+export const DEFAULT_HEURISTIC_MULTIPLIER: number = 5;
+export const MAX_HEURISTIC_MULTIPLIER: number = 100;
 export const LOCAL_STORAGE_KEY = 'pathium-global-variables';

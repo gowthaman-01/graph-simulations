@@ -11,6 +11,7 @@ import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesMan
 import RunResults from '../classes/RunResults';
 import { calculateEuclideanDistance, calculateManhattanDistance } from '../utils/general';
 import { getNeighborWeight } from '../utils/graph';
+import { DEFAULT_HEURISTIC_MULTIPLIER } from '../common/constants';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
 
@@ -19,7 +20,9 @@ const globalVariablesManager = getGlobalVariablesManagerInstance();
  *
  * @returns {RunResults}
  */
-export const aStarSearch = (): RunResults => {
+export const aStarSearch = (
+    heuristicMultiplier: number = DEFAULT_HEURISTIC_MULTIPLIER,
+): RunResults => {
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
     const nodes = globalVariablesManager.getGraph().nodes;
@@ -83,9 +86,9 @@ export const aStarSearch = (): RunResults => {
             if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
             const neighborWeight = getNeighborWeight(nodes[currentNode], nodes[neighbor]);
             const newWeight = weights[currentNode] + neighborWeight;
-            // Calculating the heuristic takes approximately 13 steps.
-            const newWeightWithHeuristic = newWeight + heuristicAlgorithm(neighbor, endNode);
-            steps += 24;
+            const newWeightWithHeuristic =
+                newWeight + heuristicAlgorithm(neighbor, endNode) * heuristicMultiplier;
+            steps += 12;
 
             // If a shorter path is found.
             if (newWeight < weights[neighbor]) {

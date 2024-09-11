@@ -76,7 +76,7 @@ class GlobalVariablesManager {
             this.environmentType = EnvironmentType.RoadNetwork;
             this.graphType = GraphType.Standard;
             this.stepIncrement = AVERAGE_SPEED;
-            this.heuristicType = HeuristicType.Euclidean;
+            this.heuristicType = HeuristicType.Manhattan;
             this.simulationSpeed = SimulationSpeed.Average;
             this.customGraph = null;
         }

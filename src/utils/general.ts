@@ -285,3 +285,24 @@ export const updateProgressBarAndHideLoadingScreen = async (
     // Hide loading screen after initialization
     loadingScreen.style.display = 'none';
 };
+
+/**
+ * Preloads a list of images by creating Image objects and setting their source to the provided URLs.
+ * This function returns a promise that resolves when all images are successfully loaded,
+ * or rejects if any image fails to load.
+ *
+ * @param {string[]} imageUrls - An array of image URLs to preload.
+ * @returns {Promise<void[]>} A promise that resolves when all images are loaded, or rejects if any image fails to load.
+ */
+export const preloadImages = (imageUrls: string[]): Promise<void[]> => {
+    return Promise.all(
+        imageUrls.map((url) => {
+            return new Promise<void>((resolve, reject) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => resolve();
+                img.onerror = () => reject();
+            });
+        }),
+    );
+};

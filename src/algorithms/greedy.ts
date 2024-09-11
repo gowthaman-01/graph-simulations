@@ -81,9 +81,8 @@ export const greedy = (): RunResults => {
             if (visited[neighbor] || nodes[neighbor] === Infinity) continue;
             const newWeight =
                 weights[currentNode] + Math.max(nodes[neighbor] - nodes[currentNode], 0);
-            // Calculating the heuristic takes approximately 13 steps.
             const heuristic = heuristicAlgorithm(neighbor, endNode);
-            steps += 22;
+            steps += 10;
 
             // If a shorter path is found.
             if (newWeight < weights[neighbor]) {

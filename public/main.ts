@@ -41,10 +41,11 @@ import {
     getSecondaryGraphTypeDisplayName,
     getSimulationSpeedDisplayName,
     getWeightTypeDisplayName,
+    preloadImages,
     setWeightColor,
     updateProgressBarAndHideLoadingScreen,
 } from '../src/utils/general';
-import { runAlgorithm } from '../src/utils/run';
+import { findOptimumAStarHeuristicMultiplier, runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
 import { tutorialDataList } from '../src/tutorial/data';
 import { CustomDropdown } from '../src/classes/CustomDropdown';
@@ -55,9 +56,40 @@ import negativeWeightedStandardGraphExamples from '../src/generation-scripts/neg
 import negativeWeightedRecursiveDivisionGraphExamples from '../src/generation-scripts/negativeWeightedRecursiveDivisionGraphExamples.json';
 import negativeWeightedDfsGraphExamples from '../src/generation-scripts/negativeWeightedDFSGraphExamples.json';
 import negativeWeightedRandomWallsGraphExamples from '../src/generation-scripts/negativeWeightedRandomWallsGraphExamples.json';
+import { aStarSearch } from '../src/algorithms/aStarSearch';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
+    const imageUrls = [
+        './assets/car.png',
+        './assets/down-arrow.png',
+        './assets/elevated.png',
+        './assets/example-weight.png',
+        './assets/exploring.svg',
+        './assets/flag.png',
+        './assets/golf.png',
+        './assets/info.png',
+        './assets/legend-grid.png',
+        './assets/logo.png',
+        './assets/pathium.png',
+        './assets/pin.png',
+        './assets/recursive-division.png',
+        './assets/road.png',
+        './assets/shortest-path.png',
+        './assets/shortest-path.svg',
+        './assets/statistics-table.png',
+        './assets/up-arrow.png',
+        './assets/visited.svg',
+        './assets/visiting.svg',
+        './assets/weighted.png',
+    ];
+
+    try {
+        await preloadImages(imageUrls);
+    } catch (error) {
+        console.error('Error preloading images', error);
+    }
+
     // Load HTML elements
     const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
     const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
@@ -585,6 +617,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isEndNodeNotReachable = visibleGraphRunResults.every(
             (runResult) => runResult.getShortestPath().length <= 1,
         );
+
+        const aStarRunResultIndex = newRunResults.findIndex(
+            (result) => result.getAlgorithmType() === AlgorithmType.AStar,
+        );
+        const dijkstraRunResultIndex = newRunResults.findIndex(
+            (result) => result.getAlgorithmType() === AlgorithmType.Dijkstra,
+        );
+
+        if (aStarRunResultIndex !== -1 && dijkstraRunResultIndex !== -1) {
+            const aStarWeight = newRunResults[aStarRunResultIndex].getTotalWeight();
+            const dijkstraWeight = newRunResults[dijkstraRunResultIndex].getTotalWeight();
+            const optimumAStarHeuristicMultiplier = findOptimumAStarHeuristicMultiplier(
+                dijkstraWeight,
+                aStarWeight,
+            );
+            const newAstarRunResult = aStarSearch(optimumAStarHeuristicMultiplier);
+            newAstarRunResult.setGraphDiv(newRunResults[aStarRunResultIndex].getGraphDiv());
+
+            newRunResults[aStarRunResultIndex] = newAstarRunResult;
+        }
 
         // Update global variables manager
         globalVariablesManager.setEndNodeReachable(!isEndNodeNotReachable);
