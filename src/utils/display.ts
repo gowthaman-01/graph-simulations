@@ -213,11 +213,7 @@ export const displayAllRunResults = async (stepsSlider: HTMLInputElement): Promi
             return;
         }
         for (const runResult of runResults) {
-            if (step >= runResult.getLatestTotalSteps() && !runResult.isDisplayComplete()) {
-                runResult.setDisplayComplete();
-            } else {
-                displayStep(step, runResult);
-            }
+            displayStep(step, runResult);
         }
         // Increment the step counter by the defined step increment.
         step += globalVariablesManager.getStepIncrement();
