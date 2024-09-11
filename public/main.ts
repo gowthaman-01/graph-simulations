@@ -10,6 +10,7 @@ import {
     FAST_SPEED,
     TOTAL_TUTORIAL_PAGES,
     DEFAULT_GRID_SIZE,
+    PROGRESS_BAR_INCREMENT,
 } from '../src/common/constants';
 import {
     HeuristicType,
@@ -35,15 +36,15 @@ import {
     resetStatisticTable,
 } from '../src/utils/display';
 import {
+    delay,
     getAlgorithmDisplayName,
     getHeuristicTypeDisplayName,
     getPrimaryGraphTypeDisplayName,
     getSecondaryGraphTypeDisplayName,
     getSimulationSpeedDisplayName,
     getWeightTypeDisplayName,
-    preloadImages,
+    preloadImage,
     setWeightColor,
-    updateProgressBarAndHideLoadingScreen,
 } from '../src/utils/general';
 import { findOptimumAStarHeuristicMultiplier, runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
@@ -60,36 +61,6 @@ import { aStarSearch } from '../src/algorithms/aStarSearch';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
-    const imageUrls = [
-        './assets/car.png',
-        './assets/down-arrow.png',
-        './assets/elevated.png',
-        './assets/example-weight.png',
-        './assets/exploring.svg',
-        './assets/flag.png',
-        './assets/golf.png',
-        './assets/info.png',
-        './assets/legend-grid.png',
-        './assets/logo.png',
-        './assets/pathium.png',
-        './assets/pin.png',
-        './assets/recursive-division.png',
-        './assets/road.png',
-        './assets/shortest-path.png',
-        './assets/shortest-path.svg',
-        './assets/statistics-table.png',
-        './assets/up-arrow.png',
-        './assets/visited.svg',
-        './assets/visiting.svg',
-        './assets/weighted.png',
-    ];
-
-    try {
-        await preloadImages(imageUrls);
-    } catch (error) {
-        console.error('Error preloading images', error);
-    }
-
     // Load HTML elements
     const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
     const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
@@ -850,7 +821,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Generate the graphs and run results.
         resetGridAndRerun();
 
-        await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
+        const imageUrls = [
+            './assets/car.png',
+            './assets/down-arrow.png',
+            './assets/elevated.png',
+            './assets/example-weight.png',
+            './assets/exploring.svg',
+            './assets/flag.png',
+            './assets/golf.png',
+            './assets/info.png',
+            './assets/legend-grid.png',
+            './assets/logo.png',
+            './assets/pathium.png',
+            './assets/pin.png',
+            './assets/recursive-division.png',
+            './assets/road.png',
+            './assets/shortest-path.png',
+            './assets/shortest-path.svg',
+            './assets/statistics-table.png',
+            './assets/up-arrow.png',
+            './assets/visited.svg',
+            './assets/visiting.svg',
+            './assets/weighted.png',
+        ];
+
+        imageUrls.forEach(async (imageUrl) => {
+            try {
+                await preloadImage(imageUrl);
+                if (progressBar.style.width !== '100%') {
+                    progressBar.style.width = `${PROGRESS_BAR_INCREMENT}%`;
+                }
+                await delay(Math.floor(Math.random() * 20));
+            } catch (error) {
+                console.error('Error preloading images', error);
+            }
+        });
+
+        progressBar.style.width = '100%';
+        await delay(200);
+        loadingScreen.style.display = 'none';
     };
 
     initializePage();

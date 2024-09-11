@@ -267,10 +267,13 @@ export const shuffleArray = (array: number[]): number[] => {
 };
 
 /**
- * Updates the progress bar by incrementing its width from 0 to 100% and hides the loading screen.
- * @param {HTMLElement} progressBar - The progress bar element to update.
- * @param {HTMLElement} loadingScreen - The loading screen element to hide.
- * @returns {Promise<void>} - A promise that resolves when the progress bar is fully updated.
+ * Simulates the progress of a loading operation by incrementing the width
+ * of the progress bar in steps of 10% until it reaches 100%. After the progress bar is
+ * fully updated, it waits for a short duration before hiding the loading screen.
+ *
+ * @param {HTMLElement} progressBar - The progress bar element to update
+ * @param {HTMLElement} loadingScreen - The loading screen element to hide
+ * @returns {Promise<void>} - A promise that resolves when the progress bar is fully updated
  */
 export const updateProgressBarAndHideLoadingScreen = async (
     progressBar: HTMLElement,
@@ -287,22 +290,18 @@ export const updateProgressBarAndHideLoadingScreen = async (
 };
 
 /**
- * Preloads a list of images by creating Image objects and setting their source to the provided URLs.
- * This function returns a promise that resolves when all images are successfully loaded,
- * or rejects if any image fails to load.
+ * Preloads an image by creating an Image object and setting its source to the provided URL.
+ * This function returns a promise that resolves when the image is successfully loaded,
+ * or rejects if the image fails to load.
  *
- * @param {string[]} imageUrls - An array of image URLs to preload.
- * @returns {Promise<void[]>} A promise that resolves when all images are loaded, or rejects if any image fails to load.
+ * @param {string} imageUrl - The URL of the image to preload.
+ * @returns {Promise<void>} A promise that resolves when the image is loaded, or rejects if the image fails to load.
  */
-export const preloadImages = (imageUrls: string[]): Promise<void[]> => {
-    return Promise.all(
-        imageUrls.map((url) => {
-            return new Promise<void>((resolve, reject) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = () => resolve();
-                img.onerror = () => reject();
-            });
-        }),
-    );
+export const preloadImage = (imageUrl: string): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        img.src = imageUrl;
+        img.onload = () => resolve();
+        img.onerror = () => reject();
+    });
 };
