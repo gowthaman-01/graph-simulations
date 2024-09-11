@@ -15,8 +15,7 @@ import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNodeForStandardGraph } from '../utils/graph';
 import { LocalStorage } from 'node-localstorage';
 
-// const localStorage =
-//     typeof window !== 'undefined' ? window.localStorage : new LocalStorage('./scratch');
+// const localStorage = typeof window !== 'undefined' ? window.localStorage : new LocalStorage('');
 
 /**
  * Singleton class to manage global variables used in the application.
@@ -67,11 +66,10 @@ class GlobalVariablesManager {
             this.imagesLoaded = savedData.imagesLoaded;
         } else {
             this.gridSize = DEFAULT_GRID_SIZE;
-            this.graph = createBasicGridGraph(true, this.gridSize);
-            const { startNode, endNode } = generateStartAndEndNodeForStandardGraph(
-                this.graph.nodes,
-                this.gridSize,
-            );
+            const { graph, nodes, startNode, endNode } = createBasicGridGraph(true, this.gridSize);
+            this.graph = { graph, nodes };
+            this.startNode = startNode;
+            this.endNode = endNode;
             this.startNode = startNode;
             this.endNode = endNode;
             this.showTutorial = true;

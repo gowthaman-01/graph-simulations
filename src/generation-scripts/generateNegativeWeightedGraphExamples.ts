@@ -37,7 +37,7 @@ const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
 
 const saveGraphsToFile = (graphType: GraphType, graphList: GraphStorage[]) => {
     fs.writeFileSync(
-        `./src/scripts/negativeWeighted${graphType}GraphExamples.json`,
+        `./src/generation-scripts/negativeWeighted${graphType}GraphExamples.json`,
         JSON.stringify(graphList),
     );
 };

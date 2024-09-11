@@ -6,7 +6,7 @@
     "scripts": {
         "build": "webpack",
         "watch": "webpack --watch",
-        "generate-negative-graphs": "tsc && node dist/src/scripts/generateNegativeGraphExamples.js"
+        "generate-negative-graphs": "tsc && node dist/src/generation-scripts/generateNegativeWeightedGraphExamples.js"
     },
     "keywords": [
         "graph algorithms",
