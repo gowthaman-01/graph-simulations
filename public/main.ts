@@ -11,6 +11,7 @@ import {
     TOTAL_TUTORIAL_PAGES,
     DEFAULT_GRID_SIZE,
     PROGRESS_BAR_INCREMENT,
+    DEFAULT_PROGRESS_BAR_WIDTH,
 } from '../src/common/constants';
 import {
     HeuristicType,
@@ -171,6 +172,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) {
         return;
     }
+
+    progressBar.style.width = DEFAULT_PROGRESS_BAR_WIDTH;
 
     const graphControlElements = [
         heuristicTypeDropdownButton,
@@ -847,11 +850,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         imageUrls.forEach(async (imageUrl) => {
             try {
-                await preloadImage(imageUrl);
                 if (progressBar.style.width !== '100%') {
-                    progressBar.style.width = `${PROGRESS_BAR_INCREMENT}%`;
+                    progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;
                 }
                 await delay(Math.floor(Math.random() * 20));
+                await preloadImage(imageUrl);
             } catch (error) {
                 console.error('Error preloading images', error);
             }
@@ -862,5 +865,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadingScreen.style.display = 'none';
     };
 
+    progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;
     initializePage();
 });
