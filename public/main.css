@@ -641,7 +641,7 @@ th {
 
     .environment-type-dropdown,
     .environment-type-dropdown-menu {
-        min-width: 130px;
+        min-width: 165px;
     }
 
     .graph-dropdown-menu,
@@ -657,11 +657,6 @@ th {
 
     .bottom-right-container {
         gap: 14px;
-    }
-
-    .graph-dropdown,
-    .graph-dropdown-menu {
-        margin-left: 24px;
     }
 }
 
@@ -720,11 +715,6 @@ th {
     .heuristic-dropdown {
         height: 40px !important;
     }
-
-    .graph-dropdown,
-    .graph-dropdown-menu {
-        margin-left: 23px;
-    }
 }
 
 @media screen and (max-width: 1080px) {
@@ -780,6 +770,7 @@ th {
 
     .environment-type-dropdown,
     .environment-type-dropdown-menu {
+        min-width: 180px !important;
         margin-right: 10px;
     }
 
@@ -819,7 +810,6 @@ th {
 
     .graph-dropdown-container {
         justify-content: center;
-        margin-right: 0px;
     }
 
     .weight-controls {
@@ -911,6 +901,11 @@ th {
         top: -114px !important;
     }
 
+    .environment-type-dropdown,
+    .environment-type-dropdown-menu {
+        min-width: 170px !important;
+    }
+
     .heuristic-dropdown,
     .heuristic-dropdown-menu {
         min-width: 200px !important;
@@ -978,6 +973,11 @@ th {
     .heuristic-dropdown,
     .heuristic-dropdown-menu {
         min-width: 180px !important;
+    }
+
+    .environment-type-dropdown,
+    .environment-type-dropdown-menu {
+        min-width: 150px !important;
     }
 
     .settings-buttons {
