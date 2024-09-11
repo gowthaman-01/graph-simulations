@@ -59,14 +59,14 @@
             <!-- Settings Controls -->
             <div class="settings-subcontainer general-settings-container">
                 <div class="show-weight-switch-container">
-                    <p>Show Cell Weights</p>
+                    <p>Show Cell Weights:</p>
                     <div class="show-weight-checkbox">
                         <input type="checkbox" id="showWeightCheckbox" class="checkbox">
                         <label for="showWeightCheckbox" id="showWeightSwitch" class="switch"></label>
                     </div>
                 </div>
                 <div class="heuristic-dropdown-container">
-                    <p>A* Search Heuristic</p>
+                    <p>A* Search Heuristic:</p>
                     <div class="dropdown-wrapper">
                         <button id="heuristicTypeDropdownButton" class="dropdown heuristic-dropdown"></button>
                         <div id="heuristicTypeDropdownMenu" class="dropdown-menu heuristic-dropdown-menu">
@@ -196,14 +196,19 @@
                             <div class="weight-controls" id="weightControls">
                                 <p id="weightControlsText">Environment:</p>
                                 <div class="dropdown-wrapper">
-                                    <button id="weightDropdownButton" class="dropdown weight-dropdown"></button>
-                                    <div id="weightDropdownMenu" class="dropdown-menu weight-dropdown-menu">
-                                        <div class="weightDropdownMenu-item dropdown-item" data-value="FlatTerrain">
-                                            Flat Terrain</div>
-                                        <div class="weightDropdownMenu-item dropdown-item" data-value="ElevatedTerrain">
-                                            Elevated Terrain</div>
-                                        <div class="weightDropdownMenu-item dropdown-item" data-value="Road-Network">
-                                            Road Network</div>
+                                    <button id="environmentTypeDropdownButton"
+                                        class="dropdown environment-type-dropdown"></button>
+                                    <div id="environmentTypeDropdownMenu"
+                                        class="dropdown-menu environment-type-dropdown-menu">
+                                        <div class="environmentTypeDropdownMenu-item dropdown-item"
+                                            data-value="Road-Network">
+                                            Road Network [+ve]</div>
+                                        <div class="environmentTypeDropdownMenu-item dropdown-item"
+                                            data-value="ElevatedTerrain">
+                                            Elevated Terrain [&#177;]</div>
+                                        <div class="environmentTypeDropdownMenu-item dropdown-item"
+                                            data-value="FlatTerrain">
+                                            Flat Terrain [0]</div>
                                     </div>
                                 </div>
                                 <div>

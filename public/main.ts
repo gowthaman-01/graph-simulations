@@ -46,8 +46,9 @@ import {
     getWeightTypeDisplayName,
     preloadImage,
     setWeightColor,
+    updateProgressBar,
 } from '../src/utils/general';
-import { findOptimumAStarHeuristicMultiplier, runAlgorithm } from '../src/utils/run';
+import { runAlgorithm } from '../src/utils/run';
 import { renderTutorialContent } from '../src/tutorial/tutorial';
 import { tutorialDataList } from '../src/tutorial/data';
 import { CustomDropdown } from '../src/classes/CustomDropdown';
@@ -121,10 +122,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const stepsCount = document.getElementById('stepCount') as HTMLParagraphElement;
     const stepsSlider = document.getElementById('stepSlider') as HTMLInputElement;
     const weightControls = document.getElementById('weightControls') as HTMLDivElement;
-    const weightDropdownButton = document.getElementById(
-        'weightDropdownButton',
+    const environmentTypeDropdownButton = document.getElementById(
+        'environmentTypeDropdownButton',
     ) as HTMLButtonElement;
-    const weightDropdownMenu = document.getElementById('weightDropdownMenu') as HTMLDivElement;
+    const environmentTypeDropdownMenu = document.getElementById(
+        'environmentTypeDropdownMenu',
+    ) as HTMLDivElement;
     const speedDropdownButton = document.getElementById('speedDropdownButton') as HTMLButtonElement;
     const speedDropdownMenu = document.getElementById('speedDropdownMenu') as HTMLDivElement;
     const showWeightCheckbox = document.getElementById('showWeightCheckbox') as HTMLInputElement;
@@ -163,8 +166,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         !stepsCount ||
         !stepsSlider ||
         !weightControls ||
-        !weightDropdownButton ||
-        !weightDropdownMenu ||
+        !environmentTypeDropdownButton ||
+        !environmentTypeDropdownMenu ||
         !speedDropdownButton ||
         !speedDropdownMenu ||
         !showWeightCheckbox ||
@@ -277,8 +280,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         globalVariablesManager.setWeightType(EnvironmentType.RoadNetwork);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
-                            const weightDropdown = dropdowns.weightDropdown;
-                            weightDropdown.updateTextContent(
+                            const environmentTypeDropdown = dropdowns.environmentTypeDropdown;
+                            environmentTypeDropdown.updateTextContent(
                                 getWeightTypeDisplayName(EnvironmentType.RoadNetwork),
                             );
                         }
@@ -357,9 +360,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
         );
 
-        const weightDropdown = new CustomDropdown(
-            weightDropdownButton,
-            weightDropdownMenu,
+        const environmentTypeDropdown = new CustomDropdown(
+            environmentTypeDropdownButton,
+            environmentTypeDropdownMenu,
             getWeightTypeDisplayName(globalVariablesManager.getEnvironmentType()),
             (dataValue) => {
                 const environmentType = dataValue as EnvironmentType;
@@ -409,17 +412,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             primaryGraphTypeDropdown,
             speedDropdown,
             heuristicTypeDropdown,
-            weightDropdown,
+            environmentTypeDropdown,
         };
     };
 
     /* Helper functions to disable and enable controls. */
     const disableWeightControls = () => {
-        toggleElement([weightDropdownButton], STATUS.DISABLE);
+        toggleElement([environmentTypeDropdownButton], STATUS.DISABLE);
     };
 
     const enableWeightControls = () => {
-        toggleElement([weightDropdownButton], STATUS.ENABLE);
+        toggleElement([environmentTypeDropdownButton], STATUS.ENABLE);
     };
 
     const disableGraphControls = () => {
@@ -591,26 +594,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isEndNodeNotReachable = visibleGraphRunResults.every(
             (runResult) => runResult.getShortestPath().length <= 1,
         );
-
-        const aStarRunResultIndex = newRunResults.findIndex(
-            (result) => result.getAlgorithmType() === AlgorithmType.AStar,
-        );
-        const dijkstraRunResultIndex = newRunResults.findIndex(
-            (result) => result.getAlgorithmType() === AlgorithmType.Dijkstra,
-        );
-
-        if (aStarRunResultIndex !== -1 && dijkstraRunResultIndex !== -1) {
-            const aStarWeight = newRunResults[aStarRunResultIndex].getTotalWeight();
-            const dijkstraWeight = newRunResults[dijkstraRunResultIndex].getTotalWeight();
-            const optimumAStarHeuristicMultiplier = findOptimumAStarHeuristicMultiplier(
-                dijkstraWeight,
-                aStarWeight,
-            );
-            const newAstarRunResult = aStarSearch(optimumAStarHeuristicMultiplier);
-            newAstarRunResult.setGraphDiv(newRunResults[aStarRunResultIndex].getGraphDiv());
-
-            newRunResults[aStarRunResultIndex] = newAstarRunResult;
-        }
 
         // Update global variables manager
         globalVariablesManager.setEndNodeReachable(!isEndNodeNotReachable);
@@ -794,6 +777,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleTutorialClose();
     }
 
+    const loadImages = async () => {
+        const imageUrls = [
+            './assets/car.png',
+            './assets/down-arrow.png',
+            './assets/elevated.png',
+            './assets/example-weight.png',
+            './assets/exploring.svg',
+            './assets/flag.png',
+            './assets/golf.png',
+            './assets/info.png',
+            './assets/legend-grid.png',
+            './assets/logo.png',
+            './assets/pathium.png',
+            './assets/pin.png',
+            './assets/recursive-division.png',
+            './assets/road.png',
+            './assets/shortest-path.png',
+            './assets/shortest-path.svg',
+            './assets/statistics-table.png',
+            './assets/up-arrow.png',
+            './assets/visited.svg',
+            './assets/visiting.svg',
+            './assets/weighted.png',
+            './assets/flat.png',
+        ];
+
+        imageUrls.forEach(async (imageUrl) => {
+            try {
+                if (progressBar.style.width !== '100%') {
+                    progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;
+                }
+                await delay(Math.floor(Math.random() * 20));
+                await preloadImage(imageUrl);
+            } catch (error) {
+                console.error('Error preloading images', error);
+            }
+        });
+
+        progressBar.style.width = '100%';
+        await delay(200);
+        loadingScreen.style.display = 'none';
+    };
+
     /* Initialization during page load. */
     const initializePage = async () => {
         setWeightColor();
@@ -824,45 +850,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Generate the graphs and run results.
         resetGridAndRerun();
 
-        const imageUrls = [
-            './assets/car.png',
-            './assets/down-arrow.png',
-            './assets/elevated.png',
-            './assets/example-weight.png',
-            './assets/exploring.svg',
-            './assets/flag.png',
-            './assets/golf.png',
-            './assets/info.png',
-            './assets/legend-grid.png',
-            './assets/logo.png',
-            './assets/pathium.png',
-            './assets/pin.png',
-            './assets/recursive-division.png',
-            './assets/road.png',
-            './assets/shortest-path.png',
-            './assets/shortest-path.svg',
-            './assets/statistics-table.png',
-            './assets/up-arrow.png',
-            './assets/visited.svg',
-            './assets/visiting.svg',
-            './assets/weighted.png',
-        ];
-
-        imageUrls.forEach(async (imageUrl) => {
-            try {
-                if (progressBar.style.width !== '100%') {
-                    progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;
-                }
-                await delay(Math.floor(Math.random() * 20));
-                await preloadImage(imageUrl);
-            } catch (error) {
-                console.error('Error preloading images', error);
-            }
-        });
-
-        progressBar.style.width = '100%';
-        await delay(200);
-        loadingScreen.style.display = 'none';
+        if (!globalVariablesManager.getImagesLoaded()) {
+            loadImages();
+            globalVariablesManager.setImagesLoaded(true);
+        } else {
+            updateProgressBar(progressBar, loadingScreen);
+        }
     };
 
     progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;

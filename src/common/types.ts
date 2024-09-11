@@ -127,7 +127,7 @@ export interface Dropdowns {
     primaryGraphTypeDropdown: CustomDropdown;
     speedDropdown: CustomDropdown;
     heuristicTypeDropdown: CustomDropdown;
-    weightDropdown: CustomDropdown;
+    environmentTypeDropdown: CustomDropdown;
 }
 
 export enum GRAPH_POSITION {

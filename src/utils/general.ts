@@ -189,13 +189,13 @@ export const getHeuristicTypeDisplayName = (heuristicType: HeuristicType): strin
 export const getWeightTypeDisplayName = (environmentType: EnvironmentType): string => {
     switch (environmentType) {
         case EnvironmentType.FlatTerrain:
-            return 'Flat Terrain';
+            return 'Flat Terrain [0]';
         case EnvironmentType.ElevatedTerrain:
-            return 'Elevated Terrain';
+            return 'Elevated Terrain [&#177;]';
         case EnvironmentType.RoadNetwork:
-            return 'Road Network';
+            return 'Road Network [+ve]';
         default:
-            return 'Flat Terrain';
+            return 'Flat Terrain [0]';
     }
 };
 
@@ -275,7 +275,7 @@ export const shuffleArray = (array: number[]): number[] => {
  * @param {HTMLElement} loadingScreen - The loading screen element to hide
  * @returns {Promise<void>} - A promise that resolves when the progress bar is fully updated
  */
-export const updateProgressBarAndHideLoadingScreen = async (
+export const updateProgressBar = async (
     progressBar: HTMLElement,
     loadingScreen: HTMLElement,
 ): Promise<void> => {

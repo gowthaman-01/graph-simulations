@@ -326,7 +326,6 @@ th {
     align-items: center;
 }
 
-
 .general-settings-container {
     margin-top: 30px;
     gap: 32px;
@@ -480,14 +479,14 @@ th {
     gap: 12px;
 }
 
-.weight-dropdown {
-    min-width: 155px;
+.environment-type-dropdown {
+    min-width: 180px;
     text-align: left;
     justify-content: space-between;
 }
 
-.weight-dropdown-menu {
-    min-width: 155px;
+.environment-type-dropdown-menu {
+    min-width: 180px;
     top: -120px;
 }
 
@@ -640,14 +639,14 @@ th {
         top: 41px;
     }
 
-    .weight-dropdown,
-    .weight-dropdown-menu {
+    .environment-type-dropdown,
+    .environment-type-dropdown-menu {
         min-width: 130px;
     }
 
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
-    .weight-dropdown-menu,
+    .environment-type-dropdown-menu,
     .speed-dropdown-menu {
         top: -113px !important;
     }
@@ -713,7 +712,7 @@ th {
 
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
-    .weight-dropdown-menu,
+    .environment-type-dropdown-menu,
     .speed-dropdown-menu {
         top: -112px !important;
     }
@@ -769,7 +768,7 @@ th {
 
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
-    .weight-dropdown-menu,
+    .environment-type-dropdown-menu,
     .speed-dropdown-menu {
         top: -120px !important;
     }
@@ -779,8 +778,8 @@ th {
         min-width: 180px !important;
     }
 
-    .weight-dropdown,
-    .weight-dropdown-menu {
+    .environment-type-dropdown,
+    .environment-type-dropdown-menu {
         margin-right: 10px;
     }
 
@@ -907,7 +906,7 @@ th {
 
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
-    .weight-dropdown-menu,
+    .environment-type-dropdown-menu,
     .speed-dropdown-menu {
         top: -114px !important;
     }
@@ -966,7 +965,7 @@ th {
 
     .graph-dropdown-menu,
     .secondary-graph-dropdown-menu,
-    .weight-dropdown-menu,
+    .environment-type-dropdown-menu,
     .speed-dropdown-menu {
         top: -108px !important;
     }

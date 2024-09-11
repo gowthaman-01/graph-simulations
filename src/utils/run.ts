@@ -82,39 +82,3 @@ export const getBestAlgorithm = (): AlgorithmType => {
     // Return the type of the best algorithm, defaulting to BFS if none is found (though this should not occur).
     return bestAlgorithmRun ? bestAlgorithmRun.getAlgorithmType() : AlgorithmType.BFS;
 };
-
-/**
- * Finds the optimum heuristic multiplier for the A* algorithm by comparing its weight to Dijkstra's algorithm weight.
- *
- * @param {number} dijkstraWeight - The total weight of the path found by Dijkstra's algorithm.
- * @param {number} aStarWeight - The total weight of the path found by the A* algorithm.
- * @returns {number} The optimum heuristic multiplier for the A* algorithm.
- */
-export const findOptimumAStarHeuristicMultiplier = (
-    dijkstraWeight: number,
-    aStarWeight: number,
-): number => {
-    let bestMultiplier = 1;
-    if (aStarWeight === dijkstraWeight) {
-        bestMultiplier = DEFAULT_HEURISTIC_MULTIPLIER;
-    } else {
-        aStarWeight = aStarSearch(bestMultiplier).getTotalWeight();
-    }
-
-    while (aStarWeight === dijkstraWeight) {
-        const newMultiplier = bestMultiplier + 1;
-        const newAStarWeight = aStarSearch(newMultiplier).getTotalWeight();
-
-        if (newAStarWeight !== dijkstraWeight) {
-            break;
-        }
-
-        bestMultiplier = newMultiplier;
-
-        if (bestMultiplier > MAX_HEURISTIC_MULTIPLIER) {
-            break;
-        }
-    }
-
-    return bestMultiplier;
-};

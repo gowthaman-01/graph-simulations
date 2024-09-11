@@ -45,9 +45,10 @@ class GlobalVariablesManager {
     private isChangingStartEndNode: boolean;
     private customGraph: GraphStructure | null;
     private dropdowns: Dropdowns | null;
+    private imagesLoaded: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
-    private readonly TUTORIAL_PAGE_MAX = 10;
+    private readonly TUTORIAL_PAGE_MAX = 11;
 
     private constructor() {
         const savedData = this.loadFromLocalStorage();
@@ -63,6 +64,7 @@ class GlobalVariablesManager {
             this.heuristicType = savedData.heuristicType;
             this.simulationSpeed = savedData.simulationSpeed;
             this.customGraph = savedData.customGraph;
+            this.imagesLoaded = savedData.imagesLoaded;
         } else {
             this.gridSize = DEFAULT_GRID_SIZE;
             this.graph = createBasicGridGraph(true, this.gridSize);
@@ -79,6 +81,7 @@ class GlobalVariablesManager {
             this.heuristicType = HeuristicType.Manhattan;
             this.simulationSpeed = SimulationSpeed.Average;
             this.customGraph = null;
+            this.imagesLoaded = false;
         }
         this.runResults = [];
         this.endNodeReachable = true;
@@ -328,6 +331,14 @@ class GlobalVariablesManager {
         return this.dropdowns;
     }
 
+    public setImagesLoaded(imagesLoaded: boolean): void {
+        this.imagesLoaded = imagesLoaded;
+    }
+
+    public getImagesLoaded(): boolean {
+        return this.imagesLoaded;
+    }
+
     public saveToLocalStorage(): void {
         const serializedGraph = {
             ...this.graph,
@@ -355,6 +366,7 @@ class GlobalVariablesManager {
             heuristicType: this.heuristicType,
             simulationSpeed: this.simulationSpeed,
             customGraph: serializedCustomGraph,
+            imagesLoaded: this.imagesLoaded,
         };
 
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
@@ -372,6 +384,7 @@ class GlobalVariablesManager {
         heuristicType: HeuristicType;
         simulationSpeed: SimulationSpeed;
         customGraph: GraphStructure | null;
+        imagesLoaded: boolean;
     } | null {
         const data = localStorage.getItem(LOCAL_STORAGE_KEY);
 
@@ -406,6 +419,7 @@ class GlobalVariablesManager {
             heuristicType: parsedData.heuristicType,
             simulationSpeed: parsedData.simulationSpeed,
             customGraph: parsedCustomGraph,
+            imagesLoaded: parsedData.imagesLoaded,
         };
     }
 }

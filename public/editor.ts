@@ -8,7 +8,7 @@ import {
 import {
     getNodeIdFromCellElementId,
     setWeightColor,
-    updateProgressBarAndHideLoadingScreen,
+    updateProgressBar,
 } from '../src/utils/general';
 import { markCell } from '../src/utils/mark';
 import { toggleElement } from '../src/utils/element';
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     resetGrid();
     setWeightColor();
-    await updateProgressBarAndHideLoadingScreen(progressBar, loadingScreen);
+    await updateProgressBar(progressBar, loadingScreen);
 
     // Helper functions.
     const updateGraphEditorDescription = (mode: EDITOR_MODE = editorMode) => {

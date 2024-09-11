@@ -41,34 +41,42 @@ export const tutorialDataList: TutorialData[] = [
     },
     {
         pageNumber: 4,
-        title: 'Environment Types [1]',
+        title: 'Road Network [w = +ve]',
         body: `
-        <b>Flat Terrain:</b>
-        Imagine a golf ball rolling smoothly across a flat course. In this environment, every cell on the grid is equally easy for the ball to travel through regardless of direction.
-        <br><br><b>Elevated Terrain:</b>
-        Here, the golf ball must navigate a course with hills and slopes. Moving uphill requires more effort, and is equal to the difference between their elevations. However, when the ball moves downhill, the slope makes it easier for the ball to roll.
-        Suppose we have 2 points A and B, where A is at elevation 10 and B is at elevation 20. The ball will take 10 units of effort to move from A to B (20 - 10), but will take -&#8730;10 units of effort to move from B to A -&#8730;(20 - 10). The square root function simulates how gravity helps the ball roll faster on a slope.
-        <br><br><u>Note:</u> Since there are instances where moving between points can result in negative values, Bellman-Ford is better suited for finding optimal paths in these cases, while other algorithms, such as Dijkstra's, might struggle.`,
+    In this environment, you're driving a car through a network of roads, where each road segment has its own level of traffic congestion. Roads with heavier traffic slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
+    <br><br>In terms of graph theory, this environment is represented as a <u>positively weighted graph</u>, where road segments (edges) have positive values representing the level of congestion. Algorithms like Dijkstra’s work well here to find the shortest path.
+    <br><br>For example, suppose we have a road with a congestion value of 20. The car will take 20 units of effort to travel through this road segment.`,
         img: {
-            src: 'elevated',
-            width: 40,
-            marginTop: 40,
+            src: 'road',
+            width: 50,
+            marginTop: 50,
         },
     },
     {
         pageNumber: 5,
-        title: 'Environment Types [2]',
+        title: 'Flat Terrain [w = 0]',
         body: `
-        <b>Road Network:</b> In this environment, you're driving a car through a network of roads, with each road segment having its own level of traffic congestion. Roads with heavier traffic slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
-        <br><br>Suppose we have 2 roads A and B, where the congestion at A is 10 and the congestion at B is 20. The car will take 20 units of effort to move from A to B, and 10 units of effort to move from B to A.`,
+    Imagine a golf ball rolling smoothly across a flat course. In this environment, every cell on the grid is equally easy for the ball to travel through, regardless of direction.
+    <br><br>In terms of graph theory, this environment is represented as an <u>unweighted graph</u>, where all edges (paths) have equal cost or effort. The shortest path can be found using algorithms designed for unweighted graphs like BFS (Breadth-First Search).
+    `,
         img: {
-            src: 'road',
-            width: 40,
-            marginTop: 40,
+            src: 'flat',
+            width: 55,
+            marginTop: 20,
         },
     },
     {
         pageNumber: 6,
+        title: 'Elevated Terrain [w = &#177;]',
+        body: `
+    In this environment, the golf ball must navigate a course with hills and slopes. Moving uphill requires more effort, and the effort is equal to the difference in elevation. Moving downhill, the ball rolls more easily due to gravity, with the effort being proportional to the square root of the elevation difference.
+    <br><br>In terms of graph theory, this environment is represented as a <u>graph with positive and negative edge weights</u>. While moving uphill has a positive cost, moving downhill can have a negative cost, representing the help of gravity.
+    <br><br>For example, if point A is at elevation 10 and point B is at elevation 20, moving from A to B requires 10 units of effort (20 - 10). Moving from B to A requires less effort: the ball will move downhill with a cost of -√(20 - 10).
+    <br><br><u>Note:</u> This graph does not contain negative edge weight cycles, ensuring that paths are always valid and well-defined for all algorithms. Bellman-Ford is typically used to handle negative edge weights, while algorithms like Dijkstra's struggle with these cases.`,
+    },
+
+    {
+        pageNumber: 7,
         title: 'Legend',
         body: `
         <div class="legend">
@@ -97,7 +105,7 @@ export const tutorialDataList: TutorialData[] = [
         </div>`,
     },
     {
-        pageNumber: 7,
+        pageNumber: 8,
         title: 'Control Elements',
         body: `<u><b>Generate New Graph</b></u>
         <br>Generates a new graph based on the selected type and weight settings.<br><br>
@@ -113,7 +121,7 @@ export const tutorialDataList: TutorialData[] = [
         <br>Allows manual control of the progression through each stage of the algorithm.`,
     },
     {
-        pageNumber: 8,
+        pageNumber: 9,
         title: 'Control Elements',
         body: `<div class="graph-buttons-container" style="justify-content: center;">
         <button onclick="openTutorialPage(10)">Editor</button>
@@ -133,7 +141,7 @@ export const tutorialDataList: TutorialData[] = [
         <br>Runs the simulation based on the current settings.<br><br>`,
     },
     {
-        pageNumber: 9,
+        pageNumber: 10,
         title: 'Run Statistics',
         body: `The run statistics table compares the performance of different algorithms (BFS, Bellman-Ford, Dijkstra, and A* Search). 
         <br><br><u>Steps</u>: Represents the number of steps to find the shortest path.
@@ -175,7 +183,7 @@ export const tutorialDataList: TutorialData[] = [
         </table>`,
     },
     {
-        pageNumber: 10,
+        pageNumber: 11,
         title: 'Graph Editor',
         body: `The Graph Editor enables you to design and customize graphs for algorithm visualization and testing.
     <br><br><b>Add Walls</b>: Add wall nodes to create obstacles, which act as impassable nodes.
