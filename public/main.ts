@@ -59,13 +59,13 @@ import negativeWeightedStandardGraphExamples from '../src/generation-scripts/neg
 import negativeWeightedRecursiveDivisionGraphExamples from '../src/generation-scripts/negativeWeightedRecursiveDivisionGraphExamples.json';
 import negativeWeightedDfsGraphExamples from '../src/generation-scripts/negativeWeightedDFSGraphExamples.json';
 import negativeWeightedRandomWallsGraphExamples from '../src/generation-scripts/negativeWeightedRandomWallsGraphExamples.json';
-import { aStarSearch } from '../src/algorithms/aStarSearch';
 
 // Script that runs when DOM is loaded.
 document.addEventListener('DOMContentLoaded', async () => {
     // Load HTML elements
     const mainBodyDiv = document.getElementById('mainBody') as HTMLDivElement;
     const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
+    const loadingText = document.getElementById('loadingText') as HTMLParagraphElement;
     const progressBar = document.getElementById('progressBar') as HTMLDivElement;
     const tutorialContainerDiv = document.getElementById('tutorialContainer') as HTMLDivElement;
     const tutorialContentDiv = document.getElementById('tutorialContent') as HTMLDivElement;
@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (
         !mainBodyDiv ||
         !loadingScreen ||
+        !loadingText ||
         !progressBar ||
         !tutorialContainerDiv ||
         !tutorialContentDiv ||
@@ -176,6 +177,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    const loadingScreenMessages = [
+        'Initializing graph structure...',
+        'Analyzing node connections...',
+        'Configuring weights...',
+        'Calculating shortest paths...',
+        'Verifying shortest path...',
+        'Evaluating all possible paths...',
+        'Mapping out node relationships...',
+        'Exploring node connections...',
+        'Setting up grid layout...',
+        'Optimizing route selection...',
+    ];
+    const randomLoadingScreenMessage =
+        loadingScreenMessages[Math.floor(Math.random() * loadingScreenMessages.length)];
+
+    loadingText.innerHTML = randomLoadingScreenMessage;
     progressBar.style.width = DEFAULT_PROGRESS_BAR_WIDTH;
 
     const graphControlElements = [

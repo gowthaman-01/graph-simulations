@@ -47,6 +47,10 @@ export const displayGrid = (graphDiv: GraphDiv) => {
     // Create grid cells using DocumentFragment to optimise performance.
     const fragment = document.createDocumentFragment();
 
+    // Calculate and set the cell's width and height based on the number of rows.
+    const cellSize = getCellWidth(rows);
+    document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+
     for (let i = 0; i < gridSize; i++) {
         const cell = document.createElement('div');
 
@@ -54,10 +58,6 @@ export const displayGrid = (graphDiv: GraphDiv) => {
         cell.className = 'grid-cell';
         cell.classList.add('noselect');
         cell.style.border = 'solid 1px #0C3547';
-
-        // Calculate and set the cell's width and height based on the number of rows.
-        const cellSize = getCellWidth(rows);
-        document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
 
         // Set the cell's color based on its weight.
         const weight = nodes[i];
