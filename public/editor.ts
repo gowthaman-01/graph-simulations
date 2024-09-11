@@ -140,12 +140,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const updateGraphEditorDescription = (mode: EDITOR_MODE = editorMode) => {
         switch (mode) {
             case EDITOR_MODE.ADD_WALLS:
-                graphEditorDescription.innerHTML =
-                    'Click or drag on the grid to place walls that act as obstacles';
+                graphEditorDescription.innerHTML = 'Click or drag on the grid to place walls';
                 break;
             case EDITOR_MODE.SET_WEIGHT:
                 graphEditorDescription.innerHTML =
-                    'Adjust the slider, then drag on the grid to apply the weight';
+                    'Adjust the weight slider, then drag on the grid to apply it';
                 break;
             case EDITOR_MODE.CHANGE_START_NODE:
                 graphEditorDescription.innerHTML =
