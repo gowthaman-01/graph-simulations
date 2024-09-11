@@ -26,6 +26,7 @@ import {
     EnvironmentType,
 } from '../src/common/types';
 import { DEFAULT_WEIGHT } from '../src/common/constants';
+import { getColorByWeight } from '../src/utils/color';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const loadingScreen = document.getElementById('loadingScreen') as HTMLDivElement;
@@ -212,30 +213,80 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const getNodeState = (nodeId: number): NodeState => {
+        if (nodeId === globalVariablesManager.getStartNode()) {
+            return NodeState.StartNode;
+        } else if (nodeId === globalVariablesManager.getEndNode()) {
+            return NodeState.EndNode;
+        } else {
+            return NodeState.Unvisited;
+        }
+    };
+
+    const checkValidNode = (nodeState: NodeState) => {
+        return (
+            editorMode !== EDITOR_MODE.ADD_WALLS ||
+            (nodeState !== NodeState.StartNode && nodeState !== NodeState.EndNode)
+        );
+    };
+
     const setWeight = (weight: number) => {
         if (selectedNodeId === null) return;
-        let nodeState;
-        switch (selectedNodeId) {
-            case globalVariablesManager.getStartNode():
-                nodeState = NodeState.StartNode;
-                break;
-            case globalVariablesManager.getEndNode():
-                nodeState = NodeState.EndNode;
-                break;
-            default:
-                nodeState = NodeState.Unvisited;
-                break;
-        }
-        if (
-            editorMode === EDITOR_MODE.ADD_WALLS &&
-            (nodeState === NodeState.StartNode || nodeState === NodeState.EndNode)
-        ) {
+
+        const nodeState = getNodeState(selectedNodeId);
+        if (!checkValidNode(nodeState)) {
             return;
         }
+
         const nodes = globalVariablesManager.getGraph().nodes;
         nodes[selectedNodeId] = weight;
         markCell(selectedNodeId, nodeState, GRAPH_POSITION.EDITOR);
         globalVariablesManager.setNodes(nodes);
+    };
+
+    const displayWeight = (weight: number) => {
+        if (selectedNodeId === null) return;
+
+        const nodeState = getNodeState(selectedNodeId);
+        if (!checkValidNode(nodeState)) {
+            return;
+        }
+
+        const cell = document.getElementById(`${GRAPH_POSITION.EDITOR}-cell-${selectedNodeId}`);
+        if (!cell) {
+            return;
+        }
+        cell.style.backgroundColor = getColorByWeight(weight);
+
+        if (editorMode === EDITOR_MODE.SET_WEIGHT) {
+            const weightDisplay = document.getElementById(
+                `${GRAPH_POSITION.EDITOR}-cell-${selectedNodeId}-weight-display`,
+            );
+            if (weightDisplay) {
+                weightDisplay.innerHTML = weight === Infinity ? '∞' : weight.toString();
+                weightDisplay.style.color = getColorByWeight(weight, true);
+            }
+        }
+
+        cell.addEventListener('mouseleave', () => {
+            if (selectedNodeId === null) return;
+            const nodes = globalVariablesManager.getGraph().nodes;
+            const originalWeight = nodes[selectedNodeId];
+            if (selectedNodeId) {
+                cell.style.backgroundColor = getColorByWeight(originalWeight);
+            }
+            if (editorMode === EDITOR_MODE.SET_WEIGHT) {
+                const weightDisplay = document.getElementById(
+                    `${GRAPH_POSITION.EDITOR}-cell-${selectedNodeId}-weight-display`,
+                );
+                if (!weightDisplay) {
+                    return;
+                }
+                weightDisplay.innerHTML =
+                    originalWeight === Infinity ? '∞' : originalWeight.toString();
+                weightDisplay.style.color = getColorByWeight(originalWeight, true);
+            }
+        });
     };
 
     const showWeightSlider = (nodeId: number | null = null) => {
@@ -348,14 +399,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const handleEvent = (target: HTMLElement) => {
+    const handleNodeHover = (nodeId: number) => {
+        selectedNodeId = nodeId;
+        switch (editorMode) {
+            case EDITOR_MODE.ADD_WALLS:
+                displayWeight(Infinity);
+                break;
+            case EDITOR_MODE.SET_WEIGHT:
+                displayWeight(parseInt(weightSlider.value));
+                break;
+        }
+    };
+
+    const handleEvent = (target: HTMLElement, hover: boolean = false) => {
         if (
             target.classList.contains('grid-cell') ||
             target.classList.contains('weight-display') ||
             target.classList.contains('mark')
         ) {
             const nodeId = getNodeIdFromCellElementId(target.id);
-            handleNodeInteraction(nodeId);
+            if (hover) {
+                handleNodeHover(nodeId);
+            } else {
+                handleNodeInteraction(nodeId);
+            }
         }
     };
 
@@ -374,6 +441,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     graphEditorElement.addEventListener('mouseover', (event) => {
         if ((event as MouseEvent).buttons === 1) {
             handleEvent(event.target as HTMLElement);
+        } else {
+            handleEvent(event.target as HTMLElement, true);
         }
     });
 
