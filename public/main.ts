@@ -535,21 +535,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         pageNumber.innerHTML = `${currentPageNumber}/${TOTAL_TUTORIAL_PAGES}`;
     };
 
-    const handleTutorialOpen = () => {
+    const openTutorialModal = () => {
         openTutorialPage(globalVariablesManager.getTutorialPageMin());
     };
 
-    const handleTutorialClose = () => {
+    const closeTutorialModal = () => {
         toggleElementVisibility([tutorialContainerDiv], DISPLAY_STYLE.NONE);
         mainBodyDiv.classList.remove('main-body-blur');
     };
 
-    const handleSettingsOpen = () => {
+    const openSettingsModal = () => {
         toggleElementVisibility([settingsModalDiv], DISPLAY_STYLE.FLEX);
         mainBodyDiv.classList.add('main-body-blur');
     };
 
-    const handleSettingsClose = () => {
+    const closeSettingsModal = () => {
         toggleElementVisibility([settingsModalDiv], DISPLAY_STYLE.NONE);
         mainBodyDiv.classList.remove('main-body-blur');
     };
@@ -693,8 +693,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             runButton.innerHTML = 'Run';
         }
     });
-
-    viewTutorialButton.addEventListener('click', handleTutorialOpen);
+    viewTutorialButton.addEventListener('click', openTutorialModal);
 
     tutorialNextButton.addEventListener('click', () => {
         openTutorialPage(globalVariablesManager.incrementTutorialPageNumber());
@@ -704,13 +703,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         openTutorialPage(globalVariablesManager.decrementTutorialPageNumber());
     });
 
-    tutorialSkipButton.addEventListener('click', handleTutorialClose);
+    tutorialSkipButton.addEventListener('click', closeTutorialModal);
 
-    tutorialFinishButton.addEventListener('click', handleTutorialClose);
+    tutorialFinishButton.addEventListener('click', closeTutorialModal);
 
-    viewSettingsButton.addEventListener('click', handleSettingsOpen);
+    viewSettingsButton.addEventListener('click', openSettingsModal);
 
-    closeSettingsButton.addEventListener('click', handleSettingsClose);
+    closeSettingsButton.addEventListener('click', closeSettingsModal);
 
     generateNewGraphButton.addEventListener('click', () => {
         // If the graph type is custom, reset to standard graph type and update dropdown.
@@ -785,13 +784,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Render tutorial upon page load.
     if (globalVariablesManager.getShowTutorial()) {
-        handleTutorialOpen();
+        openTutorialModal();
 
         // Prevent tutorial from showing again by saving user settings to local storage.
         globalVariablesManager.setShowTutorial(false);
         globalVariablesManager.saveToLocalStorage();
     } else {
-        handleTutorialClose();
+        closeTutorialModal();
     }
 
     const loadImages = async () => {
