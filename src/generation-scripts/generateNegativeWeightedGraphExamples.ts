@@ -5,7 +5,7 @@ import { runAlgorithm } from '../utils/run';
 import * as fs from 'fs';
 
 const globalVariablesManager = getGlobalVariablesManagerInstance();
-globalVariablesManager.setWeightType(EnvironmentType.ElevatedTerrain);
+globalVariablesManager.setEnvironmentType(EnvironmentType.ElevatedTerrain);
 
 const generateGraphs = (graphType: GraphType, graphList: GraphStorage[]) => {
     while (graphList.length < 100) {

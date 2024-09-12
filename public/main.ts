@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const customGraph = globalVariablesManager.getCustomGraph();
                     if (customGraph) {
                         globalVariablesManager.setGraph(customGraph);
-                        globalVariablesManager.setWeightType(EnvironmentType.RoadNetwork);
+                        globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
                             const environmentTypeDropdown = dropdowns.environmentTypeDropdown;
@@ -383,12 +383,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             getWeightTypeDisplayName(globalVariablesManager.getEnvironmentType()),
             (dataValue) => {
                 const environmentType = dataValue as EnvironmentType;
-                globalVariablesManager.setWeightType(environmentType);
+                globalVariablesManager.setEnvironmentType(environmentType);
 
                 if (globalVariablesManager.getGraphType() === GraphType.Custom) {
                     if (environmentType === EnvironmentType.FlatTerrain) {
                         globalVariablesManager.setGraphType(GraphType.Standard);
-                        globalVariablesManager.setWeightType(EnvironmentType.FlatTerrain);
+                        globalVariablesManager.setEnvironmentType(EnvironmentType.FlatTerrain);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
                             const primaryGraphTypeDropdown = dropdowns.primaryGraphTypeDropdown;

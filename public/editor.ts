@@ -344,7 +344,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleBackButton = () => {
         globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
         globalVariablesManager.setGraphType(GraphType.Custom);
-        globalVariablesManager.setWeightType(EnvironmentType.RoadNetwork);
+        if (globalVariablesManager.getEnvironmentType() === EnvironmentType.FlatTerrain) {
+            globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);
+        }
         globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };

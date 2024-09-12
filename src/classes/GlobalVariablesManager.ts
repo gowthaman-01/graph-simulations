@@ -153,7 +153,7 @@ class GlobalVariablesManager {
         return this.graphType;
     }
 
-    public setWeightType(environmentType: EnvironmentType) {
+    public setEnvironmentType(environmentType: EnvironmentType) {
         this.environmentType = environmentType;
     }
 

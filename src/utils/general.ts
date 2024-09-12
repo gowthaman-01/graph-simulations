@@ -191,7 +191,7 @@ export const getWeightTypeDisplayName = (environmentType: EnvironmentType): stri
         case EnvironmentType.FlatTerrain:
             return 'Flat Terrain [0]';
         case EnvironmentType.ElevatedTerrain:
-            return 'Elevated Terrain [&#177;]';
+            return 'Elevated Terrain [±]';
         case EnvironmentType.RoadNetwork:
             return 'Road Network [+ve]';
         default:
