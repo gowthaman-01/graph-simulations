@@ -212,6 +212,7 @@ export const displayAllRunResults = async (stepsSlider: HTMLInputElement): Promi
         if (!globalVariablesManager.getIsSimulationRunning()) {
             return;
         }
+
         for (const runResult of runResults) {
             displayStep(step, runResult);
         }
@@ -223,6 +224,14 @@ export const displayAllRunResults = async (stepsSlider: HTMLInputElement): Promi
 
         // Pause for a predefined delay before displaying the next step.
         await delay(DEFAULT_DELAY);
+    }
+
+    // Display the final step
+    if (globalVariablesManager.getIsSimulationRunning()) {
+        for (const runResult of runResults) {
+            displayStep(maxTotalSteps, runResult);
+        }
+        stepsSlider.value = maxTotalSteps.toString();
     }
 };
 
