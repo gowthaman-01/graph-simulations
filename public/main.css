@@ -326,6 +326,11 @@ th {
     align-items: center;
 }
 
+.settings-buttons-subcontainer {
+    display: flex;
+    gap: 20px;
+}
+
 .general-settings-container {
     margin-top: 30px;
     gap: 32px;
@@ -980,11 +985,9 @@ th {
         min-width: 150px !important;
     }
 
-    .settings-buttons {
-        display: flex;
+    .settings-buttons-subcontainer {
         flex-direction: column;
         gap: 10px;
-        align-items: center;
     }
 
     .grid-cell {

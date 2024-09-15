@@ -46,11 +46,6 @@ export const tutorialDataList: TutorialData[] = [
     In this environment, you're driving a car through a network of roads, where each road segment has its own level of traffic congestion. Roads with heavier traffic slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
     <br><br>In terms of graph theory, this environment is represented as a <u>positively weighted graph</u>, where road segments (edges) have positive values representing the level of congestion. Algorithms like Dijkstra’s work well here to find the shortest path.
     <br><br>For example, suppose we have a road with a congestion value of 20. The car will take 20 units of effort to travel through this road segment.`,
-        img: {
-            src: 'road',
-            width: 50,
-            marginTop: 50,
-        },
     },
     {
         pageNumber: 5,
@@ -62,7 +57,7 @@ export const tutorialDataList: TutorialData[] = [
         img: {
             src: 'flat',
             width: 55,
-            marginTop: 20,
+            marginTop: 30,
         },
     },
     {
