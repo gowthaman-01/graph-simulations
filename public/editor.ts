@@ -342,7 +342,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handleBackButton = () => {
-        globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
+        globalVariablesManager.setCustomGraph({
+            graph: globalVariablesManager.getGraph().graph,
+            nodes: globalVariablesManager.getGraph().nodes,
+            startNode: globalVariablesManager.getStartNode(),
+            endNode: globalVariablesManager.getEndNode(),
+        });
         globalVariablesManager.setGraphType(GraphType.Custom);
         if (globalVariablesManager.getEnvironmentType() === EnvironmentType.FlatTerrain) {
             globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);

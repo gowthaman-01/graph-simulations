@@ -10,6 +10,7 @@ import {
     EnvironmentType,
     Dropdowns,
     GRAPH_POSITION,
+    GraphStorage,
 } from '../common/types';
 import RunResults from './RunResults';
 import { createBasicGridGraph, generateStartAndEndNodeForStandardGraph } from '../utils/graph';
@@ -42,9 +43,10 @@ class GlobalVariablesManager {
     private showWeights: boolean;
     private isSimulationRunning: boolean;
     private isChangingStartEndNode: boolean;
-    private customGraph: GraphStructure | null;
+    private customGraph: GraphStorage | null;
     private dropdowns: Dropdowns | null;
     private imagesLoaded: boolean;
+    private isVisualgoGraph: boolean;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 11;
@@ -64,6 +66,7 @@ class GlobalVariablesManager {
             this.simulationSpeed = savedData.simulationSpeed;
             this.customGraph = savedData.customGraph;
             this.imagesLoaded = savedData.imagesLoaded;
+            this.isVisualgoGraph = savedData.isVisualgoGraph;
         } else {
             this.gridSize = DEFAULT_GRID_SIZE;
             const { graph, nodes, startNode, endNode } = createBasicGridGraph(true, this.gridSize);
@@ -80,6 +83,7 @@ class GlobalVariablesManager {
             this.simulationSpeed = SimulationSpeed.Average;
             this.customGraph = null;
             this.imagesLoaded = false;
+            this.isVisualgoGraph = false;
         }
         this.runResults = [];
         this.endNodeReachable = true;
@@ -313,11 +317,11 @@ class GlobalVariablesManager {
         this.isChangingStartEndNode = isChangingStartEndNode;
     }
 
-    public setCustomGraph(customGraph: GraphStructure): void {
+    public setCustomGraph(customGraph: GraphStorage): void {
         this.customGraph = customGraph;
     }
 
-    public getCustomGraph(): GraphStructure | null {
+    public getCustomGraph(): GraphStorage | null {
         return this.customGraph;
     }
 
@@ -335,6 +339,14 @@ class GlobalVariablesManager {
 
     public getImagesLoaded(): boolean {
         return this.imagesLoaded;
+    }
+
+    public setIsVisualgoGraph(isVisualgoGraph: boolean): void {
+        this.isVisualgoGraph = isVisualgoGraph;
+    }
+
+    public getIsVisualgoGraph(): boolean {
+        return this.isVisualgoGraph;
     }
 
     public saveToLocalStorage(): void {
@@ -365,6 +377,7 @@ class GlobalVariablesManager {
             simulationSpeed: this.simulationSpeed,
             customGraph: serializedCustomGraph,
             imagesLoaded: this.imagesLoaded,
+            isVisualgoGraph: this.isVisualgoGraph,
         };
 
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
@@ -381,8 +394,9 @@ class GlobalVariablesManager {
         stepIncrement: number;
         heuristicType: HeuristicType;
         simulationSpeed: SimulationSpeed;
-        customGraph: GraphStructure | null;
+        customGraph: GraphStorage | null;
         imagesLoaded: boolean;
+        isVisualgoGraph: boolean;
     } | null {
         const data = localStorage.getItem(LOCAL_STORAGE_KEY);
 
@@ -397,12 +411,14 @@ class GlobalVariablesManager {
                 weight === 'Infinity' ? Infinity : weight,
             ),
         };
-        const parsedCustomGraph: GraphStructure | null = parsedData.customGraph
+        const parsedCustomGraph: GraphStorage | null = parsedData.customGraph
             ? {
                   ...parsedData.customGraph,
                   nodes: parsedData.customGraph.nodes.map((weight: string | number) =>
                       weight === 'Infinity' ? Infinity : weight,
                   ),
+                  startNode: parsedData.customGraph.startNode,
+                  endNode: parsedData.customGraph.endNode,
               }
             : null;
         return {
@@ -418,6 +434,7 @@ class GlobalVariablesManager {
             simulationSpeed: parsedData.simulationSpeed,
             customGraph: parsedCustomGraph,
             imagesLoaded: parsedData.imagesLoaded,
+            isVisualgoGraph: parsedData.isVisualgoGraph,
         };
     }
 }

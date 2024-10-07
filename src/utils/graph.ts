@@ -9,7 +9,7 @@ import {
     EnvironmentType,
 } from '../common/types';
 import { getGlobalVariablesManagerInstance } from '../classes/GlobalVariablesManager';
-import { DEFAULT_GRID_SIZE, DEFAULT_WEIGHT, MAX_WEIGHT } from '../common/constants';
+import { DEFAULT_WEIGHT, MAX_WEIGHT, MIN_GRID_SIZE } from '../common/constants';
 
 /**
  * Generates a new graph using the current graph type and ensures that there is a valid path
@@ -29,6 +29,14 @@ export const generateNewGraphWithReachableEndNode = (callback: () => void) => {
 export const generateAndStoreNewGraph = () => {
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     const graphType = globalVariablesManager.getGraphType();
+
+    // If the grid size is too small, set it to the default grid size.
+    if (
+        globalVariablesManager.getGridSize() < MIN_GRID_SIZE &&
+        !globalVariablesManager.getIsVisualgoGraph()
+    ) {
+        globalVariablesManager.setGridSize(MIN_GRID_SIZE);
+    }
 
     let newGraph: GraphStructure;
 
@@ -145,7 +153,7 @@ export const createBasicGridGraph = (isWeighted: boolean, gridSize: number): Gra
     }
 
     createGraphConnections(graph, gridSize);
-    if (gridSize < DEFAULT_GRID_SIZE) {
+    if (gridSize < MIN_GRID_SIZE) {
         // Set arbituary start and end nodes for visualgo graphs, since they are not used.
         return { graph, nodes, startNode: 0, endNode: gridSize - 1 };
     }

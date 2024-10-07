@@ -276,6 +276,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const customGraph = globalVariablesManager.getCustomGraph();
                     if (customGraph) {
                         globalVariablesManager.setGraph(customGraph);
+                        globalVariablesManager.setStartNode(customGraph.startNode);
+                        globalVariablesManager.setEndNode(customGraph.endNode);
                         globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);
                         const dropdowns = globalVariablesManager.getDropdowns();
                         if (dropdowns) {
@@ -284,6 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 getWeightTypeDisplayName(EnvironmentType.RoadNetwork),
                             );
                         }
+                        globalVariablesManager.setGridSize(customGraph.nodes.length);
                         resetGridAndRerun();
                     } else {
                         window.location.href = 'editor.html';

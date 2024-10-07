@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isVisualgoEditor = true;
     const globalVariablesManager = getGlobalVariablesManagerInstance();
     globalVariablesManager.setGridSize(VISUALGO_EDITOR_GRID_SIZE);
+    globalVariablesManager.setIsVisualgoGraph(true);
     generateAndStoreNewGraph();
 
     const getGridSizeDisplayName = (gridSize: number): string => {
@@ -348,11 +349,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handlePathiumButton = () => {
-        globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
+        globalVariablesManager.setCustomGraph({
+            graph: globalVariablesManager.getGraph().graph,
+            nodes: globalVariablesManager.getGraph().nodes,
+            startNode: globalVariablesManager.getStartNode(),
+            endNode: globalVariablesManager.getEndNode(),
+        });
         globalVariablesManager.setGraphType(GraphType.Custom);
         if (globalVariablesManager.getEnvironmentType() === EnvironmentType.FlatTerrain) {
             globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);
         }
+        globalVariablesManager.setIsVisualgoGraph(false);
         globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };
