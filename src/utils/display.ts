@@ -27,7 +27,7 @@ export const resetGrid = (algorithmToClear?: AlgorithmType): void => {
     }
 };
 
-export const displayGrid = (graphDiv: GraphDiv) => {
+export const displayGrid = (graphDiv: GraphDiv, isVisualgoEditor: boolean = false) => {
     const nodes = globalVariablesManager.getGraph().nodes;
     const startNode = globalVariablesManager.getStartNode();
     const endNode = globalVariablesManager.getEndNode();
@@ -63,15 +63,17 @@ export const displayGrid = (graphDiv: GraphDiv) => {
         const weight = nodes[i];
         cell.style.backgroundColor = getColorByWeight(weight);
 
-        if (i === startNode || i === endNode) {
+        if (!isVisualgoEditor && (i === startNode || i === endNode)) {
             // If the cell is the start or end node, create a mark to indicate it.
             const nodeState = i === startNode ? NodeState.StartNode : NodeState.EndNode;
             const mark = createMark(i, nodeState, graphPosition);
             cell.appendChild(mark);
-        } else if (i !== startNode && i !== endNode && globalVariablesManager.shouldShowWeights()) {
-            // If the cell is not a start or end node, display the weight of the node.
-            const weight = createMark(i, NodeState.Unvisited, graphPosition);
-            cell.appendChild(weight);
+        } else if (globalVariablesManager.shouldShowWeights()) {
+            if (isVisualgoEditor || (i !== startNode && i !== endNode)) {
+                // If the cell is not a start or end node, display the weight of the node. Visualgo editor displays weights on all nodes.
+                const weight = createMark(i, NodeState.Unvisited, graphPosition);
+                cell.appendChild(weight);
+            }
         }
 
         fragment.appendChild(cell);

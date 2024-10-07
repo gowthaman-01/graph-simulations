@@ -3,8 +3,9 @@ const path = require('path');
 module.exports = {
     mode: 'development', // or 'production' for production builds
     entry: {
-        main: './public/main.ts', // Entry point of your main application
-        editor: './public/editor.ts', // Entry point of your editor page
+        main: './public/main.ts', // Entry point of the main application
+        editor: './public/editor.ts', // Entry point of the default editor page
+        visualgo: './public/visualgo.ts', // Entry point of the visualgo graph editor
     },
     devtool: 'inline-source-map', // Source maps support
     module: {

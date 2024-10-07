@@ -1,6 +1,7 @@
 /node_modules
 /public/main.js
 /public/editor.js
+/public/visualgo.js
 .DS_STORE
 /dist
 /src/utils/storage.ts

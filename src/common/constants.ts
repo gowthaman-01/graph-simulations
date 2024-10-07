@@ -32,3 +32,6 @@ export const PROGRESS_BAR_INCREMENT = 5;
 
 // Local storage
 export const LOCAL_STORAGE_KEY = 'pathium-global-variables';
+
+// Visualgo
+export const VISUALGO_EDITOR_GRID_SIZE = 25;
