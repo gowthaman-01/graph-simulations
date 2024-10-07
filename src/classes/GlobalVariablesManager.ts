@@ -1,4 +1,4 @@
-import { AVERAGE_SPEED, DEFAULT_GRID_SIZE, LOCAL_STORAGE_KEY } from '../common/constants';
+import { AVERAGE_SPEED, DEFAULT_GRID_SIZE, LOCAL_STORAGE_KEY, VERSION } from '../common/constants';
 import {
     AlgorithmType,
     HeuristicType,
@@ -47,13 +47,14 @@ class GlobalVariablesManager {
     private dropdowns: Dropdowns | null;
     private imagesLoaded: boolean;
     private isVisualgoGraph: boolean;
+    private version: string;
 
     private readonly TUTORIAL_PAGE_MIN = 1;
     private readonly TUTORIAL_PAGE_MAX = 11;
 
     private constructor() {
         const savedData = this.loadFromLocalStorage();
-        if (savedData) {
+        if (savedData && savedData.version === VERSION) {
             this.gridSize = savedData.gridSize;
             this.graph = savedData.graph;
             this.startNode = savedData.startNode;
@@ -67,6 +68,7 @@ class GlobalVariablesManager {
             this.customGraph = savedData.customGraph;
             this.imagesLoaded = savedData.imagesLoaded;
             this.isVisualgoGraph = savedData.isVisualgoGraph;
+            this.version = savedData.version;
         } else {
             this.gridSize = DEFAULT_GRID_SIZE;
             const { graph, nodes, startNode, endNode } = createBasicGridGraph(true, this.gridSize);
@@ -84,6 +86,7 @@ class GlobalVariablesManager {
             this.customGraph = null;
             this.imagesLoaded = false;
             this.isVisualgoGraph = false;
+            this.version = VERSION;
         }
         this.runResults = [];
         this.endNodeReachable = true;
@@ -378,6 +381,7 @@ class GlobalVariablesManager {
             customGraph: serializedCustomGraph,
             imagesLoaded: this.imagesLoaded,
             isVisualgoGraph: this.isVisualgoGraph,
+            version: this.version,
         };
 
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
@@ -397,6 +401,7 @@ class GlobalVariablesManager {
         customGraph: GraphStorage | null;
         imagesLoaded: boolean;
         isVisualgoGraph: boolean;
+        version: string;
     } | null {
         const data = localStorage.getItem(LOCAL_STORAGE_KEY);
 
@@ -435,6 +440,7 @@ class GlobalVariablesManager {
             customGraph: parsedCustomGraph,
             imagesLoaded: parsedData.imagesLoaded,
             isVisualgoGraph: parsedData.isVisualgoGraph,
+            version: parsedData.version,
         };
     }
 }
