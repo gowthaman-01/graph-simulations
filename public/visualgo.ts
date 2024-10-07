@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const handleVisualizeButton = () => {
         const visualgoFormat = convertGraphToVisualgoFormat();
-        window.location.href = `https://visualgo.net/en/sssp?create=${visualgoFormat}`;
+        window.open(`https://visualgo.net/en/sssp?create=${visualgoFormat}`, '_blank');
     };
 
     const handlePathiumButton = () => {
