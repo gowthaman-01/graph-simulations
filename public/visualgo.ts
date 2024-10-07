@@ -19,6 +19,7 @@ import {
     NodeState,
     STATUS,
     EnvironmentType,
+    GraphType,
 } from '../src/common/types';
 import { DEFAULT_WEIGHT, VISUALGO_EDITOR_GRID_SIZE } from '../src/common/constants';
 import { getColorByWeight } from '../src/utils/color';
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const setWeightButton = document.getElementById('setWeightButton') as HTMLButtonElement;
     const resetGraphButton = document.getElementById('resetGraphButton') as HTMLButtonElement;
     const visualgoButton = document.getElementById('visualgoButton') as HTMLButtonElement;
+    const pathiumButton = document.getElementById('pathiumButton') as HTMLButtonElement;
     const gridSizeDropdownButton = document.getElementById(
         'gridSizeDropdownButton',
     ) as HTMLButtonElement;
@@ -63,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         !setWeightButton ||
         !resetGraphButton ||
         !visualgoButton ||
+        !pathiumButton ||
         !gridSizeDropdownButton ||
         !gridSizeDropdownMenu ||
         !editorButtonsContainer
@@ -76,6 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         resetGraphButton,
         doneButton,
         visualgoButton,
+        pathiumButton,
         gridSizeDropdownButton,
     ];
 
@@ -146,7 +150,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 graphEditorDescription.innerHTML = 'Clear the entire grid and start over';
                 break;
             case EDITOR_MODE.VISUALIZE:
-                graphEditorDescription.innerHTML = 'Visualise the graph on VisuAlgo';
+                graphEditorDescription.innerHTML = 'Visualise the graph on VisuAlgo.net';
+                break;
+            case EDITOR_MODE.PATHIUM:
+                graphEditorDescription.innerHTML = 'Visualise the graph on Pathium';
                 break;
             case EDITOR_MODE.NONE:
                 graphEditorDescription.innerHTML =
@@ -341,6 +348,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const handlePathiumButton = () => {
+        globalVariablesManager.setCustomGraph(globalVariablesManager.getGraph());
+        globalVariablesManager.setGraphType(GraphType.Custom);
+        if (globalVariablesManager.getEnvironmentType() === EnvironmentType.FlatTerrain) {
+            globalVariablesManager.setEnvironmentType(EnvironmentType.RoadNetwork);
+        }
+        globalVariablesManager.saveToLocalStorage();
         window.location.href = 'index.html';
     };
 
@@ -360,6 +373,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             button: visualgoButton,
             mode: EDITOR_MODE.VISUALIZE,
             clickHandler: handleVisualizeButton,
+        },
+        {
+            button: pathiumButton,
+            mode: EDITOR_MODE.PATHIUM,
+            clickHandler: handlePathiumButton,
         },
     ];
 

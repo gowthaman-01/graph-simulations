@@ -164,6 +164,7 @@ export enum EDITOR_MODE {
     CHANGE_GRID_SIZE = 'CHANGE_GRID_SIZE',
     RESET = 'RESET',
     VISUALIZE = 'VISUALIZE',
+    PATHIUM = 'PATHIUM',
     BACK = 'BACK',
     NONE = 'NONE',
 }
