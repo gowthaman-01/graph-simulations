@@ -45,7 +45,6 @@ class GlobalVariablesManager {
     private isChangingStartEndNode: boolean;
     private customGraph: GraphStorage | null;
     private dropdowns: Dropdowns | null;
-    private imagesLoaded: boolean;
     private isVisualgoGraph: boolean;
     private version: string;
 
@@ -66,7 +65,6 @@ class GlobalVariablesManager {
             this.heuristicType = savedData.heuristicType;
             this.simulationSpeed = savedData.simulationSpeed;
             this.customGraph = savedData.customGraph;
-            this.imagesLoaded = savedData.imagesLoaded;
             this.isVisualgoGraph = savedData.isVisualgoGraph;
             this.version = savedData.version;
         } else {
@@ -84,7 +82,6 @@ class GlobalVariablesManager {
             this.heuristicType = HeuristicType.Manhattan;
             this.simulationSpeed = SimulationSpeed.Average;
             this.customGraph = null;
-            this.imagesLoaded = false;
             this.isVisualgoGraph = false;
             this.version = VERSION;
         }
@@ -336,14 +333,6 @@ class GlobalVariablesManager {
         return this.dropdowns;
     }
 
-    public setImagesLoaded(imagesLoaded: boolean): void {
-        this.imagesLoaded = imagesLoaded;
-    }
-
-    public getImagesLoaded(): boolean {
-        return this.imagesLoaded;
-    }
-
     public setIsVisualgoGraph(isVisualgoGraph: boolean): void {
         this.isVisualgoGraph = isVisualgoGraph;
     }
@@ -379,7 +368,6 @@ class GlobalVariablesManager {
             heuristicType: this.heuristicType,
             simulationSpeed: this.simulationSpeed,
             customGraph: serializedCustomGraph,
-            imagesLoaded: this.imagesLoaded,
             isVisualgoGraph: this.isVisualgoGraph,
             version: this.version,
         };
@@ -399,7 +387,6 @@ class GlobalVariablesManager {
         heuristicType: HeuristicType;
         simulationSpeed: SimulationSpeed;
         customGraph: GraphStorage | null;
-        imagesLoaded: boolean;
         isVisualgoGraph: boolean;
         version: string;
     } | null {
@@ -438,7 +425,6 @@ class GlobalVariablesManager {
             heuristicType: parsedData.heuristicType,
             simulationSpeed: parsedData.simulationSpeed,
             customGraph: parsedCustomGraph,
-            imagesLoaded: parsedData.imagesLoaded,
             isVisualgoGraph: parsedData.isVisualgoGraph,
             version: parsedData.version,
         };

@@ -851,12 +851,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Generate the graphs and run results.
         resetGridAndRerun();
 
-        if (!globalVariablesManager.getImagesLoaded()) {
-            loadImages();
-            globalVariablesManager.setImagesLoaded(true);
-        } else {
-            updateProgressBar(progressBar, loadingScreen);
-        }
+        loadImages();
+        updateProgressBar(progressBar, loadingScreen);
     };
 
     progressBar.style.width += `${PROGRESS_BAR_INCREMENT}%`;
