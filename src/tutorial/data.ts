@@ -32,7 +32,8 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 3,
         title: 'Grid Graphs',
         body: `Each node in the grid graph has a weight associated with it. Nodes with higher weights are indicated by darker backgrounds (refer to image below).
-        <br><br>There are 2 types of grid graphs - <b>Standard</b> and <b>Maze</b>. Standard graphs are basic grid graphs with no walls. Maze graphs are generated using maze generation algorithms such as Recursive Division, Random Walls and DFS, and contain impassable walls.`,
+        <br><br>There are 2 types of grid graphs - <b>Standard</b> and <b>Maze</b>. Standard graphs are basic grid graphs with no walls. Maze graphs are generated using maze generation algorithms such as Recursive Division, Random Walls and DFS, and contain impassable walls.
+        <br><br>Grid graphs can represent a variety of real-world scenarios, each with unique movement challenges. From road networks filled with traffic to smooth, flat terrains or hilly landscapes, these environments provide distinct obstacles. Let's explore how navigating these different terrains can be modeled using graph theory.`,
         img: {
             src: 'example-weight',
             width: 60,
@@ -43,9 +44,9 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 4,
         title: 'Road Network [w = +ve]',
         body: `
-    In this environment, you're driving a car through a network of roads, where each road segment has its own level of traffic congestion. Roads with heavier traffic slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
-    <br><br>In terms of graph theory, this environment is represented as a <u>positively weighted graph</u>, where road segments (edges) have positive values representing the level of congestion. Algorithms like Dijkstra’s work well here to find the shortest path.
-    <br><br>For example, suppose we have a road with a congestion value of 20. The car will take 20 units of effort to travel through this road segment.`,
+    In this environment, you're driving a car through a network of roads, where each road segment (represented as a grid cell) has its own level of traffic congestion. Roads with heavier traffic, indicated by darker colours slow you down, while roads with less congestion allow for faster travel. The challenge is to navigate the road network efficiently, avoiding traffic jams and finding the quickest path to the destination.
+    <br><br>In terms of graph theory, this environment is represented as a positively weighted graph, where road segments have positive values representing the level of congestion. Algorithms like Dijkstra's work well here to find the shortest path.
+    <br><br>For example, suppose we have a road with a congestion value of 20. A car travelling through this road will require 20 units of effort (fuel) to travel through this road segment.`,
     },
     {
         pageNumber: 5,
@@ -64,10 +65,10 @@ export const tutorialDataList: TutorialData[] = [
         pageNumber: 6,
         title: 'Elevated Terrain [w = &#177;]',
         body: `
-    In this environment, the golf ball must navigate a course with hills and slopes. Moving uphill requires more effort, and the effort is equal to the difference in elevation. Moving downhill, the ball rolls more easily due to gravity, with the effort being proportional to the square root of the elevation difference.
+    In this environment, the golf ball must navigate a course with hills and slopes. Moving uphill requires more effort, and the effort is equal to the difference in elevation. On the other hand, moving downhill is easier due to gravity, and for simplicity, we simulate this by making the effort proportional to the square root of the elevation difference - an arbitrary choice to represent the ease of downhill movement.
     <br><br>In terms of graph theory, this environment is represented as a <u>graph with positive and negative edge weights</u>. While moving uphill has a positive cost, moving downhill can have a negative cost, representing the help of gravity.
     <br><br>For example, if point A is at elevation 10 and point B is at elevation 20, moving from A to B requires 10 units of effort (20 - 10). Moving from B to A requires less effort: the ball will move downhill with a cost of -√(20 - 10).
-    <br><br><u>Note:</u> This graph does not contain negative edge weight cycles, ensuring that paths are always valid and well-defined for all algorithms. Bellman-Ford is typically used to handle negative edge weights, while algorithms like Dijkstra's struggle with these cases.`,
+    <br><br><u>Note:</u> Grid graph does not contain negative edge weight cycles, ensuring that paths are always valid and well-defined for all algorithms. Bellman-Ford is typically used to handle negative edge weights, while algorithms like Dijkstra's struggle with these cases.`,
     },
 
     {
